@@ -6,6 +6,9 @@ import jakarta.persistence.*
 class Video(
     uuid: String,       // 우리쪽 UUID
     videoId: String,    // 유튜브 UUID (비디오 아이디)
+    userId: Long,       // 생성한 유저 아이디
+    // TODO video title
+    // TODO video author
 ): BaseTime() {
 
     @Id
@@ -18,6 +21,10 @@ class Video(
 
     @Column(name = "video_id", nullable = false, updatable = true)
     var videoId: String = videoId
+        protected set
+
+    @Column(name = "created_by", nullable = false, updatable = true)
+    var createdBy: Long = userId
         protected set
 
     @OneToMany(

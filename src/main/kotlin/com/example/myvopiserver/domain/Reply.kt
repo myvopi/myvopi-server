@@ -1,14 +1,17 @@
 package com.example.myvopiserver.domain
 
+import com.example.myvopiserver.common.enums.CommentStatus
+import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 
 @Entity
 class Reply(
-    uuid: String,       // 우리쪽 UUID
-    content: String,    // 내용
-    modifiedCnt: Int,   // 수정 여부
-    comment: Comment,   // 상위 댓글
-    status: Status,     // 표시 상태
+    uuid: String,               // 우리쪽 UUID
+    content: String,            // 내용
+    modifiedCnt: Int,           // 수정 여부
+    comment: Comment,           // 상위 댓글
+    status: CommentStatus,      // 표시 상태
+    user: User,                 // 생성자
 ): BaseTime() {
 
     @Id
@@ -29,7 +32,7 @@ class Reply(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, updatable = true)
-    var status: Status = status
+    var status: CommentStatus = status
         protected set
 
     @ManyToOne(
@@ -49,6 +52,13 @@ class Reply(
     var likes: MutableList<ReplyLike> = mutableListOf()
         protected set
 
-    // TODO created by user id
+    @ManyToOne(
+        fetch = FetchType.LAZY,
+        targetEntity = User::class,
+    )
+    @JoinColumn(name = "user_id", nullable = false)
+    var user: User = user
+        protected set
+
     // TODO verified
 }

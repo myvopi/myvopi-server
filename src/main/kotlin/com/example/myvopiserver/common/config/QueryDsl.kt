@@ -16,8 +16,7 @@ class QueryDsl {
         lateinit var em: EntityManager
 
         @Bean
-        fun jpaQueryFactory(): JPAQueryFactory
-        {
+        fun jpaQueryFactory(): JPAQueryFactory {
             return JPAQueryFactory(em)
         }
     }
