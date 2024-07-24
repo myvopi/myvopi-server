@@ -4,6 +4,8 @@ import com.example.myvopiserver.domain.role.User
 
 interface UserReaderStore {
 
+    fun saveUser(user: User): User
+
     /**
     * validation usages
     * */

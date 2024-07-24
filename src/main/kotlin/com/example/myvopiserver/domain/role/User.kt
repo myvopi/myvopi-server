@@ -1,11 +1,13 @@
 package com.example.myvopiserver.domain.role
 
 import com.example.myvopiserver.common.enums.CountryCode
+import com.example.myvopiserver.common.enums.MemberRole
 import com.example.myvopiserver.common.enums.RoleStatus
 import com.example.myvopiserver.domain.BaseTime
 import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.Reply
 import jakarta.persistence.*
+import java.lang.reflect.Member
 import java.util.*
 
 @Entity
@@ -49,7 +51,12 @@ class User(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, updatable = true)
-    var status: RoleStatus = RoleStatus.UNVERIFIED
+    var status: RoleStatus = RoleStatus.ACTIVE
+        protected set
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, updatable = true)
+    var role: MemberRole = MemberRole.ROLE_UNVERIFIED
         protected set
 
     @OneToMany(
@@ -70,11 +77,20 @@ class User(
     var replies: MutableList<Reply> = mutableListOf()
         protected set
 
-    fun setRoleVerified() {
-        this.status = RoleStatus.VERIFIED
+    @OneToMany(
+        mappedBy = "user",
+        fetch = FetchType.LAZY,
+        targetEntity = EmailVerification::class,
+        cascade = [CascadeType.ALL],
+    )
+    var verifications: MutableList<EmailVerification> = mutableListOf()
+        protected set
+
+    fun setRoleStatusBanned() {
+        this.status = RoleStatus.BANNED
     }
 
-    fun setRoleBanned() {
-        this.status = RoleStatus.BANNED
+    fun setMemberRoleUser() {
+        this.role = MemberRole.ROLE_USER
     }
 }

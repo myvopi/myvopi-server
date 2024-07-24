@@ -10,7 +10,8 @@ enum class ErrorCode(val engErrorMsg: String, val korErrorMsg: String) {
     JWT_CORRUPT("Token has bee corrupted", "토큰이 변조 되었습니다."),
     INVALID_TOKEN("Invalid token","유효하지 않은 토큰입니다."),
     ACCESS_DENIED("Access denied","접근 권한이 없습니다."),
-    BAD_REQUEST("Bad request", "잘못된 요청입니다.")
+    BAD_REQUEST("Bad request", "잘못된 요청입니다."),
+    NOT_FOUND("Not found", "찾지 못했습니다."),
     ;
     companion object: EnumCodeCompanion<ErrorCode, String>(ErrorCode.entries.associateBy(ErrorCode::engErrorMsg))
 }

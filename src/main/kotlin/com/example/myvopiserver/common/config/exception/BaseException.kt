@@ -29,3 +29,13 @@ data class UnauthorizedException(
         return super.toString()
     }
 }
+
+data class NotFoundException(
+    val errorCode: ErrorCode,
+    override val message: String = errorCode.engErrorMsg
+): RuntimeException(message)
+{
+    override fun toString(): String {
+        return super.toString()
+    }
+}

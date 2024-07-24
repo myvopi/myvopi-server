@@ -1,0 +1,55 @@
+package com.example.myvopiserver.domain.service
+
+import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
+import com.example.myvopiserver.common.config.exception.BadRequestException
+import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.domain.command.InternalUserCommand
+import com.example.myvopiserver.domain.command.UserLoginCommand
+import com.example.myvopiserver.domain.command.UserRegisterCommand
+import com.example.myvopiserver.domain.interfaces.UserReaderStore
+import com.example.myvopiserver.domain.mapper.UserMapper
+import com.example.myvopiserver.domain.role.User
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+@Service
+class UserService(
+    private val userReaderStore: UserReaderStore,
+    private val userMapper: UserMapper,
+    private val jwtTokenGenerator: JwtTokenGenerator,
+) {
+
+    @Transactional
+    fun registerUser(command: UserRegisterCommand): InternalUserCommand {
+        val userCommand = User(
+            name = command.name,
+            userId = command.userId,
+            nationality = command.nationality,
+            password = command.password, // TODO encrypt
+            email = command.email,
+        )
+        val user = userReaderStore.saveUser(userCommand)
+        return userMapper.of(user)
+    }
+
+    @Transactional(readOnly = true)
+    fun validateUserLogin(command: UserLoginCommand): String {
+        val user = userReaderStore.findUserByUserId(command.userId)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+
+        // TODO encryption
+        val reqPassword = command.password
+        val password = user.password
+        if(reqPassword != password) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
+        return jwtTokenGenerator.createToken(user)
+    }
+
+    @Transactional
+    fun updateUserMemberRole(command: InternalUserCommand) {
+        val user = userReaderStore.findUserByUserId(command.userId)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        user.setMemberRoleUser()
+        userReaderStore.saveUser(user)
+    }
+}

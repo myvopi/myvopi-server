@@ -10,6 +10,10 @@ class UserReaderStoreImpl(
     private val userRepository: UserRepository,
 ): UserReaderStore {
 
+    override fun saveUser(user: User): User {
+        return userRepository.save(user)
+    }
+
     override fun findUserByUserId(userId: String): User? {
         return userRepository.findByUserId(userId)
     }

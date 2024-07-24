@@ -17,7 +17,12 @@ data class InternalUserCommand(
 data class UserRegisterCommand(
     val name: String,
     val userId: String,
-    val nationality: String,
+    val nationality: CountryCode,
     val password: String,
     val email: String,
+)
+
+data class UserLoginCommand(
+    val userId: String,
+    val password: String,
 )

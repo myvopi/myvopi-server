@@ -1,6 +1,7 @@
 package com.example.myvopiserver.common.enums
 
 enum class MemberRole {
-    USER,
-    ADMIN,
+    ROLE_UNVERIFIED,
+    ROLE_USER,
+    ROLE_ADMIN,
 }

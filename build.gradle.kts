@@ -45,6 +45,12 @@ dependencies {
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
 
     implementation("com.google.code.gson:gson:2.8.9")
+
+    implementation("org.mapstruct:mapstruct:1.5.2.Final")
+    kapt("org.mapstruct:mapstruct-processor:1.5.2.Final")
+
+    // Mail Sender
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 }
 
 allOpen{
