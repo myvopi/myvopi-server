@@ -51,11 +51,11 @@ class SecurityConfig(
             headers.xssProtection { xssProtection -> xssProtection.disable() }
         }
 
-        http.authorizeHttpRequests { authorize ->
-            authorize.requestMatchers(
-                "/api/v1/user/login",
-            ).hasRole("MEMBER").anyRequest().permitAll()
-        }
+//        http.authorizeHttpRequests { authorize ->
+//            authorize.requestMatchers(
+//                "/api/v1/user/email/verification",
+//            ).hasRole("USER").anyRequest().permitAll()
+//        }
 
         return http.build()
     }

@@ -1,12 +1,13 @@
 package com.example.myvopiserver.common.config.handler
 
+import com.example.myvopiserver.common.config.authentication.toUserInfo
 import com.example.myvopiserver.common.config.exception.*
 import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
-import org.slf4j.MDC
-import org.springframework.core.NestedExceptionUtils
+import com.example.myvopiserver.common.enums.MemberRole
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -35,6 +36,16 @@ class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException::class)
     fun handleAccessDeniedException(e: AccessDeniedException): CommonResult<String> {
-        return CommonResponse.fail(ErrorCode.ACCESS_DENIED)
+        val authentication = SecurityContextHolder.getContext().authentication
+        val userInfo = authentication.toUserInfo()
+        val deniedMsg = if(userInfo.role == MemberRole.ROLE_UNVERIFIED) "Email needs to be verified"
+            else ErrorCode.ACCESS_DENIED.engErrorMsg
+        return CommonResponse.fail(deniedMsg, ErrorCode.ACCESS_DENIED)
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException::class)
+    fun handleAccessDeniedException(e: NotFoundException): CommonResult<String> {
+        return CommonResponse.fail(e.message, e.errorCode)
     }
 }

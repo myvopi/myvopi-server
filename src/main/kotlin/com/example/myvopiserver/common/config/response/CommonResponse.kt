@@ -6,7 +6,7 @@ class CommonResponse {
 
     companion object {
 
-        private fun <T : Any> success(data: T, message: String?): CommonResult<T> {
+        fun <T : Any> success(data: T, message: String?): CommonResult<T> {
             return CommonResult(
                 result = CommonResult.Result.SUCCESS,
                 data = data,

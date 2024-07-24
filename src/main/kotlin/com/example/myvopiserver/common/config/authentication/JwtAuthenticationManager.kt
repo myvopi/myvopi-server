@@ -1,5 +1,6 @@
 package com.example.myvopiserver.common.config.authentication
 
+import com.example.myvopiserver.domain.command.InternalUserCommand
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -20,4 +21,8 @@ class JwtAuthenticationManager(
         grantedAuthorityList.add(SimpleGrantedAuthority(internalUserCommand.role.name))
         return UsernamePasswordAuthenticationToken(internalUserCommand, "", grantedAuthorityList)
     }
+}
+
+fun Authentication.toUserInfo(): InternalUserCommand {
+    return this.principal as InternalUserCommand
 }
