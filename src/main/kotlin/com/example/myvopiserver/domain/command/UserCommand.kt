@@ -26,3 +26,7 @@ data class UserLoginCommand(
     val userId: String,
     val password: String,
 )
+
+data class ReissueAccessTokenCommand(
+    val refreshToken: String,
+)

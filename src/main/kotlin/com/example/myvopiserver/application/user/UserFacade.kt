@@ -1,9 +1,11 @@
 package com.example.myvopiserver.application.user
 
-import com.example.myvopiserver.domain.command.EmailVerifyReqCommand
-import com.example.myvopiserver.domain.command.InternalUserCommand
-import com.example.myvopiserver.domain.command.UserLoginCommand
-import com.example.myvopiserver.domain.command.UserRegisterCommand
+import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
+import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.enums.TokenType
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
 import com.example.myvopiserver.domain.service.EmailVerificationService
 import com.example.myvopiserver.domain.service.UserService
 import com.example.myvopiserver.domain.service.ValidationService
@@ -16,6 +18,7 @@ class UserFacade(
     private val userService: UserService,
     private val emailVerificationService: EmailVerificationService,
     private val mailService: MailService,
+    private val jwtTokenGenerator: JwtTokenGenerator,
 ) {
 
     /**
@@ -35,7 +38,7 @@ class UserFacade(
         userService.registerUser(command)
     }
 
-    fun loginUser(command: UserLoginCommand): String {
+    fun loginUser(command: UserLoginCommand): AuthenticationTokenInfo {
         return userService.validateUserLogin(command)
     }
 
@@ -47,5 +50,17 @@ class UserFacade(
     fun verifyEmail(command: EmailVerifyReqCommand) {
         emailVerificationService.verifyCode(command)
         userService.updateUserMemberRole(command.internalUserCommand)
+    }
+
+    fun reissueAccessToken(command: ReissueAccessTokenCommand, ): AuthenticationTokenInfo {
+        val validatedRefreshToken = jwtTokenGenerator.parseTokenFilter(command.refreshToken, TokenType.REFRESH_TOKEN)
+        val internalUserCommand = jwtTokenGenerator.parseRefreshToken(validatedRefreshToken)
+            ?: throw UnauthorizedException(ErrorCode.INVALID_TOKEN)
+        val newAccessToken = jwtTokenGenerator.createAccessToken(internalUserCommand)
+
+        return AuthenticationTokenInfo(
+            accessToken = newAccessToken,
+            refreshToken = command.refreshToken
+        )
     }
 }

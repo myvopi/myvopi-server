@@ -1,5 +1,7 @@
 package com.example.myvopiserver.common.config.authentication
 
+import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.config.exception.UnauthorizedException
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -16,10 +18,9 @@ class JwtAuthenticationManager(
     override fun authenticate(authentication: Authentication): Authentication {
         val jwt = authentication as BearerTokenAuthenticationToken
         val token = jwt.token
-        val internalUserCommand = tokenGenerator.validateTokenAndFindUser(token)
-        val grantedAuthorityList = mutableListOf<SimpleGrantedAuthority>()
-        grantedAuthorityList.add(SimpleGrantedAuthority(internalUserCommand.role.name))
-        return UsernamePasswordAuthenticationToken(internalUserCommand, "", grantedAuthorityList)
+        val internalUserCommand = tokenGenerator.parseAccessToken(token)
+            ?: throw UnauthorizedException(ErrorCode.INVALID_TOKEN)
+        return UsernamePasswordAuthenticationToken(internalUserCommand, "", listOf(SimpleGrantedAuthority(internalUserCommand.role.name)))
     }
 }
 
