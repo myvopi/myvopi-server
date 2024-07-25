@@ -18,3 +18,7 @@ data class LoginDto(
 data class EmailVerificationDto(
     val code: String,
 )
+
+data class ReissueAccessTokenDto(
+    val refreshToken: String,
+)

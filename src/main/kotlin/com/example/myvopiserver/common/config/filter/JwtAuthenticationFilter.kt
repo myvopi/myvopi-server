@@ -1,6 +1,6 @@
 package com.example.myvopiserver.common.config.filter
 
-import com.example.myvopiserver.common.config.authentication.JwtTokenValidation
+import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -9,7 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtTokenValidation: JwtTokenValidation
+    private val jwtTokenGenerator: JwtTokenGenerator,
 ) : OncePerRequestFilter() {
 
     private val headerString = "Authorization"
@@ -20,10 +20,10 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val header: String? = request.getHeader(headerString)
-        if(!header.isNullOrBlank() && header.startsWith(tokenPrefix)) {
+        val header = request.getHeader(headerString)
+        if(request.requestURI.startsWith("/api") && !header.isNullOrBlank() && header.startsWith(tokenPrefix)) {
             val token = header.replace(tokenPrefix, "")
-            jwtTokenValidation.validateAndDecodeToken(token)
+            jwtTokenGenerator.parseTokenFilter(token)
         }
         filterChain.doFilter(request, response)
     }

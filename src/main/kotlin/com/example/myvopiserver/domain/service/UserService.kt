@@ -7,6 +7,7 @@ import com.example.myvopiserver.common.config.exception.NotFoundException
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.command.UserLoginCommand
 import com.example.myvopiserver.domain.command.UserRegisterCommand
+import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.mapper.UserMapper
 import com.example.myvopiserver.domain.role.User
@@ -30,11 +31,11 @@ class UserService(
             email = command.email,
         )
         val user = userReaderStore.saveUser(userCommand)
-        return userMapper.of(user)
+        return userMapper.of(user)!!
     }
 
     @Transactional(readOnly = true)
-    fun validateUserLogin(command: UserLoginCommand): String {
+    fun validateUserLogin(command: UserLoginCommand): AuthenticationTokenInfo {
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
 
@@ -42,7 +43,11 @@ class UserService(
         val reqPassword = command.password
         val password = user.password
         if(reqPassword != password) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
-        return jwtTokenGenerator.createToken(user)
+        val internalUserCommand = userMapper.of(user)!!
+        return AuthenticationTokenInfo(
+            accessToken = jwtTokenGenerator.createAccessToken(internalUserCommand),
+            refreshToken = jwtTokenGenerator.createRefreshToken(internalUserCommand),
+        )
     }
 
     @Transactional

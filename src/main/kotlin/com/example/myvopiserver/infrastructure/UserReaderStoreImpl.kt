@@ -14,6 +14,10 @@ class UserReaderStoreImpl(
         return userRepository.save(user)
     }
 
+    override fun findUserByUuid(uuid: String): User? {
+        return userRepository.findByUuid(uuid)
+    }
+
     override fun findUserByUserId(userId: String): User? {
         return userRepository.findByUserId(userId)
     }

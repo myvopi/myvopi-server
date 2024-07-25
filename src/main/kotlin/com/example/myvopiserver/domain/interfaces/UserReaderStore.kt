@@ -6,6 +6,8 @@ interface UserReaderStore {
 
     fun saveUser(user: User): User
 
+    fun findUserByUuid(uuid: String): User?
+
     /**
     * validation usages
     * */
