@@ -4,6 +4,7 @@ import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 
 @Entity
+@Table(name ="reply_like")
 class ReplyLike(
     reply: Reply,   // 상위 댓글
     user: User,     // 생성자

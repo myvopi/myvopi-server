@@ -5,6 +5,7 @@ import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 
 @Entity
+@Table(name ="comment")
 class Comment(
     uuid: String,              // 우리쪽 UUID
     content: String,           // 내용
@@ -22,7 +23,7 @@ class Comment(
     var uuid: String = uuid
         protected set
 
-    @Column(name = "content", nullable = false, updatable = true)
+    @Column(name = "content", nullable = false, updatable = true, columnDefinition = "TEXT")
     var content: String = content
         protected set
 
@@ -68,6 +69,10 @@ class Comment(
     @JoinColumn(name = "user_id", nullable = false)
     var user: User = user
         protected set
+
+    override fun toString(): String {
+        return "Comment(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status, video=$video, replies=$replies, likes=$likes, user=$user)"
+    }
 
     // TODO verified
 }

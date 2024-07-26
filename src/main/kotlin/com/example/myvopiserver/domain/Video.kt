@@ -1,14 +1,15 @@
 package com.example.myvopiserver.domain
 
+import com.example.myvopiserver.common.enums.VideoType
+import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
+import java.util.*
 
 @Entity
 class Video(
-    uuid: String,       // 우리쪽 UUID
-    videoId: String,    // 유튜브 UUID (비디오 아이디)
-    userId: Long,       // 생성한 유저 아이디
-    // TODO video title
-    // TODO video author
+    videoId: String,     // 유튜브 UUID (비디오 아이디)
+    user: User,          // 생성한 유저 아이디
+    videoType: VideoType // 영상 타입
 ): BaseTime() {
 
     @Id
@@ -16,15 +17,24 @@ class Video(
     var id: Long = 0L
 
     @Column(name = "uuid", nullable = false, updatable = true)
-    var uuid: String = uuid
+    var uuid: String = UUID.randomUUID().toString()
         protected set
 
     @Column(name = "video_id", nullable = false, updatable = true)
     var videoId: String = videoId
         protected set
 
-    @Column(name = "created_by", nullable = false, updatable = true)
-    var createdBy: Long = userId
+    @ManyToOne(
+        fetch = FetchType.LAZY,
+        targetEntity = User::class,
+    )
+    @JoinColumn(name = "user_id", nullable = false)
+    var user: User = user
+        protected set
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "video_type", nullable = false, updatable = true)
+    var videoType: VideoType = videoType
         protected set
 
     @OneToMany(
@@ -35,6 +45,4 @@ class Video(
     )
     var comments: MutableList<Comment> = mutableListOf()
         protected set
-
-    // TODO created by user id
 }

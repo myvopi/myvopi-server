@@ -58,7 +58,7 @@ class JwtTokenGenerator(
             val jwt = this.parseTokenFilter(token, TokenType.ACCESS_TOKEN)
             val claims = jwt.claims
             val uuid = claims["unique"] as String
-            userMapper.of(userReaderStore.findUserByUuid(uuid))
+            userMapper.of(user = userReaderStore.findUserByUuid(uuid))
         } catch (e: JwtException) {
             null
         }
@@ -71,7 +71,7 @@ class JwtTokenGenerator(
     {
         return try{
             val key = jwt.subject
-            userMapper.of(userReaderStore.findUserByUuid(key))
+            userMapper.of(user = userReaderStore.findUserByUuid(key))
         } catch (e: JwtException) {
             null
         }

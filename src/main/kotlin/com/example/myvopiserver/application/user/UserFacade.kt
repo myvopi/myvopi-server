@@ -34,7 +34,6 @@ class UserFacade(
         validationService.validateEmail(command.email)
         validationService.validateFormatPassword(command.password)
         validationService.validateCountryCode(command.nationality)
-
         userService.registerUser(command)
     }
 
@@ -57,7 +56,6 @@ class UserFacade(
         val internalUserCommand = jwtTokenGenerator.parseRefreshToken(validatedRefreshToken)
             ?: throw UnauthorizedException(ErrorCode.INVALID_TOKEN)
         val newAccessToken = jwtTokenGenerator.createAccessToken(internalUserCommand)
-
         return AuthenticationTokenInfo(
             accessToken = newAccessToken,
             refreshToken = command.refreshToken
