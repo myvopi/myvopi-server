@@ -1,6 +1,7 @@
 package com.example.myvopiserver.domain.info
 
 data class CommentBaseInfo(
+    val commentUuid: String,
     val content: String,
     val userId: String,
     val likeCount: Long,

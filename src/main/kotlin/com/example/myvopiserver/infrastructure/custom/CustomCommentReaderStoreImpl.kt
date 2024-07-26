@@ -67,6 +67,7 @@ class CustomCommentReaderStoreImpl(
 
         val query = jpaSqlQuery
             .select(
+                qComment.uuid.`as`(alias.commentUuidAlias),
                 qComment.content.`as`(alias.commentContentAlias),
                 qComment.modifiedCnt.`as`(alias.commentModifiedCntAlias),
                 qUser.userId.`as`(alias.userIdAlias),
