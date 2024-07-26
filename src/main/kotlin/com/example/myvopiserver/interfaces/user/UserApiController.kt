@@ -1,4 +1,4 @@
-package com.example.myvopiserver.interfaces
+package com.example.myvopiserver.interfaces.user
 
 import com.example.myvopiserver.application.user.UserFacade
 import com.example.myvopiserver.common.config.authentication.toUserInfo
@@ -6,7 +6,6 @@ import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
-import com.example.myvopiserver.interfaces.user.*
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.PostMapping

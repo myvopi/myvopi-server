@@ -5,6 +5,7 @@ import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 
 @Entity
+@Table(name ="reply")
 class Reply(
     uuid: String,               // 우리쪽 UUID
     content: String,            // 내용
@@ -22,7 +23,7 @@ class Reply(
     var uuid: String = uuid
         protected set
 
-    @Column(name = "content", nullable = false, updatable = true)
+    @Column(name = "content", nullable = false, updatable = true, columnDefinition = "TEXT")
     var content: String = content
         protected set
 

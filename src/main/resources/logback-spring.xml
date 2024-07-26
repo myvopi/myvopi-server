@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <!-- Conversion -->
+    <!--<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" /> -->
+
+    <!-- Console Log Pattern &ndash;-->
+    <!-- <property name="CONSOLE_PATTERN" value= "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(${HOSTNAME:- }){yellow} %clr(${PID:- }){magenta} %clr(-&#45;&#45;){faint} %clr([%5.5t]){faint} %clr(%-40.40logger{39}){cyan}" />-->
+
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+    <!--    <property name="CONSOLE_LOG_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-&#45;&#45;){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %magenta(${PID:- }) %boldWhite([%C.%M:%yellow(%L)])  ----  %msg%n" />
+    <!-- Console -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache.catalina.startup.DigesterFactory" level="ERROR"/>
+    <logger name="org.apache.catalina.util.LifecycleBase" level="ERROR"/>
+    <logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
+    <logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN"/>
+    <logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
+    <logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR"/>
+    <logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
+
+    <!--    ENV PROFILE SETTING START    -->
+    <!-- default / local / dev -->
+    <springProfile name="default | local | dev1 | dev2">
+        <logger name="com.example.myvopiserver" level="DEBUG" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <!-- SQL logging -->
+        <logger name="jdbc" level="OFF" additivity="false" />
+
+        <logger name="jdbc.sqlonly" level="INFO" additivity="false" />
+        <logger name="jdbc.sqltiming" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <logger name="jdbc.resultsettable" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <logger name="org.hibernate" level="INFO" additivity="false"/>
+        <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+
+    <!-- Production -->
+    <springProfile name="prod1 | prod2">
+        <logger name="com.example.myvopiserver" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <!-- SQL logging -->
+        <logger name="jdbc" level="OFF" additivity="false" />
+
+        <logger name="jdbc.sqlonly" level="INFO" additivity="false" />
+        <logger name="jdbc.sqltiming" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <logger name="jdbc.resultsettable" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <logger name="org.hibernate" level="INFO" additivity="false"/>
+        <logger name="org.hibernate.SQL" level="INFO" additivity="false">
+            <appender-ref ref="console" />
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+
+
+    <!--    ENV PROFILE SETTING END    -->
+
+</configuration>

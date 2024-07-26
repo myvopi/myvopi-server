@@ -33,7 +33,10 @@ class EmailVerificationService(
             ?: run { EmailVerification(code = newCode, user = user) }
 
         val storedVerification = emailVerificationReaderStore.saveEmailVerification(emailVerification)
-        return emailVerificationMapper.of(user, storedVerification)
+        return emailVerificationMapper.of(
+            user = user,
+            emailVerification = storedVerification
+        )
     }
 
     @Transactional(readOnly = true)

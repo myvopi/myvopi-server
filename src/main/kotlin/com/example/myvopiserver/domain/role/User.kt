@@ -93,4 +93,8 @@ class User(
     fun setMemberRoleUser() {
         this.role = MemberRole.ROLE_USER
     }
+
+    override fun toString(): String {
+        return "User(id=$id, uuid='$uuid', name='$name', userId='$userId', nationality=$nationality, password='$password', email='$email', status=$status, role=$role, comments=$comments, replies=$replies, verifications=$verifications)"
+    }
 }
