@@ -3,11 +3,11 @@ package com.example.myvopiserver.domain
 import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
+import java.util.UUID
 
 @Entity
 @Table(name ="comment")
 class Comment(
-    uuid: String,              // 우리쪽 UUID
     content: String,           // 내용
     modifiedCnt: Int,          // 수정 여부
     video: Video,              // 상위 비디오
@@ -20,7 +20,7 @@ class Comment(
     var id: Long = 0L
 
     @Column(name = "uuid", nullable = false, updatable = true)
-    var uuid: String = uuid
+    var uuid: String = UUID.randomUUID().toString()
         protected set
 
     @Column(name = "content", nullable = false, updatable = true, columnDefinition = "TEXT")

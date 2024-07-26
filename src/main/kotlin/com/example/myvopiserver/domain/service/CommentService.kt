@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CommentService(
     private val commentReaderStore: CommentReaderStore,
-    private val aliasExpressions: AliasExpressions,
+    private val alias: AliasExpressions,
 ) {
 
     @Transactional(readOnly = true)
@@ -23,12 +23,13 @@ class CommentService(
     fun constructCommentBaseInfo(result: List<Tuple>): List<CommentBaseInfo> {
         return result.map { tuple ->
             CommentBaseInfo(
-                content = tuple.get(aliasExpressions.commentContentAlias)!!,
-                userId = tuple.get(aliasExpressions.userIdAlias)!!,
-                likeCount = tuple.get(aliasExpressions.commentLikesCountAlias)!!,
-                replyCount = tuple.get(aliasExpressions.replyCountAlias)!!,
-                createdDate = tuple.get(aliasExpressions.createdDateTupleAlias)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
-                modified = tuple.get(aliasExpressions.commentModifiedCntAlias)!! > 0,
+                commentUuid = tuple.get(alias.commentUuidAlias)!!,
+                content = tuple.get(alias.commentContentAlias)!!,
+                userId = tuple.get(alias.userIdAlias)!!,
+                likeCount = tuple.get(alias.commentLikesCountAlias)!!,
+                replyCount = tuple.get(alias.replyCountAlias)!!,
+                createdDate = tuple.get(alias.createdDateTupleAlias)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
+                modified = tuple.get(alias.commentModifiedCntAlias)!! > 0,
             )
         }
     }
