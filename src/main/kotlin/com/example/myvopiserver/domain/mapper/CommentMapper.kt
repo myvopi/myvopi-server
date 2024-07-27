@@ -1,7 +1,7 @@
 package com.example.myvopiserver.domain.mapper
 
 import com.example.myvopiserver.common.enums.SearchFilter
-import com.example.myvopiserver.domain.command.CommentSearchCommand
+import com.example.myvopiserver.domain.command.CommentSearchFromVideoCommand
 import org.mapstruct.*
 
 @Mapper(
@@ -19,5 +19,5 @@ interface CommentMapper {
         filter: SearchFilter,
         reqPage: Int,
         videoId: Long,
-    ): CommentSearchCommand
+    ): CommentSearchFromVideoCommand
 }

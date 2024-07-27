@@ -10,7 +10,6 @@ import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.interfaces.VideoReaderStore
 import com.example.myvopiserver.domain.mapper.VideoMapper
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class VideoService(
@@ -18,7 +17,6 @@ class VideoService(
     private val videoMapper: VideoMapper,
     private val userReaderStore: UserReaderStore,
 ) {
-    @Transactional
     fun storeVideo(
         videoId: String,
         userId: String,
@@ -36,7 +34,6 @@ class VideoService(
         return videoMapper.of(video = video)
     }
 
-    @Transactional
     fun searchVideoOrStore(command: VideoSearchCommand): InternalVideoCommand {
         return videoReaderStore.findVideoByTypeAndId(command.videoType, command.videoId)
             ?.let { videoMapper.of(video = it) }

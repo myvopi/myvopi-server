@@ -12,7 +12,6 @@ import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.mapper.EmailVerificationMapper
 import com.example.myvopiserver.domain.role.EmailVerification
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class EmailVerificationService(
@@ -21,7 +20,6 @@ class EmailVerificationService(
     private val emailVerificationMapper: EmailVerificationMapper,
 ) {
 
-    @Transactional
     fun updateEmailCode(command: InternalUserCommand): EmailVerificationCommand {
         val newCode = CodeGenerator.sixDigitCode()
 
@@ -39,7 +37,6 @@ class EmailVerificationService(
         )
     }
 
-    @Transactional(readOnly = true)
     fun verifyCode(command: EmailVerifyReqCommand) {
         val user = userReaderStore.findUserByUserId(command.internalUserCommand.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)

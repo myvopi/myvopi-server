@@ -19,4 +19,5 @@ class AliasExpressions {
     val replyCountAlias: NumberPath<Long> = Expressions.numberPath(Long::class.javaObjectType, "replyCount")
     val createdDateAlias: DatePath<LocalDateTime> = Expressions.datePath(LocalDateTime::class.javaObjectType, "createdDate")
     val createdDateTupleAlias: DatePath<Date> = Expressions.datePath(Date::class.javaObjectType, "createdDate")
+    val replySubQueryAlias = Expressions.stringPath("r2")
 }

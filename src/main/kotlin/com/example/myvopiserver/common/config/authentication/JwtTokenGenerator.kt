@@ -49,7 +49,6 @@ class JwtTokenGenerator(
         return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).tokenValue
     }
 
-    @Transactional(readOnly = true)
     fun parseAccessToken(
         token: String
     ): InternalUserCommand?

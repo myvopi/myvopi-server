@@ -5,14 +5,12 @@ import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.enums.CountryCode
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ValidationService(
     private val userReaderStore: UserReaderStore,
 ) {
 
-    @Transactional(readOnly = true)
     fun validateUserId(userId: String) {
         val user = userReaderStore.findUserByUserId(userId)
         if(user != null) {
@@ -20,7 +18,6 @@ class ValidationService(
         }
     }
 
-    @Transactional(readOnly = true)
     fun validateEmail(email: String) {
         val user = userReaderStore.findUserByEmail(email)
         if(user != null) {

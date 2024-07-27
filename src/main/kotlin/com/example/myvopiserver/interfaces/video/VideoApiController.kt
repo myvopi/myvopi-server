@@ -24,8 +24,8 @@ class VideoApiController(
     @PostMapping("/{videoType}={videoId}")
     fun searchVideo(
         authentication: Authentication?,
-        @PathVariable("videoType") videoType: String,
-        @PathVariable("videoId") videoId: String,
+        @PathVariable(value = "videoType", required = true) videoType: String,
+        @PathVariable(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentRequestDto,
     ): CommonResult<List<CommentBaseInfo>>
     {

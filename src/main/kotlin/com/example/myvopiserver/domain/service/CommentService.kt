@@ -1,13 +1,13 @@
 package com.example.myvopiserver.domain.service
 
 import com.example.myvopiserver.common.util.extension.toStrings
-import com.example.myvopiserver.domain.command.CommentSearchCommand
+import com.example.myvopiserver.domain.command.CommentSearchFromCommentCommand
+import com.example.myvopiserver.domain.command.CommentSearchFromVideoCommand
 import com.example.myvopiserver.domain.info.CommentBaseInfo
 import com.example.myvopiserver.domain.interfaces.CommentReaderStore
 import com.example.myvopiserver.infrastructure.custom.expression.AliasExpressions
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CommentService(
@@ -15,9 +15,12 @@ class CommentService(
     private val alias: AliasExpressions,
 ) {
 
-    @Transactional(readOnly = true)
-    fun findComments(command: CommentSearchCommand): List<Tuple> {
-        return commentReaderStore.findComments(command)
+    fun findCommentsFromVideo(command: CommentSearchFromVideoCommand): List<Tuple> {
+        return commentReaderStore.findCommentsFromVideoRequest(command)
+    }
+
+    fun findComments(command: CommentSearchFromCommentCommand): List<Tuple> {
+        return commentReaderStore.findCommentsFromCommentRequest(command)
     }
 
     fun constructCommentBaseInfo(result: List<Tuple>): List<CommentBaseInfo> {
