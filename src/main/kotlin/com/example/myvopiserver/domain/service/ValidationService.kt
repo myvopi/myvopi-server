@@ -11,21 +11,21 @@ class ValidationService(
     private val userReaderStore: UserReaderStore,
 ) {
 
-    fun validateUserId(userId: String) {
+    fun validateUserIdExists(userId: String) {
         val user = userReaderStore.findUserByUserId(userId)
         if(user != null) {
             throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username")
         }
     }
 
-    fun validateEmail(email: String) {
+    fun validateEmailExists(email: String) {
         val user = userReaderStore.findUserByEmail(email)
         if(user != null) {
             throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email")
         }
     }
 
-    fun validateFormatPassword(password: String) {
+    fun validatePasswordFormat(password: String) {
         val lengthRegex = Regex(".{12,20}") // At least 12 characters
         val specialCharRegex = Regex("[@!#$%&*]") // At least one special character
         val uppercaseRegex = Regex("[A-Z]") // At least one uppercase letter
@@ -35,7 +35,7 @@ class ValidationService(
         if(!uppercaseRegex.containsMatchIn(password)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Password must contain at least one capital letter")
     }
 
-    fun validateCountryCode(countryCode: CountryCode) {
+    fun validateValidCountryCode(countryCode: CountryCode) {
         CountryCode.entries.find { it == countryCode }
             ?: throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad country code request")
     }
