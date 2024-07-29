@@ -18,11 +18,12 @@ class VideoFacade(
         command: VideoSearchCommand,
     ): List<CommentBaseInfo>
     {
-        val internalVideoCommand = videoService.searchVideoOrStore(command)
-        val searchCommand = commentMapper.of(
+        val internalVideoCommand = videoService.searchVideoOrCreateNew(command)
+        val searchCommand = commentMapper.to(
             filter = command.filter,
             reqPage = command.reqPage,
             videoId = internalVideoCommand.id,
+            videoType = command.videoType,
         )
         val result = commentService.findCommentsFromVideo(searchCommand)
         return commentService.constructCommentBaseInfo(result)

@@ -29,7 +29,7 @@ class UserService(
             email = command.email,
         )
         val user = userReaderStore.saveUser(userCommand)
-        return userMapper.of(user = user)!!
+        return userMapper.to(user = user)!!
     }
 
     fun validateUserLogin(command: UserLoginCommand): AuthenticationTokenInfo {
@@ -40,7 +40,7 @@ class UserService(
         val reqPassword = command.password
         val password = user.password
         if(reqPassword != password) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
-        val internalUserCommand = userMapper.of(user = user)!!
+        val internalUserCommand = userMapper.to(user = user)!!
         return AuthenticationTokenInfo(
             accessToken = jwtTokenGenerator.createAccessToken(internalUserCommand),
             refreshToken = jwtTokenGenerator.createRefreshToken(internalUserCommand),

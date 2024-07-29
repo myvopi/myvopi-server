@@ -22,16 +22,13 @@ class EmailVerificationService(
 
     fun updateEmailCode(command: InternalUserCommand): EmailVerificationCommand {
         val newCode = CodeGenerator.sixDigitCode()
-
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-
         val emailVerification = emailVerificationReaderStore.findByUser(user)
             ?.apply { setNewCode(newCode) }
             ?: run { EmailVerification(code = newCode, user = user) }
-
         val storedVerification = emailVerificationReaderStore.saveEmailVerification(emailVerification)
-        return emailVerificationMapper.of(
+        return emailVerificationMapper.to(
             user = user,
             emailVerification = storedVerification
         )
@@ -40,10 +37,8 @@ class EmailVerificationService(
     fun verifyCode(command: EmailVerifyReqCommand) {
         val user = userReaderStore.findUserByUserId(command.internalUserCommand.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-
         val emailVerification = emailVerificationReaderStore.findByUser(user)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-
         if(command.reqCode != emailVerification.code) throw BadRequestException(ErrorCode.BAD_REQUEST, "Verification code invalid")
     }
 }

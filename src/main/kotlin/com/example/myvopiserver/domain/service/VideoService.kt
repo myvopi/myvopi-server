@@ -17,7 +17,7 @@ class VideoService(
     private val videoMapper: VideoMapper,
     private val userReaderStore: UserReaderStore,
 ) {
-    fun storeVideo(
+    fun createNewVideo(
         videoId: String,
         userId: String,
         videoType: VideoType,
@@ -31,15 +31,15 @@ class VideoService(
             videoType = videoType,
         )
         val video = videoReaderStore.saveVideo(videoCommand)
-        return videoMapper.of(video = video)
+        return videoMapper.to(video = video)
     }
 
-    fun searchVideoOrStore(command: VideoSearchCommand): InternalVideoCommand {
+    fun searchVideoOrCreateNew(command: VideoSearchCommand): InternalVideoCommand {
         return videoReaderStore.findVideoByTypeAndId(command.videoType, command.videoId)
-            ?.let { videoMapper.of(video = it) }
+            ?.let { videoMapper.to(video = it) }
             ?: run {
                 if(!command.authenticationState) throw NotFoundException(ErrorCode.NOT_FOUND, "Video not found, you will need an account to start a topic")
-                storeVideo(
+                createNewVideo(
                     videoId = command.videoId,
                     userId = command.internalUserCommand!!.userId,
                     videoType = command.videoType,
