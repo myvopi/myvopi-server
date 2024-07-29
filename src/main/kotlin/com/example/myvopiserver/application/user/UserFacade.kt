@@ -30,10 +30,10 @@ class UserFacade(
      * 5. 계정 생성
      * */
     fun registerUser(command: UserRegisterCommand) {
-        validationService.validateUserId(command.userId)
-        validationService.validateEmail(command.email)
-        validationService.validateFormatPassword(command.password)
-        validationService.validateCountryCode(command.nationality)
+        validationService.validateUserIdExists(command.userId)
+        validationService.validateEmailExists(command.email)
+        validationService.validatePasswordFormat(command.password)
+        validationService.validateValidCountryCode(command.nationality)
         userService.registerUser(command)
     }
 

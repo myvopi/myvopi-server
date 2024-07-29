@@ -26,6 +26,8 @@ class EmailVerification(
     var code: String = code
         protected set
 
+    // TODO need limit of tries and verification emails sent
+
     fun setNewCode(code: String) {
         this.code = code
     }

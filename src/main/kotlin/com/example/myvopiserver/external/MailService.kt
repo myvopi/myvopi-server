@@ -4,6 +4,7 @@ import com.example.myvopiserver.domain.command.EmailVerificationCommand
 import jakarta.mail.internet.MimeMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
 @Service
@@ -11,6 +12,7 @@ class MailService(
     private val mailSender: JavaMailSender,
 ) {
 
+    @Async("mailExecutor")
     fun sendVerificationEmail(command: EmailVerificationCommand) {
         val mimeMessage: MimeMessage = mailSender.createMimeMessage()
         val helper = MimeMessageHelper(mimeMessage, true, "utf-8")

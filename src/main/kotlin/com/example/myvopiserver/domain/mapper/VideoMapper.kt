@@ -17,5 +17,5 @@ interface VideoMapper {
         Mapping(source = "video.user.id", target = "userId"),
         Mapping(source = "video.videoType", target = "videoType"),
     )
-    fun of(video: Video): InternalVideoCommand
+    fun to(video: Video): InternalVideoCommand
 }

@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 fun getCurrentDateTime(): LocalDateTime {
-    return LocalDateTime.now();
+    return LocalDateTime.now()
 }
 
 fun LocalDateTime.toStrings(format: String): String {

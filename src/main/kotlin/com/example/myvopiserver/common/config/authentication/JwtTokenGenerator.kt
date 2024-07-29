@@ -22,7 +22,7 @@ class JwtTokenGenerator(
 ) {
 
     private final val accessTokenExpireTime = 1L
-    private final val refreshTokenExpireDate = 7L
+    private final val refreshTokenExpireDate = 1L
 
     fun createAccessToken(command: InternalUserCommand): String {
         val jwsHeader = JwsHeader.with{"HS256"}.build()
@@ -49,7 +49,6 @@ class JwtTokenGenerator(
         return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).tokenValue
     }
 
-    @Transactional(readOnly = true)
     fun parseAccessToken(
         token: String
     ): InternalUserCommand?
@@ -58,7 +57,7 @@ class JwtTokenGenerator(
             val jwt = this.parseTokenFilter(token, TokenType.ACCESS_TOKEN)
             val claims = jwt.claims
             val uuid = claims["unique"] as String
-            userMapper.of(user = userReaderStore.findUserByUuid(uuid))
+            userMapper.to(user = userReaderStore.findUserByUuid(uuid))
         } catch (e: JwtException) {
             null
         }
@@ -71,7 +70,7 @@ class JwtTokenGenerator(
     {
         return try{
             val key = jwt.subject
-            userMapper.of(user = userReaderStore.findUserByUuid(key))
+            userMapper.to(user = userReaderStore.findUserByUuid(key))
         } catch (e: JwtException) {
             null
         }

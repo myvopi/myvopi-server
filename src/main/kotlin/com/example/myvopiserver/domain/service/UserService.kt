@@ -12,7 +12,6 @@ import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.mapper.UserMapper
 import com.example.myvopiserver.domain.role.User
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
@@ -21,7 +20,6 @@ class UserService(
     private val jwtTokenGenerator: JwtTokenGenerator,
 ) {
 
-    @Transactional
     fun registerUser(command: UserRegisterCommand): InternalUserCommand {
         val userCommand = User(
             name = command.name,
@@ -31,10 +29,9 @@ class UserService(
             email = command.email,
         )
         val user = userReaderStore.saveUser(userCommand)
-        return userMapper.of(user = user)!!
+        return userMapper.to(user = user)!!
     }
 
-    @Transactional(readOnly = true)
     fun validateUserLogin(command: UserLoginCommand): AuthenticationTokenInfo {
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
@@ -43,14 +40,13 @@ class UserService(
         val reqPassword = command.password
         val password = user.password
         if(reqPassword != password) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
-        val internalUserCommand = userMapper.of(user = user)!!
+        val internalUserCommand = userMapper.to(user = user)!!
         return AuthenticationTokenInfo(
             accessToken = jwtTokenGenerator.createAccessToken(internalUserCommand),
             refreshToken = jwtTokenGenerator.createRefreshToken(internalUserCommand),
         )
     }
 
-    @Transactional
     fun updateUserMemberRole(command: InternalUserCommand) {
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)

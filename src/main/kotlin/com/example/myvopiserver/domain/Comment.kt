@@ -9,9 +9,7 @@ import java.util.UUID
 @Table(name ="comment")
 class Comment(
     content: String,           // 내용
-    modifiedCnt: Int,          // 수정 여부
     video: Video,              // 상위 비디오
-    status: CommentStatus,     // 표시 상태
     user: User,                // 생성자
 ): BaseTime() {
 
@@ -28,12 +26,12 @@ class Comment(
         protected set
 
     @Column(name = "modified_cnt", nullable = false, updatable = true)
-    var modifiedCnt: Int = modifiedCnt
+    var modifiedCnt: Int = 0
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, updatable = true)
-    var status: CommentStatus = status
+    @Column(name = "comment_status", nullable = false, updatable = true)
+    var status: CommentStatus = CommentStatus.SHOW
         protected set
 
     @ManyToOne(
@@ -72,6 +70,15 @@ class Comment(
 
     override fun toString(): String {
         return "Comment(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status, video=$video, replies=$replies, likes=$likes, user=$user)"
+    }
+
+    fun updateContent(
+        content: String,
+    ) {
+        if(this.content == content) return
+        // TODO verify request to admin
+        this.modifiedCnt++
+        this.content = content
     }
 
     // TODO verified
