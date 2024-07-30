@@ -3,6 +3,7 @@ package com.example.myvopiserver.domain.service
 import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.config.exception.NotFoundException
 import com.example.myvopiserver.common.enums.VideoType
+import com.example.myvopiserver.common.util.CustomParser
 import com.example.myvopiserver.domain.Video
 import com.example.myvopiserver.domain.command.InternalVideoCommand
 import com.example.myvopiserver.domain.command.VideoSearchCommand

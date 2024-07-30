@@ -23,11 +23,11 @@ class CommentApiController(
     private val commentFacade: CommentFacade,
 ) {
 
-    @GetMapping("/{videoType}={videoId}")
+    @GetMapping("/")
     fun getComments(
         authentication: Authentication?,
-        @PathVariable(value = "videoType", required = true) videoType: String,
-        @PathVariable(value = "videoId", required = true) videoId: String,
+        @RequestParam(value = "videoType", required = true) videoType: String,
+        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestParam(value = "filter", required = true) filter: String,
         @RequestParam(value = "reqPage", required = true) reqPage: Int,
     ): CommonResult<List<CommentBaseInfo>>
@@ -47,11 +47,11 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PutMapping("/{videoType}={videoId}")
+    @PutMapping("/")
     fun updateComment(
         authentication: Authentication,
-        @PathVariable(value = "videoType", required = true) videoType: String,
-        @PathVariable(value = "videoId", required = true) videoId: String,
+        @RequestParam(value = "videoType", required = true) videoType: String,
+        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentUpdateDto,
     ): CommonResult<CommentBaseInfo>
     {
@@ -71,11 +71,11 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/{videoType}={videoId}")
+    @PostMapping("/")
     fun postComment(
         authentication: Authentication,
-        @PathVariable(value = "videoType", required = true) videoType: String,
-        @PathVariable(value = "videoId", required = true) videoId: String,
+        @RequestParam(value = "videoType", required = true) videoType: String,
+        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentPostDto,
     ): CommonResult<CommentBaseInfo>
     {
@@ -93,11 +93,11 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @DeleteMapping("/{videoType}={videoId}")
+    @DeleteMapping("/")
     fun deleteComment(
         authentication: Authentication,
-        @PathVariable(value = "videoType", required = true) videoType: String,
-        @PathVariable(value = "videoId", required = true) videoId: String,
+        @RequestParam(value = "videoType", required = true) videoType: String,
+        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentDeleteDto,
     ): CommonResult<String>
     {

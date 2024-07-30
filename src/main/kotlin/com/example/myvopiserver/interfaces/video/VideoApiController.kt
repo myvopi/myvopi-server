@@ -8,6 +8,7 @@ import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
 import com.example.myvopiserver.common.enums.SearchFilter
 import com.example.myvopiserver.common.enums.VideoType
+import com.example.myvopiserver.common.util.CustomParser
 import com.example.myvopiserver.domain.command.VideoSearchCommand
 import com.example.myvopiserver.domain.info.CommentBaseInfo
 import org.springframework.security.core.Authentication
@@ -18,27 +19,26 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class VideoApiController(
+    private val customParser: CustomParser,
     private val videoFacade: VideoFacade,
 ) {
 
-    @PostMapping("/{videoType}={videoId}")
+    @PostMapping("/{url}")
     fun searchVideo(
         authentication: Authentication?,
-        @PathVariable(value = "videoType", required = true) videoType: String,
-        @PathVariable(value = "videoId", required = true) videoId: String,
+        @PathVariable(value = "url", required = true) url: String,
         @RequestBody body: CommentRequestDto,
     ): CommonResult<List<CommentBaseInfo>>
     {
+        val urlCommand = customParser.validateAndParse(url)
         val userCommand = authentication?.toUserInfo()
-        val videoTypeEnum = VideoType.decode(videoType)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val searchFilter = SearchFilter.decode(body.filter)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")
         val command = VideoSearchCommand(
             authenticationState = userCommand?.let { true } ?: false,
             internalUserCommand = userCommand,
-            videoType = videoTypeEnum,
-            videoId = videoId,
+            videoType = urlCommand.videoType,
+            videoId = urlCommand.videoId,
             filter = searchFilter,
             reqPage = body.reqPage,
         )
