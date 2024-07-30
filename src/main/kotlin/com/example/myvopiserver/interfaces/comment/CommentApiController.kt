@@ -8,10 +8,7 @@ import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
 import com.example.myvopiserver.common.enums.SearchFilter
 import com.example.myvopiserver.common.enums.VideoType
-import com.example.myvopiserver.domain.command.CommentDeleteCommand
-import com.example.myvopiserver.domain.command.CommentPostCommand
-import com.example.myvopiserver.domain.command.CommentSearchFromCommentCommand
-import com.example.myvopiserver.domain.command.CommentUpdateCommand
+import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
@@ -32,11 +29,13 @@ class CommentApiController(
         @RequestParam(value = "reqPage", required = true) reqPage: Int,
     ): CommonResult<List<CommentBaseInfo>>
     {
+        val userCommand = authentication?.toUserInfo()
         val videoTypeEnum = VideoType.decode(videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val searchFilter = SearchFilter.decode(filter)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")
         val command = CommentSearchFromCommentCommand(
+            internalUserInfo = userCommand,
             filter = searchFilter,
             reqPage = reqPage,
             videoId = videoId,
@@ -62,7 +61,6 @@ class CommentApiController(
             internalUserInfo = internalUserCommand,
             content = body.content,
             commentUuid = body.commentUuid,
-            userId = body.userId,
             videoType = videoTypeEnum,
             videoId = videoId,
         )
@@ -109,7 +107,6 @@ class CommentApiController(
             commentUuid = body.commentUuid,
             videoType = videoTypeEnum,
             videoId = videoId,
-            userId = body.userId,
         )
         commentFacade.requestCommentDelete(command)
         return CommonResponse.success("Comment deleted")

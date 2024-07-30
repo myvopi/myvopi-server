@@ -6,14 +6,15 @@ import com.example.myvopiserver.common.enums.VideoType
 import java.time.LocalDateTime
 
 data class CommentSearchFromVideoCommand(
+    val internalUserInfo: InternalUserCommand?,
     val filter: SearchFilter,
     val reqPage: Int,
     val videoId: Long,
     val videoType: VideoType,
-    // TODO user id
 )
 
 data class CommentSearchFromCommentCommand(
+    val internalUserInfo: InternalUserCommand?,
     val filter: SearchFilter,
     val reqPage: Int,
     val videoId: String,
@@ -24,7 +25,6 @@ data class CommentUpdateCommand(
     val internalUserInfo: InternalUserCommand,
     val content: String,
     val commentUuid: String,
-    val userId: String,
     val videoType: VideoType,
     val videoId: String,
 )
@@ -38,8 +38,7 @@ data class CommentUpdateRequestCommand(
 )
 
 data class SingleCommandSearchCommand(
-    val userUuid: String,
-    val userId: String,
+    val internalUserInfo: InternalUserCommand,
     val videoId: String,
     val videoType: VideoType,
     val commentUuid: String,
@@ -67,5 +66,11 @@ data class CommentDeleteCommand(
     val commentUuid: String,
     val videoType: VideoType,
     val videoId: String,
-    val userId: String,
+)
+
+data class CommentLikeCommand(
+    val internalUserInfo: InternalUserCommand,
+    val commentUuid: String,
+    val videoType: VideoType,
+    val videoId: String,
 )

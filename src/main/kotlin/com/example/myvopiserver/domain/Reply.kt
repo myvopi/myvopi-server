@@ -32,7 +32,7 @@ class Reply(
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, updatable = true)
+    @Column(name = "comment_status", nullable = false, updatable = true)
     var status: CommentStatus = status
         protected set
 

@@ -2,10 +2,11 @@ package com.example.myvopiserver.domain.service
 
 import com.example.myvopiserver.common.config.exception.BadRequestException
 import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.common.config.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.CountryCode
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
+import com.example.myvopiserver.domain.role.User
 import org.springframework.stereotype.Service
 
 @Service
@@ -42,13 +43,12 @@ class ValidationService(
             ?: throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad country code request")
     }
 
-    fun validateRequestEqualsUser(
-        command: InternalUserCommand,
-        userId: String
+    fun validateOwnerAndRequester(
+        user: User,
+        command: InternalUserCommand
     ) {
-        val user = userReaderStore.findUserByUserId(userId)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        if(user.userId != command.userId) throw BadRequestException(ErrorCode.BAD_REQUEST)
+        if(command.uuid != user.uuid || command.userId != user.userId) {
+            throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
+        }
     }
-
 }

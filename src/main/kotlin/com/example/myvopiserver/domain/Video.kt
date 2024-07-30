@@ -6,6 +6,7 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
+@Table(name = "video")
 class Video(
     videoId: String,     // 유튜브 UUID (비디오 아이디)
     user: User,          // 생성한 유저 아이디

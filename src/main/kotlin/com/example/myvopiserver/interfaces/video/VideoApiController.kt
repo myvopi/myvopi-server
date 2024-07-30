@@ -7,7 +7,6 @@ import com.example.myvopiserver.common.config.exception.NotFoundException
 import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
 import com.example.myvopiserver.common.enums.SearchFilter
-import com.example.myvopiserver.common.enums.VideoType
 import com.example.myvopiserver.common.util.CustomParser
 import com.example.myvopiserver.domain.command.VideoSearchCommand
 import com.example.myvopiserver.domain.info.CommentBaseInfo
@@ -35,7 +34,6 @@ class VideoApiController(
         val searchFilter = SearchFilter.decode(body.filter)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")
         val command = VideoSearchCommand(
-            authenticationState = userCommand?.let { true } ?: false,
             internalUserCommand = userCommand,
             videoType = urlCommand.videoType,
             videoId = urlCommand.videoId,

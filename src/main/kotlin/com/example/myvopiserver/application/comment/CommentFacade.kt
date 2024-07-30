@@ -20,11 +20,9 @@ class CommentFacade(
     }
 
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
-        validationService.validateRequestEqualsUser(command.internalUserInfo, command.userId)
-        commentService.updateComment(command)
+        commentService.validateAndUpdateComment(command)
         val searchCommand = SingleCommandSearchCommand(
-            userUuid = command.internalUserInfo.uuid,
-            userId = command.userId,
+            internalUserInfo = command.internalUserInfo,
             videoId = command.videoId,
             videoType = command.videoType,
             commentUuid = command.commentUuid,
@@ -35,12 +33,10 @@ class CommentFacade(
 
     fun requestCommentPost(command: CommentPostCommand): CommentBaseInfo {
         val internalCommentCommand = commentService.createNewComment(command)
-        return commentService.constructCommentBaseInfo(internalCommentCommand)
+        return commentService.constructInitialCommentBaseInfo(internalCommentCommand)
     }
 
     fun requestCommentDelete(command: CommentDeleteCommand) {
-        validationService.validateRequestEqualsUser(command.internalUserInfo, command.userId)
-        val updateCommand = commentMapper.deleteTo(command)
-        commentService.updateStatus(updateCommand)
+        commentService.validateAndUpdateStatus(command)
     }
 }

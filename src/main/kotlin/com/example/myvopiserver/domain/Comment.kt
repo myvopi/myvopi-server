@@ -81,5 +81,9 @@ class Comment(
         this.content = content
     }
 
+    fun deleteComment() {
+        this.status = CommentStatus.DELETED
+    }
+
     // TODO verified
 }

@@ -20,7 +20,7 @@ class CustomParser {
         if(unparsedVideoId.isBlank()) throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         return UrlCommand(
             videoType = videoType,
-            videoId = if(unparsedVideoId.contains('&')) unparsedVideoId.substringBefore('&') else unparsedVideoId,
+            videoId = if(unparsedVideoId.contains('&')) unparsedVideoId.substringBefore('?') else unparsedVideoId,
         )
     }
 }
