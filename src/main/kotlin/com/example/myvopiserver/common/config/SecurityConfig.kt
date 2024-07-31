@@ -7,6 +7,7 @@ import com.example.myvopiserver.common.config.filter.JwtAuthenticationFilter
 import com.example.myvopiserver.common.config.handler.CustomAccessDeniedHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -51,13 +52,22 @@ class SecurityConfig(
             headers.xssProtection { xssProtection -> xssProtection.disable() }
         }
 
-//        http.authorizeHttpRequests { authorize ->
-//            authorize.requestMatchers(
-//                "/api/v1/user/email/verification",
-//            ).hasRole("USER").anyRequest().permitAll()
-//        }
+        http.authorizeHttpRequests { authorize ->
+            authorize.requestMatchers(HttpMethod.POST, "/{url}").permitAll()
 
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/register").permitAll()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/email/verification/newCode").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/email/verification").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/token/re-issue").permitAll()
+
+            authorize.requestMatchers(HttpMethod.GET, "/api/v1/comment/**").permitAll()
+            authorize.requestMatchers(HttpMethod.PUT, "/api/v1/comment/**").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/**").authenticated()
+            authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/comment/**").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/like").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/unlike").authenticated()
+        }
         return http.build()
     }
-
 }

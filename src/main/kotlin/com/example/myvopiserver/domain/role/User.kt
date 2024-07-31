@@ -7,10 +7,10 @@ import com.example.myvopiserver.domain.BaseTime
 import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.Reply
 import jakarta.persistence.*
-import java.lang.reflect.Member
 import java.util.*
 
 @Entity
+@Table(name = "user")
 class User(
     name: String,               // 성명
     userId: String,             // 아이디

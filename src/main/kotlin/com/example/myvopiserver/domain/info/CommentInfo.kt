@@ -8,4 +8,5 @@ data class CommentBaseInfo(
     val replyCount: Long,
     val createdDate: String,
     val modified: Boolean,
+    val userLiked: Boolean,
 )

@@ -2,16 +2,12 @@ package com.example.myvopiserver.application.comment
 
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
-import com.example.myvopiserver.domain.mapper.CommentMapper
 import com.example.myvopiserver.domain.service.CommentService
-import com.example.myvopiserver.domain.service.ValidationService
 import org.springframework.stereotype.Service
 
 @Service
 class CommentFacade(
     private val commentService: CommentService,
-    private val validationService: ValidationService,
-    private val commentMapper: CommentMapper,
 ) {
 
     fun requestComments(command: CommentSearchFromCommentCommand): List<CommentBaseInfo> {
@@ -20,11 +16,9 @@ class CommentFacade(
     }
 
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
-        validationService.validateRequestEqualsUser(command.internalUserInfo, command.userId)
-        commentService.updateComment(command)
+        commentService.validateAndUpdateComment(command)
         val searchCommand = SingleCommandSearchCommand(
-            userUuid = command.internalUserInfo.uuid,
-            userId = command.userId,
+            internalUserInfo = command.internalUserInfo,
             videoId = command.videoId,
             videoType = command.videoType,
             commentUuid = command.commentUuid,
@@ -35,12 +29,20 @@ class CommentFacade(
 
     fun requestCommentPost(command: CommentPostCommand): CommentBaseInfo {
         val internalCommentCommand = commentService.createNewComment(command)
-        return commentService.constructCommentBaseInfo(internalCommentCommand)
+        return commentService.constructInitialCommentBaseInfo(internalCommentCommand)
     }
 
     fun requestCommentDelete(command: CommentDeleteCommand) {
-        validationService.validateRequestEqualsUser(command.internalUserInfo, command.userId)
-        val updateCommand = commentMapper.deleteTo(command)
-        commentService.updateStatus(updateCommand)
+        commentService.validateAndUpdateStatus(command)
+    }
+
+    fun requestCommentLike(command: CommentLikeCommand) {
+        val internalCommentCommand = commentService.findComment(command.commentUuid)
+        commentService.searchAndLikeOrCreateNew(command.internalUserInfo, internalCommentCommand)
+    }
+
+    fun requestCommentUnlike(command: CommentLikeCommand) {
+        val internalCommentCommand = commentService.findComment(command.commentUuid)
+        commentService.searchAndUnlike(command.internalUserInfo, internalCommentCommand)
     }
 }

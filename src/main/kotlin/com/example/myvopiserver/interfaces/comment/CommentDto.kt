@@ -2,8 +2,7 @@ package com.example.myvopiserver.interfaces.comment
 
 data class CommentUpdateDto(
     val content: String,
-    val commentUuid: String,
-    val userId: String,
+    val uuid: String,
 )
 
 data class CommentPostDto(
@@ -11,6 +10,9 @@ data class CommentPostDto(
 )
 
 data class CommentDeleteDto(
-    val commentUuid: String,
-    val userId: String,
+    val uuid: String,
+)
+
+data class CommentLikeDto(
+    val uuid: String,
 )
