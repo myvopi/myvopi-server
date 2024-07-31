@@ -2,11 +2,8 @@ package com.example.myvopiserver.domain.service
 
 import com.example.myvopiserver.common.config.exception.BadRequestException
 import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.CountryCode
-import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
-import com.example.myvopiserver.domain.role.User
 import org.springframework.stereotype.Service
 
 @Service
@@ -41,14 +38,5 @@ class ValidationService(
     fun validateValidCountryCode(countryCode: CountryCode) {
         CountryCode.entries.find { it == countryCode }
             ?: throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad country code request")
-    }
-
-    fun validateOwnerAndRequester(
-        user: User,
-        command: InternalUserCommand
-    ) {
-        if(command.uuid != user.uuid || command.userId != user.userId) {
-            throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
-        }
     }
 }

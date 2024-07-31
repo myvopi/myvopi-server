@@ -23,4 +23,16 @@ interface CommentMapper {
         comment: Comment,
         userId: String,
     ): InternalCommentCommand
+
+    @Mappings(
+        Mapping(source = "comment.id", target = "id"),
+        Mapping(source = "comment.uuid", target = "uuid"),
+        Mapping(source = "comment.content", target = "content"),
+        Mapping(source = "comment.modifiedCnt", target = "modifiedCnt"),
+        Mapping(source = "comment.status", target = "status"),
+        Mapping(source = "comment.createdDt", target = "createdDate"),
+    )
+    fun to(
+        comment: Comment,
+    ): InternalCommentCommand
 }

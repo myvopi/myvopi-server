@@ -1,5 +1,6 @@
 package com.example.myvopiserver.infrastructure.custom.expression
 
+import com.example.myvopiserver.common.enums.LikeStatus
 import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
@@ -21,6 +22,7 @@ class CommentQueryExpressions(
                     .eq(Expressions.numberPath(Long::class.java, qEntityAlias.qComment, "video_id")),
                 qEntityAlias.qComment2.id.eq(qEntityAlias.qComment.id),
                 Expressions.numberPath(Long::class.java, qEntityAlias.qCommentLike2, "user_id").eq(userId),
+                Expressions.stringPath(qEntityAlias.qCommentLike2, "like_status").eq(LikeStatus.LIKED.name),
             )
             .exists()
     }

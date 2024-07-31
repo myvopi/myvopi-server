@@ -50,7 +50,7 @@ data class InternalCommentCommand(
     val content: String,
     val modifiedCnt: Int,
     val status: CommentStatus,
-    val userId: String,
+    val userId: String?,
     val createdDate: LocalDateTime,
 )
 
@@ -73,4 +73,9 @@ data class CommentLikeCommand(
     val commentUuid: String,
     val videoType: VideoType,
     val videoId: String,
+)
+
+data class CommentLikePostCommand(
+    val userId: Long,
+    val commentId: Long,
 )

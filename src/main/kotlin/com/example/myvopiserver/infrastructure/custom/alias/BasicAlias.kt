@@ -20,5 +20,6 @@ class BasicAlias {
     final val columnCreatedDate = Expressions.datePath(LocalDateTime::class.javaObjectType, "createdDate")
     final val columnCreatedDateTuple: DatePath<Date> = Expressions.datePath(Date::class.javaObjectType, "createdDate")
     final val subQueryReply = Expressions.stringPath("r")
+    final val subQueryCommentLike = Expressions.stringPath("cl")
     final val columnUserLiked = Expressions.booleanPath("userLiked")
 }

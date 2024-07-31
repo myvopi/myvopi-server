@@ -1,5 +1,6 @@
 package com.example.myvopiserver.domain
 
+import com.example.myvopiserver.common.enums.LikeStatus
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 
@@ -29,4 +30,22 @@ class ReplyLike(
     @JoinColumn(name = "user_id", nullable = false)
     var user: User = user
         protected set
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "like_status", nullable = false, updatable = true)
+    var status: LikeStatus = LikeStatus.LIKED
+        protected set
+
+    override fun toString(): String {
+        return "ReplyLike(id=$id, reply=$reply, user=$user, status=$status)"
+    }
+
+    fun unlike() {
+        this.status = LikeStatus.UNLIKED
+    }
+
+    fun like() {
+        this.status = LikeStatus.LIKED
+    }
+
 }

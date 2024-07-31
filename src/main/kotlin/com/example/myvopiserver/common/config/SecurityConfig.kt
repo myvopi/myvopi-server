@@ -65,6 +65,8 @@ class SecurityConfig(
             authorize.requestMatchers(HttpMethod.PUT, "/api/v1/comment/**").authenticated()
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/**").authenticated()
             authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/comment/**").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/like").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/unlike").authenticated()
         }
         return http.build()
     }

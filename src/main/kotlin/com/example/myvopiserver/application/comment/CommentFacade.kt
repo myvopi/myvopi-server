@@ -2,16 +2,12 @@ package com.example.myvopiserver.application.comment
 
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
-import com.example.myvopiserver.domain.mapper.CommentMapper
 import com.example.myvopiserver.domain.service.CommentService
-import com.example.myvopiserver.domain.service.ValidationService
 import org.springframework.stereotype.Service
 
 @Service
 class CommentFacade(
     private val commentService: CommentService,
-    private val validationService: ValidationService,
-    private val commentMapper: CommentMapper,
 ) {
 
     fun requestComments(command: CommentSearchFromCommentCommand): List<CommentBaseInfo> {
@@ -38,5 +34,15 @@ class CommentFacade(
 
     fun requestCommentDelete(command: CommentDeleteCommand) {
         commentService.validateAndUpdateStatus(command)
+    }
+
+    fun requestCommentLike(command: CommentLikeCommand) {
+        val internalCommentCommand = commentService.findComment(command.commentUuid)
+        commentService.searchAndLikeOrCreateNew(command.internalUserInfo, internalCommentCommand)
+    }
+
+    fun requestCommentUnlike(command: CommentLikeCommand) {
+        val internalCommentCommand = commentService.findComment(command.commentUuid)
+        commentService.searchAndUnlike(command.internalUserInfo, internalCommentCommand)
     }
 }

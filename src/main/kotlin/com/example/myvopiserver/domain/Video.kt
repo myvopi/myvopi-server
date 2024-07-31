@@ -46,4 +46,8 @@ class Video(
     )
     var comments: MutableList<Comment> = mutableListOf()
         protected set
+
+    override fun toString(): String {
+        return "Video(id=$id, uuid='$uuid', videoId='$videoId', user=$user, videoType=$videoType, comments=$comments)"
+    }
 }

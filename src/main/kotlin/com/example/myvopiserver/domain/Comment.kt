@@ -1,6 +1,10 @@
 package com.example.myvopiserver.domain
 
+import com.example.myvopiserver.common.config.exception.BadRequestException
+import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.config.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.CommentStatus
+import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 import java.util.UUID
@@ -75,6 +79,7 @@ class Comment(
     fun updateContent(
         content: String,
     ) {
+        if(this.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This comment has already been deleted")
         if(this.content == content) return
         // TODO verify request to admin
         this.modifiedCnt++
@@ -82,7 +87,14 @@ class Comment(
     }
 
     fun deleteComment() {
+        if(this.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This comment has already been deleted")
         this.status = CommentStatus.DELETED
+    }
+
+    fun validateOwnerAndRequester(command: InternalUserCommand) {
+        if(command.uuid != user.uuid || command.userId != user.userId) {
+            throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
+        }
     }
 
     // TODO verified

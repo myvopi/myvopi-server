@@ -1,5 +1,6 @@
 package com.example.myvopiserver.domain.service
 
+import com.example.myvopiserver.common.config.exception.BaseException
 import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.config.exception.NotFoundException
 import com.example.myvopiserver.common.util.extension.toStrings
@@ -7,6 +8,7 @@ import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
 import com.example.myvopiserver.domain.interfaces.CommentReaderStore
+import com.example.myvopiserver.domain.interfaces.LikeReaderStore
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.interfaces.VideoReaderStore
 import com.example.myvopiserver.domain.mapper.CommentMapper
@@ -22,7 +24,7 @@ class CommentService(
     private val commentMapper: CommentMapper,
     private val userReaderStore: UserReaderStore,
     private val videoReaderStore: VideoReaderStore,
-    private val validationService: ValidationService,
+    private val likeReaderStore: LikeReaderStore,
 ) {
 
     private fun mapCommentBaseInfoOfResult(result: Tuple): CommentBaseInfo {
@@ -56,10 +58,7 @@ class CommentService(
     fun validateAndUpdateComment(command: CommentUpdateCommand): InternalCommentCommand {
         val comment = commentReaderStore.findCommentByUuid(command.commentUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        validationService.validateOwnerAndRequester(
-            user = comment.user,
-            command = command.internalUserInfo,
-        )
+        comment.validateOwnerAndRequester(command.internalUserInfo)
 
         comment.updateContent(command.content)
         val updatedComment = commentReaderStore.saveComment(comment)
@@ -73,10 +72,7 @@ class CommentService(
     fun validateAndUpdateStatus(command: CommentDeleteCommand) {
         val comment = commentReaderStore.findCommentByUuid(command.commentUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        validationService.validateOwnerAndRequester(
-            user = comment.user,
-            command = command.internalUserInfo,
-        )
+        comment.validateOwnerAndRequester(command.internalUserInfo)
         comment.deleteComment()
     }
 
@@ -92,7 +88,7 @@ class CommentService(
         return CommentBaseInfo(
             commentUuid = command.uuid,
             content = command.content,
-            userId = command.userId,
+            userId = command.userId ?: "",
             likeCount = 0,
             replyCount = 0,
             createdDate = command.createdDate.toStrings("yyyy-MM-dd HH:mm:ss"),
@@ -116,5 +112,43 @@ class CommentService(
             comment = savedComment,
             userId = command.internalUserInfo.userId,
         )
+    }
+
+    fun findComment(uuid: String): InternalCommentCommand {
+        val comment = commentReaderStore.findCommentByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        return commentMapper.to(comment)
+    }
+
+    fun searchAndLikeOrCreateNew(
+        internalUserCommand: InternalUserCommand,
+        internalCommentCommand: InternalCommentCommand,
+    ) {
+        val commentLike = likeReaderStore.findCommentLikeRequest(internalCommentCommand.id, internalUserCommand.id)
+
+        if(commentLike == null) {
+            val command = CommentLikePostCommand(
+                userId = internalUserCommand.id,
+                commentId = internalCommentCommand.id,
+            )
+            likeReaderStore.saveCommentLikeRequest(command)
+        } else {
+            commentLike.like()
+            likeReaderStore.saveCommentLike(commentLike)
+        }
+    }
+
+    fun searchAndUnlike(
+        internalUserCommand: InternalUserCommand,
+        internalCommentCommand: InternalCommentCommand,
+    ) {
+        val commentLike = likeReaderStore.findCommentLike(internalCommentCommand.id, internalUserCommand.id)
+
+        if(commentLike == null) {
+            throw BaseException(ErrorCode.BAD_REQUEST, "You cannot unlike this comment")
+        } else {
+            commentLike.unlike()
+            likeReaderStore.saveCommentLike(commentLike)
+        }
     }
 }

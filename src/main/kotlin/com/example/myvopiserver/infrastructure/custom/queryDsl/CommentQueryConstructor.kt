@@ -1,6 +1,7 @@
 package com.example.myvopiserver.infrastructure.custom.queryDsl
 
 import com.example.myvopiserver.common.enums.CommentStatus
+import com.example.myvopiserver.common.enums.LikeStatus
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
 import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
@@ -36,7 +37,7 @@ class CommentQueryConstructor(
             qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
             qEntityAlias.qComment.modifiedCnt.`as`(alias.columnCommentModifiedCnt),
             qEntityAlias.qUser.userId.`as`(alias.columnUserId),
-            qEntityAlias.qCommentLike.id.countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
+            Expressions.numberPath(Long::class.java, alias.subQueryCommentLike, "id").countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
             Expressions.numberPath(Long::class.java, alias.subQueryReply, "id").countDistinct().`as`(alias.columnReplyCount), // replyCount
             Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qComment, "created_dt").`as`(alias.columnCreatedDate), // created_dt
             expressions.commentLikeSubQuery(command.id).`as`(alias.columnUserLiked)
@@ -50,7 +51,7 @@ class CommentQueryConstructor(
             qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
             qEntityAlias.qComment.modifiedCnt.`as`(alias.columnCommentModifiedCnt),
             qEntityAlias.qUser.userId.`as`(alias.columnUserId),
-            qEntityAlias.qCommentLike.id.countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
+            Expressions.numberPath(Long::class.java, alias.subQueryCommentLike, "id").countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
             Expressions.numberPath(Long::class.java, alias.subQueryReply, "id").countDistinct().`as`(alias.columnReplyCount), // replyCount
             Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qComment, "created_dt").`as`(alias.columnCreatedDate), // created_dt
         )
@@ -65,6 +66,18 @@ class CommentQueryConstructor(
             .from(qEntityAlias.qReply)
             .where(
                 Expressions.stringPath(qEntityAlias.qReply, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name)
+            )
+    }
+
+    fun constructFilteredCommentLikeSubQuery(): JPQLQuery<Tuple> {
+        return JPAExpressions
+            .select(
+                qEntityAlias.qCommentLike.id,
+                Expressions.numberPath(Long::class.java, qEntityAlias.qCommentLike, "comment_id").`as`("comment_id"),
+            )
+            .from(qEntityAlias.qCommentLike)
+            .where(
+                Expressions.stringPath(qEntityAlias.qCommentLike, "like_status").eq(LikeStatus.LIKED.name)
             )
     }
 }
