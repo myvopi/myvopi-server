@@ -35,7 +35,7 @@ class CommentApiController(
         val searchFilter = SearchFilter.decode(filter)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")
         val command = CommentSearchFromCommentCommand(
-            internalUserInfo = userCommand,
+            internalUserCommand = userCommand,
             filter = searchFilter,
             reqPage = reqPage,
             videoId = videoId,
@@ -58,7 +58,7 @@ class CommentApiController(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentUpdateCommand(
-            internalUserInfo = internalUserCommand,
+            internalUserCommand = internalUserCommand,
             content = body.content,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
@@ -81,7 +81,7 @@ class CommentApiController(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentPostCommand(
-            internalUserInfo = internalUserCommand,
+            internalUserCommand = internalUserCommand,
             content = body.content,
             videoType = videoTypeEnum,
             videoId = videoId,
@@ -103,7 +103,7 @@ class CommentApiController(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentDeleteCommand(
-            internalUserInfo = internalUserCommand,
+            internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
             videoId = videoId,
@@ -125,7 +125,7 @@ class CommentApiController(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentLikeCommand(
-            internalUserInfo = internalUserCommand,
+            internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
             videoId = videoId,
@@ -147,7 +147,7 @@ class CommentApiController(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentLikeCommand(
-            internalUserInfo = internalUserCommand,
+            internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
             videoId = videoId,

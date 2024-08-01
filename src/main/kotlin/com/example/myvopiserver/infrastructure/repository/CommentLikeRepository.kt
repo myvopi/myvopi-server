@@ -1,6 +1,8 @@
 package com.example.myvopiserver.infrastructure.repository
 
+import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.CommentLike
+import com.example.myvopiserver.domain.role.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
@@ -8,4 +10,6 @@ import org.springframework.stereotype.Repository
 interface CommentLikeRepository: JpaRepository<CommentLike, Long> {
 
     fun findByIdAndUserId(commentId: Long, userId: Long): CommentLike?
+
+    fun findByUserAndComment(user: User, comment: Comment): CommentLike?
 }

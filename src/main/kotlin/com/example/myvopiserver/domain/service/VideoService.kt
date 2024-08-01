@@ -17,6 +17,16 @@ class VideoService(
     private val videoMapper: VideoMapper,
     private val userReaderStore: UserReaderStore,
 ) {
+
+
+    // Db-transactions (readOnly)
+    fun findByTypeAndId(videoType: VideoType, videoId: String): InternalVideoCommand {
+        val video = videoReaderStore.findVideoByTypeAndId(videoType, videoId)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        return videoMapper.to(video = video)
+    }
+
+    // Db-transactions
     fun createNewVideo(
         videoId: String,
         userId: String,
@@ -38,10 +48,10 @@ class VideoService(
         return videoReaderStore.findVideoByTypeAndId(command.videoType, command.videoId)
             ?.let { videoMapper.to(video = it) }
             ?: run {
-                command.internalUserCommand?.let {
+                command.internalUserCommand?.let { internalUserCommand ->
                     createNewVideo(
                         videoId = command.videoId,
-                        userId = command.internalUserCommand.userId,
+                        userId = internalUserCommand.userId,
                         videoType = command.videoType,
                     )
                 } ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video not found, you will need an account to start a topic")

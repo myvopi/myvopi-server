@@ -4,6 +4,7 @@ import com.example.myvopiserver.common.config.exception.BadRequestException
 import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.config.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.CommentStatus
+import com.example.myvopiserver.domain.command.InternalCommentCommand
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
@@ -13,9 +14,25 @@ import java.util.UUID
 @Table(name ="comment")
 class Comment(
     content: String,           // 내용
-    video: Video,              // 상위 비디오
     user: User,                // 생성자
+    video: Video,              // 상위 비디오
 ): BaseTime() {
+
+    constructor(
+        command: InternalCommentCommand,
+        user: User,
+        video: Video,
+    ) : this(
+        command.content,
+        user,
+        video,
+    )
+    {
+        this.id = command.id
+        this.uuid = command.uuid
+        this.modifiedCnt = command.modifiedCnt
+        this.status = command.status
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,10 +89,6 @@ class Comment(
     var user: User = user
         protected set
 
-    override fun toString(): String {
-        return "Comment(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status, video=$video, replies=$replies, likes=$likes, user=$user)"
-    }
-
     fun updateContent(
         content: String,
     ) {
@@ -95,6 +108,10 @@ class Comment(
         if(command.uuid != user.uuid || command.userId != user.userId) {
             throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
         }
+    }
+
+    override fun toString(): String {
+        return "Comment(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status)"
     }
 
     // TODO verified

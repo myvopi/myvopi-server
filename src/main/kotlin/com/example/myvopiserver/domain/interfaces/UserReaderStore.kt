@@ -8,10 +8,11 @@ interface UserReaderStore {
 
     fun findUserByUuid(uuid: String): User?
 
-    /**
-    * validation usages
-    * */
     fun findUserByUserId(userId: String): User?
 
     fun findUserByEmail(email: String): User?
+
+    fun userExistsByUserId(userId: String): Boolean
+
+    fun userExistsByEmail(email: String): Boolean
 }

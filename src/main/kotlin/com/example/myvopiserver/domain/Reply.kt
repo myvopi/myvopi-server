@@ -62,7 +62,7 @@ class Reply(
         protected set
 
     override fun toString(): String {
-        return "Reply(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status, comment=$comment, likes=$likes, user=$user)"
+        return "Reply(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status)"
     }
     // TODO verified
 
