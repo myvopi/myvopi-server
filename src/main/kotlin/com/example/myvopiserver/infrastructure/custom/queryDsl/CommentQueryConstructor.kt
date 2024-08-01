@@ -60,12 +60,12 @@ class CommentQueryConstructor(
     fun constructReplySubQuery(): JPQLQuery<Tuple> {
         return JPAExpressions
             .select(
-                Expressions.numberPath(Long::class.java, qEntityAlias.qReply, "comment_id").`as`("comment_id"),
-                qEntityAlias.qReply.id
+                Expressions.numberPath(Long::class.java, qEntityAlias.qReply2, "comment_id").`as`("comment_id"),
+                qEntityAlias.qReply2.id
             )
-            .from(qEntityAlias.qReply)
+            .from(qEntityAlias.qReply2)
             .where(
-                Expressions.stringPath(qEntityAlias.qReply, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name)
+                Expressions.stringPath(qEntityAlias.qReply2, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name)
             )
     }
 
@@ -78,6 +78,48 @@ class CommentQueryConstructor(
             .from(qEntityAlias.qCommentLike)
             .where(
                 Expressions.stringPath(qEntityAlias.qCommentLike, "like_status").eq(LikeStatus.LIKED.name)
+            )
+    }
+
+    fun verifyAuthAndConstructReplySelectQuery(command: InternalUserCommand?): JPASQLQuery<Tuple> {
+        return command?.let { constructAuthReplySelectQuery(it) }
+            ?: run { constructNonAuthReplySelectQuery() }
+    }
+
+    fun constructAuthReplySelectQuery(command: InternalUserCommand): JPASQLQuery<Tuple> {
+        val query = JPASQLQuery<Any>(em, mysqlTemplates)
+        return query.select(
+            qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
+            qEntityAlias.qReply.content.`as`(alias.columnReplyContent),
+            qEntityAlias.qUser.userId.`as`(alias.columnUserId),
+            Expressions.numberPath(Long::class.java, alias.subQueryReplyLike, "id").countDistinct().`as`(alias.columnReplyLikesCount), // reply likeCount
+            qEntityAlias.qComment.modifiedCnt.`as`(alias.columnReplyModifiedCnt),
+            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qReply, "created_dt").`as`(alias.columnCreatedDate), // created_dt
+            expressions.replyLikeSubQuery(command.id).`as`(alias.columnUserLiked)
+        )
+    }
+
+    fun constructNonAuthReplySelectQuery(): JPASQLQuery<Tuple> {
+        val query = JPASQLQuery<Any>(em, mysqlTemplates)
+        return query.select(
+            qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
+            qEntityAlias.qReply.content.`as`(alias.columnReplyContent),
+            qEntityAlias.qUser.userId.`as`(alias.columnUserId),
+            Expressions.numberPath(Long::class.java, alias.subQueryReplyLike, "id").countDistinct().`as`(alias.columnReplyLikesCount), // reply likeCount
+            qEntityAlias.qComment.modifiedCnt.`as`(alias.columnReplyModifiedCnt),
+            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qReply, "created_dt").`as`(alias.columnCreatedDate), // created_dt
+        )
+    }
+
+    fun constructFilteredReplyLikeSubQuery(): JPQLQuery<Tuple> {
+        return JPAExpressions
+            .select(
+                qEntityAlias.qReplyLike2.id,
+                Expressions.numberPath(Long::class.java, qEntityAlias.qReplyLike2, "reply_id").`as`("reply_id"),
+            )
+            .from(qEntityAlias.qReplyLike2)
+            .where(
+                Expressions.stringPath(qEntityAlias.qReplyLike2, "like_status").eq(LikeStatus.LIKED.name)
             )
     }
 }
