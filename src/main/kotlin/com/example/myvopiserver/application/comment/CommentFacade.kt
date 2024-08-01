@@ -3,11 +3,13 @@ package com.example.myvopiserver.application.comment
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
 import com.example.myvopiserver.domain.service.CommentService
+import com.example.myvopiserver.domain.service.VideoService
 import org.springframework.stereotype.Service
 
 @Service
 class CommentFacade(
     private val commentService: CommentService,
+    private val videoService: VideoService,
 ) {
 
     fun requestComments(command: CommentSearchFromCommentCommand): List<CommentBaseInfo> {
@@ -16,19 +18,15 @@ class CommentFacade(
     }
 
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
-        commentService.validateAndUpdateComment(command)
-        val searchCommand = SingleCommandSearchCommand(
-            internalUserInfo = command.internalUserInfo,
-            videoId = command.videoId,
-            videoType = command.videoType,
-            commentUuid = command.commentUuid,
-        )
+        commentService.validateAndUpdateContent(command)
+        val searchCommand = commentService.constructSingleCommentSearchCommand(command)
         val result = commentService.findComment(searchCommand)!!
         return commentService.constructCommentBaseInfo(result)
     }
 
     fun requestCommentPost(command: CommentPostCommand): CommentBaseInfo {
-        val internalCommentCommand = commentService.createNewComment(command)
+        val internalVideoCommand = videoService.findByTypeAndId(command.videoType, command.videoId)
+        val internalCommentCommand = commentService.createNewComment(command, internalVideoCommand)
         return commentService.constructInitialCommentBaseInfo(internalCommentCommand)
     }
 
@@ -37,12 +35,12 @@ class CommentFacade(
     }
 
     fun requestCommentLike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findComment(command.commentUuid)
-        commentService.searchAndLikeOrCreateNew(command.internalUserInfo, internalCommentCommand)
+        val internalCommentCommand = commentService.findCommentOwnerWithUserAndVideo(command.commentUuid)
+        commentService.searchAndUpdateLikeOrCreateNew(command.internalUserCommand, internalCommentCommand)
     }
 
     fun requestCommentUnlike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findComment(command.commentUuid)
-        commentService.searchAndUnlike(command.internalUserInfo, internalCommentCommand)
+        val internalCommentCommand = commentService.findCommentOwnerWithUserAndVideo(command.commentUuid)
+        commentService.searchAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
     }
 }

@@ -21,14 +21,6 @@ class UserFacade(
     private val jwtTokenGenerator: JwtTokenGenerator,
 ) {
 
-    /**
-     * 회원가입
-     * 1. 아이디 중복 검사
-     * 2. 이메일 중복 검사
-     * 3. 비밀번호 유효 검사
-     * 4. 요청 국적 코드 검사
-     * 5. 계정 생성
-     * */
     fun registerUser(command: UserRegisterCommand) {
         validationService.validateUserIdExists(command.userId)
         validationService.validateEmailExists(command.email)

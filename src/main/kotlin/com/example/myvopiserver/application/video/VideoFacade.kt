@@ -23,7 +23,7 @@ class VideoFacade(
             reqPage = command.reqPage,
             videoId = internalVideoCommand.id,
             videoType = command.videoType,
-            internalUserInfo = command.internalUserCommand,
+            internalUserCommand = command.internalUserCommand,
         )
         val result = commentService.findCommentsFromVideo(searchCommand)
         return commentService.constructCommentBaseInfo(result)

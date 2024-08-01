@@ -8,7 +8,6 @@ import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.mapper.UserMapper
 import org.springframework.security.oauth2.jwt.*
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -57,20 +56,21 @@ class JwtTokenGenerator(
             val jwt = this.parseTokenFilter(token, TokenType.ACCESS_TOKEN)
             val claims = jwt.claims
             val uuid = claims["unique"] as String
-            userMapper.to(user = userReaderStore.findUserByUuid(uuid))
+            val user = userReaderStore.findUserByUuid(uuid)
+            userMapper.to(user = user)
         } catch (e: JwtException) {
             null
         }
     }
 
-    @Transactional(readOnly = true)
     fun parseRefreshToken(
         jwt: Jwt
     ): InternalUserCommand?
     {
         return try{
             val key = jwt.subject
-            userMapper.to(user = userReaderStore.findUserByUuid(key))
+            val user = userReaderStore.findUserByUuid(key)
+            userMapper.to(user = user)
         } catch (e: JwtException) {
             null
         }

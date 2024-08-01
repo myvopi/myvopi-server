@@ -6,6 +6,7 @@ import com.example.myvopiserver.common.enums.RoleStatus
 import com.example.myvopiserver.domain.BaseTime
 import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.Reply
+import com.example.myvopiserver.domain.command.InternalUserCommand
 import jakarta.persistence.*
 import java.util.*
 
@@ -18,6 +19,21 @@ class User(
     password: String,           // 비번
     email: String,              // 이메일
 ): BaseTime() {
+
+    constructor(
+        command: InternalUserCommand,
+    ) : this(
+        command.name,
+        command.userId,
+        command.nationality,
+        command.password,
+        command.email
+    )
+    {
+        this.id = command.id
+        this.uuid = command.uuid
+        this.role = command.role
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,6 +111,6 @@ class User(
     }
 
     override fun toString(): String {
-        return "User(id=$id, uuid='$uuid', name='$name', userId='$userId', nationality=$nationality, password='$password', email='$email', status=$status, role=$role, comments=$comments, replies=$replies, verifications=$verifications)"
+        return "User(id=$id, uuid='$uuid', name='$name', userId='$userId', nationality=$nationality, password='$password', email='$email', status=$status, role=$role)"
     }
 }

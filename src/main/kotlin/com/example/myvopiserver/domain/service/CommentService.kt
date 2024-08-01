@@ -5,31 +5,136 @@ import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.config.exception.NotFoundException
 import com.example.myvopiserver.common.util.extension.toStrings
 import com.example.myvopiserver.domain.Comment
+import com.example.myvopiserver.domain.CommentLike
+import com.example.myvopiserver.domain.Video
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
 import com.example.myvopiserver.domain.interfaces.CommentReaderStore
 import com.example.myvopiserver.domain.interfaces.LikeReaderStore
-import com.example.myvopiserver.domain.interfaces.UserReaderStore
-import com.example.myvopiserver.domain.interfaces.VideoReaderStore
 import com.example.myvopiserver.domain.mapper.CommentMapper
+import com.example.myvopiserver.domain.mapper.UserMapper
+import com.example.myvopiserver.domain.mapper.VideoMapper
+import com.example.myvopiserver.domain.role.User
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CommentService(
     private val commentReaderStore: CommentReaderStore,
     private val alias: BasicAlias,
-    private val commentMapper: CommentMapper,
-    private val userReaderStore: UserReaderStore,
-    private val videoReaderStore: VideoReaderStore,
     private val likeReaderStore: LikeReaderStore,
+    private val validationService: ValidationService,
+    private val commentMapper: CommentMapper,
+    private val videoMapper: VideoMapper,
+    private val userMapper: UserMapper,
 ) {
 
+    // Db-transactions (readOnly)
+    fun findCommentsFromVideo(command: CommentSearchFromVideoCommand): List<Tuple> {
+        return commentReaderStore.findCommentsFromVideoRequest(command)
+    }
+
+    fun findComments(command: CommentSearchFromCommentCommand): List<Tuple> {
+        return commentReaderStore.findCommentsFromCommentRequest(command)
+    }
+
+    fun findComment(command: SingleCommentSearchCommand): Tuple? {
+        return commentReaderStore.findCommentRequest(command)
+    }
+
+    fun findCommentOwnerWithUserAndVideo(uuid: String): InternalCommentWithUserAndVideoCommand {
+        val comment = commentReaderStore.findCommentWithUserAndVideoByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        val commentOwner = comment.user
+        val video = comment.video
+        return InternalCommentWithUserAndVideoCommand(
+            internalCommentCommand = commentMapper.to(comment = comment),
+            internalUserCommand = userMapper.to(user = commentOwner)!!,
+            internalVideoCommand = videoMapper.to(video = video),
+        )
+    }
+
+    // Db-transactions
+    fun createNewComment(
+        postCommand: CommentPostCommand,
+        internalVideoCommand: InternalVideoCommand,
+    ): InternalCommentCommand {
+        val owner = User(postCommand.internalUserCommand)
+        val video = Video(internalVideoCommand, owner)
+        val comment = Comment(
+            content = postCommand.content,
+            video = video,
+            user = owner,
+        )
+        val savedComment= commentReaderStore.saveComment(comment)
+        return commentMapper.to(
+            comment = savedComment,
+            userId = postCommand.internalUserCommand.userId,
+        )
+    }
+
+    fun searchAndUpdateLikeOrCreateNew(
+        requestedInternalUserCommand: InternalUserCommand,
+        commentOwnerCommand: InternalCommentWithUserAndVideoCommand,
+    ) {
+        val requester = User(requestedInternalUserCommand)
+        val commentOwner = User(commentOwnerCommand.internalUserCommand)
+        val video = Video(commentOwnerCommand.internalVideoCommand, commentOwner)
+        val comment = Comment(commentOwnerCommand.internalCommentCommand, commentOwner, video)
+        val commentLike = likeReaderStore.findCommentLikeByUserAndComment(requester, comment)
+        if(commentLike == null) {
+            val newCommentLike = CommentLike(
+                comment = comment,
+                user = requester,
+            )
+            likeReaderStore.saveCommentLike(newCommentLike)
+        } else {
+            commentLike.like()
+            likeReaderStore.saveCommentLike(commentLike)
+        }
+    }
+
+    fun searchAndUpdateUnlike(
+        requestedInternalUserCommand: InternalUserCommand,
+        commentOwnerCommand: InternalCommentWithUserAndVideoCommand,
+    ) {
+        val requester = User(requestedInternalUserCommand)
+        val commentOwner = User(commentOwnerCommand.internalUserCommand)
+        val video = Video(commentOwnerCommand.internalVideoCommand, commentOwner)
+        val comment = Comment(commentOwnerCommand.internalCommentCommand, commentOwner, video)
+        val commentLike = likeReaderStore.findCommentLikeByUserAndComment(requester, comment)
+        if(commentLike == null) {
+            throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this comment")
+        } else {
+            commentLike.unlike()
+            likeReaderStore.saveCommentLike(commentLike)
+        }
+    }
+
+    // Validation
+    fun validateAndUpdateContent(command: CommentUpdateCommand) {
+        val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        val commentOwner = comment.user
+        validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
+        comment.updateContent(command.content)
+        commentReaderStore.saveComment(comment)
+    }
+
+    fun validateAndUpdateStatus(command: CommentDeleteCommand) {
+        val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        val commentOwner = comment.user
+        validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
+        comment.deleteComment()
+        commentReaderStore.saveComment(comment)
+    }
+
+    // Private & constructors
     private fun mapCommentBaseInfoOfResult(result: Tuple): CommentBaseInfo {
         return CommentBaseInfo(
-            commentUuid = result.get(alias.columnCommentUuid)!!,
+            uuid = result.get(alias.columnCommentUuid)!!,
             content = result.get(alias.columnCommentContent)!!,
             userId = result.get(alias.columnUserId)!!,
             likeCount = result.get(alias.columnCommentLikesCount)!!,
@@ -40,44 +145,10 @@ class CommentService(
         )
     }
 
-    fun findCommentsFromVideo(command: CommentSearchFromVideoCommand): List<Tuple> {
-        return commentReaderStore.findCommentsFromVideoRequest(command)
-    }
-
-    fun findComments(command: CommentSearchFromCommentCommand): List<Tuple> {
-        return commentReaderStore.findCommentsFromCommentRequest(command)
-    }
-
     fun constructCommentBaseInfo(results: List<Tuple>): List<CommentBaseInfo> {
         return results.map { result ->
             mapCommentBaseInfoOfResult(result)
         }
-    }
-
-    @Transactional
-    fun validateAndUpdateComment(command: CommentUpdateCommand): InternalCommentCommand {
-        val comment = commentReaderStore.findCommentByUuid(command.commentUuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        comment.validateOwnerAndRequester(command.internalUserInfo)
-
-        comment.updateContent(command.content)
-        val updatedComment = commentReaderStore.saveComment(comment)
-        return commentMapper.to(
-            comment = updatedComment,
-            userId = command.internalUserInfo.userId
-        )
-    }
-
-    @Transactional
-    fun validateAndUpdateStatus(command: CommentDeleteCommand) {
-        val comment = commentReaderStore.findCommentByUuid(command.commentUuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        comment.validateOwnerAndRequester(command.internalUserInfo)
-        comment.deleteComment()
-    }
-
-    fun findComment(command: SingleCommandSearchCommand): Tuple? {
-        return commentReaderStore.findCommentRequest(command)
     }
 
     fun constructCommentBaseInfo(result: Tuple): CommentBaseInfo {
@@ -86,7 +157,7 @@ class CommentService(
 
     fun constructInitialCommentBaseInfo(command: InternalCommentCommand): CommentBaseInfo {
         return CommentBaseInfo(
-            commentUuid = command.uuid,
+            uuid = command.uuid,
             content = command.content,
             userId = command.userId ?: "",
             likeCount = 0,
@@ -97,58 +168,14 @@ class CommentService(
         )
     }
 
-    fun createNewComment(command: CommentPostCommand): InternalCommentCommand {
-        val user = userReaderStore.findUserByUuid(command.internalUserInfo.uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        val video = videoReaderStore.findVideoByTypeAndId(command.videoType, command.videoId)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        val comment = Comment(
-            content = command.content,
-            video = video,
-            user = user,
+    fun constructSingleCommentSearchCommand(
+        command: CommentUpdateCommand,
+    ): SingleCommentSearchCommand {
+        return SingleCommentSearchCommand(
+            internalUserCommand = command.internalUserCommand,
+            videoId = command.videoId,
+            videoType = command.videoType,
+            commentUuid = command.commentUuid,
         )
-        val savedComment= commentReaderStore.saveComment(comment)
-        return commentMapper.to(
-            comment = savedComment,
-            userId = command.internalUserInfo.userId,
-        )
-    }
-
-    fun findComment(uuid: String): InternalCommentCommand {
-        val comment = commentReaderStore.findCommentByUuid(uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        return commentMapper.to(comment)
-    }
-
-    fun searchAndLikeOrCreateNew(
-        internalUserCommand: InternalUserCommand,
-        internalCommentCommand: InternalCommentCommand,
-    ) {
-        val commentLike = likeReaderStore.findCommentLikeRequest(internalCommentCommand.id, internalUserCommand.id)
-
-        if(commentLike == null) {
-            val command = CommentLikePostCommand(
-                userId = internalUserCommand.id,
-                commentId = internalCommentCommand.id,
-            )
-            likeReaderStore.saveCommentLikeRequest(command)
-        } else {
-            commentLike.like()
-            likeReaderStore.saveCommentLike(commentLike)
-        }
-    }
-
-    fun searchAndUnlike(
-        internalUserCommand: InternalUserCommand,
-        internalCommentCommand: InternalCommentCommand,
-    ) {
-        val commentLike = likeReaderStore.findCommentLike(internalCommentCommand.id, internalUserCommand.id)
-
-        if(commentLike == null) {
-            throw BaseException(ErrorCode.BAD_REQUEST, "You cannot unlike this comment")
-        } else {
-            commentLike.unlike()
-            likeReaderStore.saveCommentLike(commentLike)
-        }
     }
 }

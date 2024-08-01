@@ -5,15 +5,12 @@ import com.example.myvopiserver.common.enums.SearchFilter
 import com.example.myvopiserver.domain.*
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
-import com.example.myvopiserver.infrastructure.custom.expression.CommentQueryExpressions
 import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
 import com.example.myvopiserver.infrastructure.custom.queryDsl.CommentQueryConstructor
 import com.example.myvopiserver.infrastructure.custom.repository.CustomCommentReaderStore
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.querydsl.jpa.sql.JPASQLQuery
-import com.querydsl.sql.SQLTemplates
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 
@@ -22,18 +19,12 @@ import org.springframework.stereotype.Repository
 class CustomCommentReaderStoreImpl(
     private val em: EntityManager,
     private val jpaQueryFactory: JPAQueryFactory,
-    private val mysqlTemplates: SQLTemplates,
     private val alias: BasicAlias,
     private val qEntityAlias: QEntityAlias,
-    private val expressions: CommentQueryExpressions,
     private val queryConstructor: CommentQueryConstructor,
 ): CustomCommentReaderStore {
 
     private final val maxFetchCnt = 10L
-
-    private fun constructJpaSqlQuery(): JPASQLQuery<*> {
-        return JPASQLQuery<Any>(em, mysqlTemplates)
-    }
 
     /**
      * <- comment search from initial video request api ->
@@ -73,7 +64,7 @@ class CustomCommentReaderStoreImpl(
      *   limit 10 offset 0;
     * */
     override fun pageableCommentAndReplyFromVideoRequest(command: CommentSearchFromVideoCommand): List<Tuple> {
-        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserInfo)
+        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qComment)
             .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
             .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply).on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
@@ -95,7 +86,7 @@ class CustomCommentReaderStoreImpl(
     }
 
     override fun pageableCommentAndReplyFromCommentRequest(command: CommentSearchFromCommentCommand): List<Tuple> {
-        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserInfo)
+        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qComment)
             .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
             .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply).on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
@@ -123,8 +114,8 @@ class CustomCommentReaderStoreImpl(
             .set(qComment.status, command.status)
             .where(
                 qComment.uuid.eq(command.commentUuid),
-                qComment.user.id.eq(command.internalUserInfo.id),
-                qComment.user.uuid.eq(command.internalUserInfo.uuid),
+                qComment.user.id.eq(command.internalUserCommand.id),
+                qComment.user.uuid.eq(command.internalUserCommand.uuid),
                 qComment.video.videoId.eq(command.videoId),
                 qComment.video.videoType.eq(command.videoType)
             )
@@ -134,16 +125,16 @@ class CustomCommentReaderStoreImpl(
         em.flush()
     }
 
-    override fun findCommentRequest(command: SingleCommandSearchCommand): Tuple? {
-        return queryConstructor.constructAuthCommentSelectQuery(command.internalUserInfo)
+    override fun findCommentRequest(command: SingleCommentSearchCommand): Tuple? {
+        return queryConstructor.constructAuthCommentSelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qComment)
             .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
             .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply).on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
             .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
             .join(qEntityAlias.qVideo).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
             .where(
-                qEntityAlias.qUser.uuid.eq(command.internalUserInfo.uuid),
-                Expressions.stringPath(qEntityAlias.qUser, "user_id").eq(command.internalUserInfo.userId),
+                qEntityAlias.qUser.uuid.eq(command.internalUserCommand.uuid),
+                Expressions.stringPath(qEntityAlias.qUser, "user_id").eq(command.internalUserCommand.userId),
                 Expressions.stringPath(qEntityAlias.qVideo, "video_id").eq(command.videoId),
                 Expressions.stringPath(qEntityAlias.qVideo, "video_type").eq(command.videoType.name),
                 qEntityAlias.qComment.uuid.eq(command.commentUuid)

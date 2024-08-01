@@ -38,10 +38,6 @@ class CommentLike(
     var status: LikeStatus = LikeStatus.LIKED
         protected set
 
-    override fun toString(): String {
-        return "CommentLike(id=$id, comment=$comment, user=$user, status=$status)"
-    }
-
     fun unlike() {
         if(this.status == LikeStatus.UNLIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Cannot unlike this comment")
         this.status = LikeStatus.UNLIKED
@@ -50,6 +46,10 @@ class CommentLike(
     fun like() {
         if(this.status == LikeStatus.LIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Already liked")
         this.status = LikeStatus.LIKED
+    }
+
+    override fun toString(): String {
+        return "CommentLike(id=$id, status=$status)"
     }
 
 }

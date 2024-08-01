@@ -8,8 +8,6 @@ import com.example.myvopiserver.domain.command.CommentLikePostCommand
 import com.example.myvopiserver.domain.role.QUser
 import com.example.myvopiserver.infrastructure.custom.repository.CustomCommentLikeReaderStore
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.querydsl.jpa.sql.JPASQLQuery
-import com.querydsl.sql.SQLTemplates
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 
@@ -17,12 +15,7 @@ import org.springframework.stereotype.Repository
 class CustomCommentLikeReaderStoreImpl(
     private val jpaQueryFactory: JPAQueryFactory,
     private val em: EntityManager,
-    private val mysqlTemplates: SQLTemplates,
 ): CustomCommentLikeReaderStore {
-
-    private fun constructJpaSqlQuery(): JPASQLQuery<*> {
-        return JPASQLQuery<Any>(em, mysqlTemplates)
-    }
 
     /**
      * select cl.*
@@ -37,7 +30,6 @@ class CustomCommentLikeReaderStoreImpl(
         val qCommentLike = QCommentLike.commentLike
         val qComment = QComment.comment
         val qUser = QUser.user
-
         return jpaQueryFactory
             .select(qCommentLike)
             .from(qCommentLike)

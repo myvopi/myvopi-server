@@ -13,5 +13,5 @@ interface CustomCommentReaderStore {
 
     fun updateCommentStatusRequest(command: CommentUpdateRequestCommand)
 
-    fun findCommentRequest(command: SingleCommandSearchCommand): Tuple?
+    fun findCommentRequest(command: SingleCommentSearchCommand): Tuple?
 }

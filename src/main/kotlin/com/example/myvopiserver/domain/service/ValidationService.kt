@@ -2,8 +2,11 @@ package com.example.myvopiserver.domain.service
 
 import com.example.myvopiserver.common.config.exception.BadRequestException
 import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.config.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.CountryCode
+import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
+import com.example.myvopiserver.domain.role.User
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,17 +15,13 @@ class ValidationService(
 ) {
 
     fun validateUserIdExists(userId: String) {
-        val user = userReaderStore.findUserByUserId(userId)
-        if(user != null) {
-            throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username")
-        }
+        val verification = userReaderStore.userExistsByUserId(userId)
+        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username")
     }
 
     fun validateEmailExists(email: String) {
-        val user = userReaderStore.findUserByEmail(email)
-        if(user != null) {
-            throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email")
-        }
+        val verification = userReaderStore.userExistsByEmail(email)
+        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email")
     }
 
     fun validatePasswordFormat(password: String) {
@@ -38,5 +37,23 @@ class ValidationService(
     fun validateValidCountryCode(countryCode: CountryCode) {
         CountryCode.entries.find { it == countryCode }
             ?: throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad country code request")
+    }
+
+    fun validateOwnerAndRequester(requesterCommand: InternalUserCommand, entityOwner: User) {
+        if(requesterCommand.uuid != entityOwner.uuid || requesterCommand.userId != entityOwner.userId) {
+            throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
+        }
+    }
+
+    // TODO encryption
+    fun validatePassword(requestPassword: String, password: String) {
+        if(requestPassword != password) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
+    }
+
+    // NOT USING
+    fun validateOwnerAndRequester(requester: User, entityOwner: User) {
+        if(requester.uuid != entityOwner.uuid || requester.userId != entityOwner.userId) {
+            throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
+        }
     }
 }

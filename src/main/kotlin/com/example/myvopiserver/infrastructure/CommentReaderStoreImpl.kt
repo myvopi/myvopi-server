@@ -26,8 +26,13 @@ class CommentReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findCommentByUuid(uuid: String): Comment? {
-        return commentRepository.findByUuid(uuid)
+    override fun findCommentWithUserAndVideoByUuid(uuid: String): Comment? {
+        return commentRepository.findWithUserAndVideoByUuid(uuid)
+    }
+
+    @Transactional(readOnly = true)
+    override fun findCommentWithUserByUuid(uuid: String): Comment? {
+        return commentRepository.findWithUserByUuid(uuid)
     }
 
     @Transactional
@@ -35,13 +40,13 @@ class CommentReaderStoreImpl(
         return commentRepository.save(comment)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun updateCommentStatusRequest(command: CommentUpdateRequestCommand) {
         return customCommentReaderStore.updateCommentStatusRequest(command)
     }
 
     @Transactional(readOnly = true)
-    override fun findCommentRequest(command: SingleCommandSearchCommand): Tuple? {
+    override fun findCommentRequest(command: SingleCommentSearchCommand): Tuple? {
         return customCommentReaderStore.findCommentRequest(command)
     }
 }

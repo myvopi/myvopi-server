@@ -1,6 +1,7 @@
 package com.example.myvopiserver.domain
 
 import com.example.myvopiserver.common.enums.VideoType
+import com.example.myvopiserver.domain.command.InternalVideoCommand
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 import java.util.*
@@ -12,6 +13,19 @@ class Video(
     user: User,          // 생성한 유저 아이디
     videoType: VideoType // 영상 타입
 ): BaseTime() {
+
+    constructor(
+        command: InternalVideoCommand,
+        user: User
+    ) : this(
+        command.videoId,
+        user,
+        command.videoType,
+    )
+    {
+        this.id = command.id
+        this.uuid = command.uuid
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
