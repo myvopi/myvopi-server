@@ -10,9 +10,11 @@ interface CommentReaderStore {
 
     fun findCommentsFromCommentRequest(command: CommentSearchFromCommentCommand): List<Tuple>
 
-    fun findCommentWithUserAndVideoByUuid(uuid: String): Comment?
+    fun findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid: String): Comment?
 
     fun findCommentWithUserByUuid(uuid: String): Comment?
+
+    fun findCommentByUuid(uuid: String): Comment?
 
     fun saveComment(comment: Comment): Comment
 

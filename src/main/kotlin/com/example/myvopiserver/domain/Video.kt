@@ -62,6 +62,6 @@ class Video(
         protected set
 
     override fun toString(): String {
-        return "Video(id=$id, uuid='$uuid', videoId='$videoId', user=$user, videoType=$videoType, comments=$comments)"
+        return "Video(id=$id, uuid='$uuid', videoId='$videoId', videoType=$videoType)"
     }
 }

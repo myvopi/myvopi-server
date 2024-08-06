@@ -36,10 +36,6 @@ class ReplyLike(
     var status: LikeStatus = LikeStatus.LIKED
         protected set
 
-    override fun toString(): String {
-        return "ReplyLike(id=$id, reply=$reply, user=$user, status=$status)"
-    }
-
     fun unlike() {
         this.status = LikeStatus.UNLIKED
     }
@@ -48,4 +44,7 @@ class ReplyLike(
         this.status = LikeStatus.LIKED
     }
 
+    override fun toString(): String {
+        return "ReplyLike(id=$id, status=$status)"
+    }
 }

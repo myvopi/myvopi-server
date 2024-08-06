@@ -1,6 +1,7 @@
 package com.example.myvopiserver.infrastructure.custom.repository
 
 import com.example.myvopiserver.domain.command.ReplySearchCommand
+import com.example.myvopiserver.domain.command.SingleReplySearchCommand
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Repository
 
@@ -8,4 +9,6 @@ import org.springframework.stereotype.Repository
 interface CustomReplyReaderStore {
 
     fun findRepliesRequest(command: ReplySearchCommand): List<Tuple>
+
+    fun findReplyRequest(command: SingleReplySearchCommand): Tuple?
 }

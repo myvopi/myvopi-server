@@ -20,7 +20,7 @@ class CommentFacade(
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
         commentService.validateAndUpdateContent(command)
         val searchCommand = commentService.constructSingleCommentSearchCommand(command)
-        val result = commentService.findComment(searchCommand)!!
+        val result = commentService.findComment(searchCommand)
         return commentService.constructCommentBaseInfo(result)
     }
 
@@ -35,12 +35,12 @@ class CommentFacade(
     }
 
     fun requestCommentLike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findCommentOwnerWithUserAndVideo(command.commentUuid)
+        val internalCommentCommand = commentService.findCommentWithUserAndVideo(command.commentUuid)
         commentService.searchAndUpdateLikeOrCreateNew(command.internalUserCommand, internalCommentCommand)
     }
 
     fun requestCommentUnlike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findCommentOwnerWithUserAndVideo(command.commentUuid)
+        val internalCommentCommand = commentService.findCommentWithUserAndVideo(command.commentUuid)
         commentService.searchAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
     }
 }

@@ -17,6 +17,11 @@ class VideoReaderStoreImpl(
       return videoRepository.findByVideoTypeAndVideoId(videoType, videoId)
    }
 
+   @Transactional(readOnly = true)
+   override fun findVideoWithUserByTypeAndId(videoType: VideoType, videoId: String): Video? {
+      return videoRepository.findWithUserByVideoTypeAndVideoId(videoType, videoId)
+   }
+
    @Transactional
    override fun saveVideo(video: Video): Video {
       return videoRepository.save(video)

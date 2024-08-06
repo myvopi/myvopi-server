@@ -2,6 +2,7 @@ package com.example.myvopiserver.infrastructure.custom
 
 import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.domain.command.ReplySearchCommand
+import com.example.myvopiserver.domain.command.SingleReplySearchCommand
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
 import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
 import com.example.myvopiserver.infrastructure.custom.queryDsl.CommentQueryConstructor
@@ -64,5 +65,21 @@ class CustomReplyReaderStoreImpl(
             .limit(maxFetchCnt)
             .offset(command.reqPage.toLong() * maxFetchCnt)
             .fetch()
+    }
+
+    override fun findReplyRequest(command: SingleReplySearchCommand): Tuple? {
+        return queryConstructor.constructAuthCommentSelectQuery(command.internalUserCommand)
+            .from(qEntityAlias.qReply)
+            .leftJoin(qEntityAlias.qComment).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id").eq(qEntityAlias.qComment.id))
+            .leftJoin(queryConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)
+                .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReplyLike, "reply_id").eq(qEntityAlias.qReply.id))
+            .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
+            .where(
+                Expressions.stringPath(qEntityAlias.qReply, "uuid").eq(command.replyUuid),
+                Expressions.stringPath(qEntityAlias.qComment, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
+                Expressions.stringPath(qEntityAlias.qReply, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
+            )
+            .groupBy(qEntityAlias.qReply.id)
+            .fetchOne()
     }
 }
