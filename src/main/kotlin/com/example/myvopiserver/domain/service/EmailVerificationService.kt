@@ -35,6 +35,7 @@ class EmailVerificationService(
 
     // Validation
     fun verifyCode(command: EmailVerifyReqCommand) {
+        // TODO verify attempt count
         val user = User(command = command.internalUserCommand)
         val emailVerification = emailVerificationReaderStore.findByUser(user)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)

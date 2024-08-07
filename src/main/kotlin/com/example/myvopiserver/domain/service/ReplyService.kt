@@ -90,6 +90,7 @@ class ReplyService(
             )
             likeReaderStore.initialSaveReplyLikeRequest(command)
         } else {
+            validationService.validateIsLiked(replyLike.status)
             replyLike.like()
             likeReaderStore.saveReplyLike(replyLike)
         }
@@ -103,6 +104,7 @@ class ReplyService(
         if(replyLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this reply")
         } else {
+            validationService.validateIsUnliked(replyLike.status)
             replyLike.unlike()
             likeReaderStore.saveReplyLike(replyLike)
         }
@@ -114,7 +116,10 @@ class ReplyService(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = reply.user
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
-        reply.updateContent(command.content)
+        validationService.validateIsDeleted(reply.status)
+        if(!validationService.validateIfRequestContentMatchesOriginalContent(command.content, reply.content)) {
+            reply.updateContent(command.content)
+        }
         replyReaderStore.saveReply(reply)
     }
 
@@ -123,6 +128,7 @@ class ReplyService(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val replyOwner = reply.user
         validationService.validateOwnerAndRequester(command.internalUserCommand, replyOwner)
+        validationService.validateIsDeleted(reply.status)
         reply.deleteComment()
         replyReaderStore.saveReply(reply)
     }

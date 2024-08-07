@@ -31,4 +31,8 @@ class EmailVerification(
     fun setNewCode(code: String) {
         this.code = code
     }
+
+    override fun toString(): String {
+        return "EmailVerification(id=$id, code='$code')"
+    }
 }

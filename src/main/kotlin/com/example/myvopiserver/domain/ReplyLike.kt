@@ -39,12 +39,10 @@ class ReplyLike(
         protected set
 
     fun unlike() {
-        if(this.status == LikeStatus.UNLIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Cannot unlike this reply")
         this.status = LikeStatus.UNLIKED
     }
 
     fun like() {
-        if(this.status == LikeStatus.LIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Already liked")
         this.status = LikeStatus.LIKED
     }
 
