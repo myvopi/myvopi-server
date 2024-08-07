@@ -56,8 +56,9 @@ data class InternalCommentCommand(
 
 data class InternalCommentWithUserAndVideoCommand(
     val internalCommentCommand: InternalCommentCommand,
-    val internalUserCommand: InternalUserCommand,
+    val internalCommentOwnerCommand: InternalUserCommand,
     val internalVideoCommand: InternalVideoCommand,
+    val internalVideoOwnerCommand: InternalUserCommand,
 )
 
 data class CommentPostCommand(

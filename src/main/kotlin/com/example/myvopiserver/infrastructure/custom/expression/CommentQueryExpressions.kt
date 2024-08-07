@@ -26,4 +26,17 @@ class CommentQueryExpressions(
             )
             .exists()
     }
+
+    fun replyLikeSubQuery(userId: Long): BooleanExpression {
+        return JPAExpressions
+            .select(Expressions.TRUE)
+            .from(qEntityAlias.qReplyLike2)
+            .join(qEntityAlias.qReply2).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReplyLike2, "reply_id").eq(qEntityAlias.qReply2.id))
+            .where(
+                qEntityAlias.qReply2.id.eq(qEntityAlias.qReply.id),
+                Expressions.numberPath(Long::class.java, qEntityAlias.qReplyLike2, "user_id").eq(userId),
+                Expressions.stringPath(qEntityAlias.qReplyLike2, "like_status").eq(LikeStatus.LIKED.name),
+            )
+            .exists()
+    }
 }

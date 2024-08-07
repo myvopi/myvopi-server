@@ -26,13 +26,18 @@ class CommentReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findCommentWithUserAndVideoByUuid(uuid: String): Comment? {
-        return commentRepository.findWithUserAndVideoByUuid(uuid)
+    override fun findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid: String): Comment? {
+        return commentRepository.findWithUserAndVideoAndVideoOwnerByUuid(uuid)
     }
 
     @Transactional(readOnly = true)
     override fun findCommentWithUserByUuid(uuid: String): Comment? {
         return commentRepository.findWithUserByUuid(uuid)
+    }
+
+    @Transactional(readOnly = true)
+    override fun findCommentByUuid(uuid: String): Comment? {
+        return commentRepository.findByUuid(uuid)
     }
 
     @Transactional

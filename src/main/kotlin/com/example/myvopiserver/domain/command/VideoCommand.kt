@@ -18,3 +18,8 @@ data class InternalVideoCommand(
     val userId: Long,
     val videoType: VideoType,
 )
+
+data class InternalVideoAndOwnerCommand(
+    val internalVideoCommand: InternalVideoCommand,
+    val internalUserCommand: InternalUserCommand,
+)

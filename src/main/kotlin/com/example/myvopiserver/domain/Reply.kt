@@ -1,6 +1,9 @@
 package com.example.myvopiserver.domain
 
+import com.example.myvopiserver.common.config.exception.BadRequestException
+import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.enums.CommentStatus
+import com.example.myvopiserver.domain.command.InternalReplyCommand
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
 import java.util.*
@@ -9,11 +12,25 @@ import java.util.*
 @Table(name ="reply")
 class Reply(
     content: String,            // 내용
-    modifiedCnt: Int,           // 수정 여부
     comment: Comment,           // 상위 댓글
-    status: CommentStatus,      // 표시 상태
     user: User,                 // 생성자
 ): BaseTime() {
+
+    constructor(
+        command: InternalReplyCommand,
+        comment: Comment,
+        user: User,
+    ) : this(
+        command.content,
+        comment,
+        user,
+    )
+    {
+        this.id = command.id
+        this.uuid = command.uuid
+        this.modifiedCnt = command.modifiedCnt
+        this.status = command.status
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +45,12 @@ class Reply(
         protected set
 
     @Column(name = "modified_cnt", nullable = false, updatable = true)
-    var modifiedCnt: Int = modifiedCnt
+    var modifiedCnt: Int = 0
         protected set
 
     @Enumerated(EnumType.STRING)
     @Column(name = "comment_status", nullable = false, updatable = true)
-    var status: CommentStatus = status
+    var status: CommentStatus = CommentStatus.SHOW
         protected set
 
     @ManyToOne(
@@ -60,6 +77,21 @@ class Reply(
     @JoinColumn(name = "user_id", nullable = false)
     var user: User = user
         protected set
+
+    fun updateContent(
+        content: String,
+    ) {
+        if(this.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This reply has already been deleted")
+        if(this.content == content) return
+        // TODO verify request to admin
+        this.modifiedCnt++
+        this.content = content
+    }
+
+    fun deleteComment() {
+        if(this.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This comment has already been deleted")
+        this.status = CommentStatus.DELETED
+    }
 
     override fun toString(): String {
         return "Reply(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status)"

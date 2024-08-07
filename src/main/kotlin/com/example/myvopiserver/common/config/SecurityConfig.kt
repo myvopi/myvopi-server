@@ -67,6 +67,13 @@ class SecurityConfig(
             authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/comment/**").authenticated()
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/like").authenticated()
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/unlike").authenticated()
+
+            authorize.requestMatchers(HttpMethod.GET, "/api/v1/reply/**").permitAll()
+            authorize.requestMatchers(HttpMethod.PUT, "/api/v1/reply/**").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/**").authenticated()
+            authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/reply/**").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/like").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/unlike").authenticated()
         }
         return http.build()
     }

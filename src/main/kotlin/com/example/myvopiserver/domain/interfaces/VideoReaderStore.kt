@@ -7,5 +7,7 @@ interface VideoReaderStore {
 
     fun findVideoByTypeAndId(videoType: VideoType, videoId: String): Video?
 
+    fun findVideoWithUserByTypeAndId(videoType: VideoType, videoId: String): Video?
+
     fun saveVideo(video: Video): Video
 }

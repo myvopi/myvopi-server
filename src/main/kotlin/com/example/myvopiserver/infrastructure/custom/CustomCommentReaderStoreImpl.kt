@@ -6,7 +6,7 @@ import com.example.myvopiserver.domain.*
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
 import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
-import com.example.myvopiserver.infrastructure.custom.queryDsl.CommentQueryConstructor
+import com.example.myvopiserver.infrastructure.custom.queryDsl.QueryConstructor
 import com.example.myvopiserver.infrastructure.custom.repository.CustomCommentReaderStore
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
@@ -21,7 +21,7 @@ class CustomCommentReaderStoreImpl(
     private val jpaQueryFactory: JPAQueryFactory,
     private val alias: BasicAlias,
     private val qEntityAlias: QEntityAlias,
-    private val queryConstructor: CommentQueryConstructor,
+    private val queryConstructor: QueryConstructor,
 ): CustomCommentReaderStore {
 
     private final val maxFetchCnt = 10L

@@ -4,11 +4,14 @@ import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.config.exception.NotFoundException
 import com.example.myvopiserver.common.enums.VideoType
 import com.example.myvopiserver.domain.Video
+import com.example.myvopiserver.domain.command.InternalVideoAndOwnerCommand
 import com.example.myvopiserver.domain.command.InternalVideoCommand
 import com.example.myvopiserver.domain.command.VideoSearchCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.interfaces.VideoReaderStore
+import com.example.myvopiserver.domain.mapper.UserMapper
 import com.example.myvopiserver.domain.mapper.VideoMapper
+import com.example.myvopiserver.domain.role.User
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,44 +19,35 @@ class VideoService(
     private val videoReaderStore: VideoReaderStore,
     private val videoMapper: VideoMapper,
     private val userReaderStore: UserReaderStore,
+    private val userMapper: UserMapper,
 ) {
 
 
     // Db-transactions (readOnly)
-    fun findByTypeAndId(videoType: VideoType, videoId: String): InternalVideoCommand {
-        val video = videoReaderStore.findVideoByTypeAndId(videoType, videoId)
+    fun findByTypeAndId(videoType: VideoType, videoId: String): InternalVideoAndOwnerCommand {
+        val video = videoReaderStore.findVideoWithUserByTypeAndId(videoType, videoId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        return videoMapper.to(video = video)
+        val owner = video.user
+        return InternalVideoAndOwnerCommand(
+            internalVideoCommand = videoMapper.to(video = video),
+            internalUserCommand = userMapper.to(user = owner)!!,
+        )
     }
 
     // Db-transactions
-    fun createNewVideo(
-        videoId: String,
-        userId: String,
-        videoType: VideoType,
-    ): InternalVideoCommand
-    {
-        val user = userReaderStore.findUserByUserId(userId)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        val videoCommand = Video(
-            videoId = videoId,
-            user = user,
-            videoType = videoType,
-        )
-        val video = videoReaderStore.saveVideo(videoCommand)
-        return videoMapper.to(video = video)
-    }
-
     fun searchVideoOrCreateNew(command: VideoSearchCommand): InternalVideoCommand {
         return videoReaderStore.findVideoByTypeAndId(command.videoType, command.videoId)
             ?.let { videoMapper.to(video = it) }
             ?: run {
                 command.internalUserCommand?.let { internalUserCommand ->
-                    createNewVideo(
+                    val requester = User(command = internalUserCommand)
+                    val videoCommand = Video(
                         videoId = command.videoId,
-                        userId = internalUserCommand.userId,
+                        user = requester,
                         videoType = command.videoType,
                     )
+                    val video = videoReaderStore.saveVideo(videoCommand)
+                    videoMapper.to(video = video)
                 } ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video not found, you will need an account to start a topic")
             }
     }
