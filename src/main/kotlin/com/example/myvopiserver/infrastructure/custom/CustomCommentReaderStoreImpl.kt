@@ -2,7 +2,6 @@ package com.example.myvopiserver.infrastructure.custom
 
 import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.common.enums.SearchFilter
-import com.example.myvopiserver.domain.*
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
 import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
@@ -10,15 +9,11 @@ import com.example.myvopiserver.infrastructure.custom.queryDsl.QueryConstructor
 import com.example.myvopiserver.infrastructure.custom.repository.CustomCommentReaderStore
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
-import com.querydsl.jpa.impl.JPAQueryFactory
-import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 
 
 @Repository
 class CustomCommentReaderStoreImpl(
-    private val em: EntityManager,
-    private val jpaQueryFactory: JPAQueryFactory,
     private val alias: BasicAlias,
     private val qEntityAlias: QEntityAlias,
     private val queryConstructor: QueryConstructor,
@@ -105,24 +100,6 @@ class CustomCommentReaderStoreImpl(
             .limit(maxFetchCnt)
             .offset(command.reqPage.toLong() * maxFetchCnt)
             .fetch()
-    }
-
-    override fun updateCommentStatusRequest(command: CommentUpdateRequestCommand) {
-        val qComment = QComment.comment
-        jpaQueryFactory
-            .update(qComment)
-            .set(qComment.status, command.status)
-            .where(
-                qComment.uuid.eq(command.commentUuid),
-                qComment.user.id.eq(command.internalUserCommand.id),
-                qComment.user.uuid.eq(command.internalUserCommand.uuid),
-                qComment.video.videoId.eq(command.videoId),
-                qComment.video.videoType.eq(command.videoType)
-            )
-            .execute()
-
-        em.clear()
-        em.flush()
     }
 
     override fun findCommentRequest(command: SingleCommentSearchCommand): Tuple? {

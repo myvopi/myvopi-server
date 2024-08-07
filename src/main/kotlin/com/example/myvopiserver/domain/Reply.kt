@@ -81,15 +81,12 @@ class Reply(
     fun updateContent(
         content: String,
     ) {
-        if(this.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This reply has already been deleted")
-        if(this.content == content) return
         // TODO verify request to admin
         this.modifiedCnt++
         this.content = content
     }
 
     fun deleteComment() {
-        if(this.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This comment has already been deleted")
         this.status = CommentStatus.DELETED
     }
 

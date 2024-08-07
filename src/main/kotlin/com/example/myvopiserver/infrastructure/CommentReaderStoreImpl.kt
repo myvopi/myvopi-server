@@ -46,11 +46,6 @@ class CommentReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun updateCommentStatusRequest(command: CommentUpdateRequestCommand) {
-        return customCommentReaderStore.updateCommentStatusRequest(command)
-    }
-
-    @Transactional(readOnly = true)
     override fun findCommentRequest(command: SingleCommentSearchCommand): Tuple? {
         return customCommentReaderStore.findCommentRequest(command)
     }

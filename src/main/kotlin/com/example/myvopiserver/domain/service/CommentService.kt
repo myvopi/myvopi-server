@@ -1,8 +1,10 @@
 package com.example.myvopiserver.domain.service
 
+import com.example.myvopiserver.common.config.exception.BadRequestException
 import com.example.myvopiserver.common.config.exception.BaseException
 import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.common.util.extension.toStrings
 import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.Video
@@ -49,8 +51,8 @@ class CommentService(
         return commentMapper.to(comment = comment)
     }
 
-    fun findCommentWithUserAndVideoRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
-        val comment = commentReaderStore.findCommentByUuid(uuid)
+    fun findCommentRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
+        val comment = commentReaderStore.findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         return extractEntityToCommand(comment)
     }
@@ -82,6 +84,7 @@ class CommentService(
         requesterUserCommand: InternalUserCommand,
         internalCommentCommand: InternalCommentCommand,
     ) {
+        validateStatus(internalCommentCommand)
         val commentLike = likeReaderStore.findCommentLikeRequest(internalCommentCommand.id, requesterUserCommand.id)
         if(commentLike == null) {
             val command = CommentLikePostCommand(
@@ -90,6 +93,7 @@ class CommentService(
             )
             likeReaderStore.initialSaveCommentLikeRequest(command)
         } else {
+            validationService.validateIsLiked(commentLike.status)
             commentLike.like()
             likeReaderStore.saveCommentLike(commentLike)
         }
@@ -99,10 +103,12 @@ class CommentService(
         requesterUserCommand: InternalUserCommand,
         internalCommentCommand: InternalCommentCommand,
     ) {
+        validateStatus(internalCommentCommand)
         val commentLike = likeReaderStore.findCommentLikeRequest(internalCommentCommand.id, requesterUserCommand.id)
         if(commentLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this comment")
         } else {
+            validationService.validateIsUnliked(commentLike.status)
             commentLike.unlike()
             likeReaderStore.saveCommentLike(commentLike)
         }
@@ -114,7 +120,10 @@ class CommentService(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
-        comment.updateContent(command.content)
+        validationService.validateIsDeleted(comment.status)
+        if(!validationService.validateIfRequestContentMatchesOriginalContent(command.content, comment.content)) {
+            comment.updateContent(command.content)
+        }
         commentReaderStore.saveComment(comment)
     }
 
@@ -123,8 +132,13 @@ class CommentService(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
+        validationService.validateIsDeleted(comment.status)
         comment.deleteComment()
         commentReaderStore.saveComment(comment)
+    }
+
+    fun validateStatus(command: InternalCommentCommand) {
+        if(command.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This comment has already been deleted")
     }
 
     // Private & constructors

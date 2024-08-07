@@ -1,9 +1,12 @@
 package com.example.myvopiserver.domain.service
 
 import com.example.myvopiserver.common.config.exception.BadRequestException
+import com.example.myvopiserver.common.config.exception.BaseException
 import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.common.enums.CountryCode
+import com.example.myvopiserver.common.enums.LikeStatus
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.role.User
@@ -50,10 +53,19 @@ class ValidationService(
         if(requestPassword != password) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
     }
 
-    // NOT USING
-    fun validateOwnerAndRequester(requester: User, entityOwner: User) {
-        if(requester.uuid != entityOwner.uuid || requester.userId != entityOwner.userId) {
-            throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
-        }
+    fun validateIfRequestContentMatchesOriginalContent(requestContent: String, commentContent: String): Boolean {
+        return requestContent == commentContent
+    }
+
+    fun validateIsDeleted(status: CommentStatus) {
+        if(status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This has already been deleted")
+    }
+
+    fun validateIsLiked(status: LikeStatus) {
+        if(status == LikeStatus.LIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Already liked")
+    }
+
+    fun validateIsUnliked(status: LikeStatus) {
+        if(status == LikeStatus.UNLIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Cannot unlike this")
     }
 }

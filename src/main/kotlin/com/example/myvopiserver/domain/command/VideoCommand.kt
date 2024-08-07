@@ -19,6 +19,11 @@ data class InternalVideoCommand(
     val videoType: VideoType,
 )
 
+data class InternalVideoCommandWithMessage(
+    val internalVideoCommand: InternalVideoCommand,
+    val message: String,
+)
+
 data class InternalVideoAndOwnerCommand(
     val internalVideoCommand: InternalVideoCommand,
     val internalUserCommand: InternalUserCommand,

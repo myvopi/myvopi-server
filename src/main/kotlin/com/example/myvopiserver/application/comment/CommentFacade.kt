@@ -25,7 +25,7 @@ class CommentFacade(
     }
 
     fun requestCommentPost(command: CommentPostCommand): CommentBaseInfo {
-        val internalVideoCommand = videoService.findByTypeAndId(command.videoType, command.videoId)
+        val internalVideoCommand = videoService.findVideoWithOwner(command.videoType, command.videoId)
         val internalCommentCommand = commentService.createNewComment(command, internalVideoCommand)
         return commentService.constructInitialCommentBaseInfo(internalCommentCommand)
     }

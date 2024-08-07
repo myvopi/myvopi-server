@@ -11,7 +11,5 @@ interface CustomCommentReaderStore {
 
     fun pageableCommentAndReplyFromCommentRequest(command: CommentSearchFromCommentCommand): List<Tuple>
 
-    fun updateCommentStatusRequest(command: CommentUpdateRequestCommand)
-
     fun findCommentRequest(command: SingleCommentSearchCommand): Tuple?
 }

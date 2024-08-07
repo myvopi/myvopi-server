@@ -2,7 +2,7 @@ package com.example.myvopiserver.application.video
 
 import com.example.myvopiserver.domain.command.CommentSearchFromVideoCommand
 import com.example.myvopiserver.domain.command.VideoSearchCommand
-import com.example.myvopiserver.domain.info.CommentBaseInfo
+import com.example.myvopiserver.domain.info.VideoBaseInfo
 import com.example.myvopiserver.domain.service.CommentService
 import com.example.myvopiserver.domain.service.VideoService
 import org.springframework.stereotype.Service
@@ -15,17 +15,21 @@ class VideoFacade(
 
     fun requestVideoAndComments(
         command: VideoSearchCommand,
-    ): List<CommentBaseInfo>
+    ): VideoBaseInfo
     {
-        val internalVideoCommand = videoService.searchVideoOrCreateNew(command)
+        val returnCommand = videoService.searchVideoOrCreateNewWithReturnMessage(command)
         val searchCommand = CommentSearchFromVideoCommand(
             filter = command.filter,
             reqPage = command.reqPage,
-            videoId = internalVideoCommand.id,
+            videoId = returnCommand.internalVideoCommand.id,
             videoType = command.videoType,
             internalUserCommand = command.internalUserCommand,
         )
         val result = commentService.findCommentsFromVideo(searchCommand)
-        return commentService.constructCommentBaseInfo(result)
+        val commentBaseInfoList = commentService.constructCommentBaseInfo(result)
+        return VideoBaseInfo(
+            comments = commentBaseInfoList,
+            message = returnCommand.message,
+        )
     }
 }

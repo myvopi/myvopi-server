@@ -29,14 +29,6 @@ data class CommentUpdateCommand(
     val videoId: String,
 )
 
-data class CommentUpdateRequestCommand(
-    val internalUserCommand: InternalUserCommand,
-    val videoId: String,
-    val videoType: VideoType,
-    val commentUuid: String,
-    val status: CommentStatus,
-)
-
 data class SingleCommentSearchCommand(
     val internalUserCommand: InternalUserCommand,
     val videoId: String,

@@ -41,6 +41,6 @@ class VideoApiController(
             reqPage = body.reqPage,
         )
         val info = videoFacade.requestVideoAndComments(command)
-        return CommonResponse.success(info, "Topic created")
+        return CommonResponse.success(info.comments, info.message)
     }
 }
