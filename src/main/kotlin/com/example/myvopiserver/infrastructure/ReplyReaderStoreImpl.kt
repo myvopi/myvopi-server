@@ -37,12 +37,8 @@ class ReplyReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findReplyWithUserAndCommentAndCommentOwnerAndVideoAndVideoOwnerByUuid(
-        uuid: String
-    ): Reply?
-    {
-        return replyRepository
-            .findWithUserAndCommentAndCommentOwnerAndVideoAndVideoOwnerByUuid(uuid)
+    override fun findWithNestedRelationsByUuidRequest(uuid: String): Tuple? {
+        return customReplyReaderStore.findWithNestedRelationsByUuidRequest(uuid)
     }
 
     @Transactional(readOnly = true)

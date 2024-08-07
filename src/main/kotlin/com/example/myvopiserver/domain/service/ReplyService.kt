@@ -15,6 +15,7 @@ import com.example.myvopiserver.domain.mapper.UserMapper
 import com.example.myvopiserver.domain.mapper.VideoMapper
 import com.example.myvopiserver.domain.role.User
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
+import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Service
 
@@ -28,6 +29,7 @@ class ReplyService(
     private val videoMapper: VideoMapper,
     private val commentMapper: CommentMapper,
     private val likeReaderStore: LikeReaderStore,
+    private val entityAlias: QEntityAlias,
 ) {
 
     // Db-transactions (readOnly)
@@ -35,12 +37,10 @@ class ReplyService(
         return replyReaderStore.findRepliesRequest(command)
     }
 
-    fun findReplyWithUserAndCommentAndVideo(uuid: String): InternalReplyWithUserCommentAndVideoCommand {
-        val reply = replyReaderStore
-            // TODO change this query to QueryDSl, due to entity graph not allowing 3 layer nests
-            .findReplyWithUserAndCommentAndCommentOwnerAndVideoAndVideoOwnerByUuid(uuid)
+    fun findReplyNestedRelations(uuid: String): InternalReplyWithUserCommentAndVideoCommand {
+        val result = replyReaderStore.findWithNestedRelationsByUuidRequest(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        return extractEntityToCommand(reply)
+        return extractResultToCommand(result)
     }
 
     fun findReply(command: SingleReplySearchCommand): Tuple {
@@ -198,21 +198,20 @@ class ReplyService(
         )
     }
 
-    private fun extractEntityToCommand(reply: Reply): InternalReplyWithUserCommentAndVideoCommand {
-        val replyOwner = reply.user
-        val comment = reply.comment
-        val commentOwner = comment.user
-        val video = comment.video
-        // TODO change this query to QueryDSl, due to entity graph not allowing 3 layer nests
-//        val videoOwner = video.user
+    private fun extractResultToCommand(tuple: Tuple): InternalReplyWithUserCommentAndVideoCommand {
+        val reply = tuple.get(entityAlias.qReply) as Reply
+        val comment = tuple.get(entityAlias.qComment) as Comment
+        val video = tuple.get(entityAlias.qVideo) as Video
+        val replyOwner = tuple.get(entityAlias.qReplyUser) as User
+        val commentOwner = tuple.get(entityAlias.qCommentUser) as User
+        val videoOwner = tuple.get(entityAlias.qVideoUser) as User
         return InternalReplyWithUserCommentAndVideoCommand(
             internalReplyCommand = replyMapper.to(reply),
             internalReplyOwnerCommand = userMapper.to(replyOwner)!!,
             internalCommentCommand = commentMapper.to(comment),
             internalCommentOwnerCommand = userMapper.to(commentOwner)!!,
             internalVideoCommand = videoMapper.to(video),
-//            internalVideoOwnerCommand = userMapper.to(videoOwner)!!,
-            internalVideoOwnerCommand = userMapper.to(commentOwner)!!,
+            internalVideoOwnerCommand = userMapper.to(videoOwner)!!,
         )
     }
 

@@ -35,12 +35,12 @@ class ReplyFacade(
     }
 
     fun requestReplyLike(command: ReplyLikeCommand) {
-        val internalReplyCommand = replyService.findReplyWithUserAndCommentAndVideo(command.replyUuid)
+        val internalReplyCommand = replyService.findReplyNestedRelations(command.replyUuid)
         replyService.searchAndUpdateLikeOrCreateNew(command.internalUserCommand, internalReplyCommand)
     }
 
     fun requestReplyUnlike(command: ReplyLikeCommand) {
-        val internalReplyCommand = replyService.findReplyWithUserAndCommentAndVideo(command.replyUuid)
+        val internalReplyCommand = replyService.findReplyNestedRelations(command.replyUuid)
         replyService.searchAndUpdateUnlike(command.internalUserCommand, internalReplyCommand)
     }
 }

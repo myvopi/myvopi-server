@@ -11,4 +11,6 @@ interface CustomReplyReaderStore {
     fun findRepliesRequest(command: ReplySearchCommand): List<Tuple>
 
     fun findReplyRequest(command: SingleReplySearchCommand): Tuple?
+
+    fun findWithNestedRelationsByUuidRequest(uuid: String): Tuple?
 }

@@ -20,4 +20,8 @@ class QEntityAlias {
     final val qReply = QReply("r")
     final val qReplyLike = QReplyLike("rl")
     final val qReplyLike2 = QReplyLike("rl2")
+
+    final val qReplyUser = QUser("ru")
+    final val qCommentUser = QUser("cu")
+    final val qVideoUser = QUser("vu")
 }

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
-class CommentQueryConstructor(
+class QueryConstructor(
     private val alias: BasicAlias,
     private val qEntityAlias: QEntityAlias,
     private val em: EntityManager,
@@ -121,5 +121,17 @@ class CommentQueryConstructor(
             .where(
                 Expressions.stringPath(qEntityAlias.qReplyLike2, "like_status").eq(LikeStatus.LIKED.name)
             )
+    }
+
+    fun constructReplyRelatedEntitySelectQuery(): JPASQLQuery<Tuple> {
+        val query = JPASQLQuery<Any>(em, mysqlTemplates)
+        return query.select(
+            qEntityAlias.qReply,
+            qEntityAlias.qReplyUser,
+            qEntityAlias.qComment,
+            qEntityAlias.qCommentUser,
+            qEntityAlias.qVideo,
+            qEntityAlias.qVideoUser,
+        )
     }
 }

@@ -15,7 +15,7 @@ interface ReplyReaderStore {
 
     fun findReplyByUuid(uuid: String): Reply?
 
-    fun findReplyWithUserAndCommentAndCommentOwnerAndVideoAndVideoOwnerByUuid(uuid: String): Reply?
+    fun findWithNestedRelationsByUuidRequest(uuid: String): Tuple?
 
     fun findReplyRequest(command: SingleReplySearchCommand): Tuple?
 }

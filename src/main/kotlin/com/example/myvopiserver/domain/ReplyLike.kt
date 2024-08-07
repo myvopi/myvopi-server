@@ -1,5 +1,7 @@
 package com.example.myvopiserver.domain
 
+import com.example.myvopiserver.common.config.exception.BaseException
+import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.enums.LikeStatus
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*
@@ -37,10 +39,12 @@ class ReplyLike(
         protected set
 
     fun unlike() {
+        if(this.status == LikeStatus.UNLIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Cannot unlike this reply")
         this.status = LikeStatus.UNLIKED
     }
 
     fun like() {
+        if(this.status == LikeStatus.LIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Already liked")
         this.status = LikeStatus.LIKED
     }
 

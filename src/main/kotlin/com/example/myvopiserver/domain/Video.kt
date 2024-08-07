@@ -40,7 +40,7 @@ class Video(
         protected set
 
     @ManyToOne(
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         targetEntity = User::class,
     )
     @JoinColumn(name = "user_id", nullable = false)

@@ -30,4 +30,11 @@ class BasicAlias {
     final val subQueryReplyLike = Expressions.stringPath("rl")
     final val columnReplyLikesCount: NumberPath<Long> = Expressions.numberPath(Long::class.javaObjectType, "replyLikeCount")
     final val columnReplyModifiedCnt: NumberPath<Int> = Expressions.numberPath(Int::class.javaObjectType, "replyModifiedCnt")
+    // Entity uses
+    final val reply = Expressions.stringPath("r")
+    final val replyUser = Expressions.stringPath("ru")
+    final val comment = Expressions.stringPath("c")
+    final val commentUser = Expressions.stringPath("cu")
+    final val video = Expressions.stringPath("v")
+    final val videouser = Expressions.stringPath("vu")
 }
