@@ -54,3 +54,8 @@ data class InternalReplyWithUserCommentAndVideoCommand(
     val internalVideoCommand: InternalVideoCommand,
     val internalVideoOwnerCommand: InternalUserCommand,
 )
+
+data class ReplyLikePostCommand(
+    val userId: Long,
+    val replyId: Long,
+)

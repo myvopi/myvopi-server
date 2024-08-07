@@ -37,10 +37,10 @@ class ReplyService(
         return replyReaderStore.findRepliesRequest(command)
     }
 
-    fun findReplyNestedRelations(uuid: String): InternalReplyWithUserCommentAndVideoCommand {
-        val result = replyReaderStore.findWithNestedRelationsByUuidRequest(uuid)
+    fun findOnlyReply(uuid: String): InternalReplyCommand {
+        val reply = replyReaderStore.findReplyByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        return extractResultToCommand(result)
+        return replyMapper.to(reply = reply)
     }
 
     fun findReply(command: SingleReplySearchCommand): Tuple {
@@ -79,34 +79,16 @@ class ReplyService(
     }
 
     fun searchAndUpdateLikeOrCreateNew(
-        requestedInternalUserCommand: InternalUserCommand,
-        internalReplyCommand: InternalReplyWithUserCommentAndVideoCommand,
+        requesterUserCommand: InternalUserCommand,
+        internalReplyCommand: InternalReplyCommand,
     ) {
-        val requester = User(command = requestedInternalUserCommand)
-        val videoOwner = User(command = internalReplyCommand.internalVideoOwnerCommand)
-        val video = Video(
-            command = internalReplyCommand.internalVideoCommand,
-            user = videoOwner,
-        )
-        val commentOwner = User(command = internalReplyCommand.internalCommentOwnerCommand)
-        val comment = Comment(
-            command = internalReplyCommand.internalCommentCommand,
-            user = commentOwner,
-            video = video,
-        )
-        val replyOwner = User(command = internalReplyCommand.internalReplyOwnerCommand)
-        val reply = Reply(
-            command = internalReplyCommand.internalReplyCommand,
-            comment = comment,
-            user = replyOwner,
-        )
-        val replyLike = likeReaderStore.findReplyLikeByUserAndReply(requester, reply)
+        val replyLike = likeReaderStore.findReplyLikeRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
-            val newReplyLike = ReplyLike(
-                reply = reply,
-                user = requester,
+            val command = ReplyLikePostCommand(
+                userId = requesterUserCommand.id,
+                replyId = internalReplyCommand.id,
             )
-            likeReaderStore.saveReplyLike(newReplyLike)
+            likeReaderStore.initialSaveReplyLikeRequest(command)
         } else {
             replyLike.like()
             likeReaderStore.saveReplyLike(replyLike)
@@ -114,28 +96,10 @@ class ReplyService(
     }
 
     fun searchAndUpdateUnlike(
-        requestedInternalUserCommand: InternalUserCommand,
-        internalReplyCommand: InternalReplyWithUserCommentAndVideoCommand,
+        requesterUserCommand: InternalUserCommand,
+        internalReplyCommand: InternalReplyCommand,
     ) {
-        val requester = User(command = requestedInternalUserCommand)
-        val videoOwner = User(command = internalReplyCommand.internalVideoOwnerCommand)
-        val video = Video(
-            command = internalReplyCommand.internalVideoCommand,
-            user = videoOwner,
-        )
-        val commentOwner = User(command = internalReplyCommand.internalCommentOwnerCommand)
-        val comment = Comment(
-            command = internalReplyCommand.internalCommentCommand,
-            user = commentOwner,
-            video = video,
-        )
-        val replyOwner = User(command = internalReplyCommand.internalReplyOwnerCommand)
-        val reply = Reply(
-            command = internalReplyCommand.internalReplyCommand,
-            comment = comment,
-            user = replyOwner,
-        )
-        val replyLike = likeReaderStore.findReplyLikeByUserAndReply(requester, reply)
+        val replyLike = likeReaderStore.findReplyLikeRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this reply")
         } else {

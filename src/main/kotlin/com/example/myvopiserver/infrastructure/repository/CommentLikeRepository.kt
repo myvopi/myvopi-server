@@ -9,7 +9,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CommentLikeRepository: JpaRepository<CommentLike, Long> {
 
-    fun findByIdAndUserId(commentId: Long, userId: Long): CommentLike?
-
     fun findByUserAndComment(user: User, comment: Comment): CommentLike?
 }

@@ -25,7 +25,7 @@ class ReplyFacade(
     }
 
     fun requestReplyPost(command: ReplyPostCommand): ReplyBaseInfo {
-        val internalCommentCommand = commentService.findComment(command.commentUuid)
+        val internalCommentCommand = commentService.findCommentWithUserAndVideoRelations(command.commentUuid)
         val internalReplyCommand = replyService.createNewReply(command, internalCommentCommand)
         return replyService.constructInitialReplyBaseInfo(internalReplyCommand)
     }
@@ -35,12 +35,12 @@ class ReplyFacade(
     }
 
     fun requestReplyLike(command: ReplyLikeCommand) {
-        val internalReplyCommand = replyService.findReplyNestedRelations(command.replyUuid)
+        val internalReplyCommand = replyService.findOnlyReply(command.replyUuid)
         replyService.searchAndUpdateLikeOrCreateNew(command.internalUserCommand, internalReplyCommand)
     }
 
     fun requestReplyUnlike(command: ReplyLikeCommand) {
-        val internalReplyCommand = replyService.findReplyNestedRelations(command.replyUuid)
+        val internalReplyCommand = replyService.findOnlyReply(command.replyUuid)
         replyService.searchAndUpdateUnlike(command.internalUserCommand, internalReplyCommand)
     }
 }

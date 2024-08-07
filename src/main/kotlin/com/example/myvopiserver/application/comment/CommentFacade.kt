@@ -35,12 +35,12 @@ class CommentFacade(
     }
 
     fun requestCommentLike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findCommentWithUserAndVideo(command.commentUuid)
+        val internalCommentCommand = commentService.findOnlyComment(command.commentUuid)
         commentService.searchAndUpdateLikeOrCreateNew(command.internalUserCommand, internalCommentCommand)
     }
 
     fun requestCommentUnlike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findCommentWithUserAndVideo(command.commentUuid)
+        val internalCommentCommand = commentService.findOnlyComment(command.commentUuid)
         commentService.searchAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
     }
 }
