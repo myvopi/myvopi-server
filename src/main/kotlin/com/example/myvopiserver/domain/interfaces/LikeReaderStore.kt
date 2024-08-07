@@ -1,6 +1,5 @@
 package com.example.myvopiserver.domain.interfaces
 
-import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.CommentLike
 import com.example.myvopiserver.domain.Reply
 import com.example.myvopiserver.domain.ReplyLike
@@ -16,8 +15,6 @@ interface LikeReaderStore {
     fun initialSaveCommentLikeRequest(command: CommentLikePostCommand)
 
     fun saveCommentLike(commentLike: CommentLike): CommentLike
-
-    fun findCommentLikeByUserAndComment(user: User, comment: Comment): CommentLike?
 
     // Reply like
     fun findReplyLikeRequest(replyId: Long, userId: Long): ReplyLike?

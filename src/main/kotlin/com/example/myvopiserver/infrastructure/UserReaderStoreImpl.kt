@@ -27,11 +27,6 @@ class UserReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findUserByEmail(email: String): User? {
-        return userRepository.findByEmail(email)
-    }
-
-    @Transactional(readOnly = true)
     override fun userExistsByUserId(userId: String): Boolean {
         return userRepository.existsUserByUuid(userId)
     }

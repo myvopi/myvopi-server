@@ -1,6 +1,5 @@
 package com.example.myvopiserver.infrastructure
 
-import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.CommentLike
 import com.example.myvopiserver.domain.Reply
 import com.example.myvopiserver.domain.ReplyLike
@@ -35,11 +34,6 @@ class LikeReaderStoreImpl(
     @Transactional
     override fun saveCommentLike(commentLike: CommentLike): CommentLike {
         return commentLikeRepository.save(commentLike)
-    }
-
-    @Transactional(readOnly = true)
-    override fun findCommentLikeByUserAndComment(user: User, comment: Comment): CommentLike? {
-        return commentLikeRepository.findByUserAndComment(user, comment)
     }
 
     // Reply like

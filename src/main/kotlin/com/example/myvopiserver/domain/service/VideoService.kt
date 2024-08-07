@@ -7,7 +7,6 @@ import com.example.myvopiserver.domain.Video
 import com.example.myvopiserver.domain.command.InternalVideoAndOwnerCommand
 import com.example.myvopiserver.domain.command.InternalVideoCommand
 import com.example.myvopiserver.domain.command.VideoSearchCommand
-import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.interfaces.VideoReaderStore
 import com.example.myvopiserver.domain.mapper.UserMapper
 import com.example.myvopiserver.domain.mapper.VideoMapper
@@ -18,13 +17,11 @@ import org.springframework.stereotype.Service
 class VideoService(
     private val videoReaderStore: VideoReaderStore,
     private val videoMapper: VideoMapper,
-    private val userReaderStore: UserReaderStore,
     private val userMapper: UserMapper,
 ) {
 
-
     // Db-transactions (readOnly)
-    fun findByTypeAndId(videoType: VideoType, videoId: String): InternalVideoAndOwnerCommand {
+    fun findVideoWithOwner(videoType: VideoType, videoId: String): InternalVideoAndOwnerCommand {
         val video = videoReaderStore.findVideoWithUserByTypeAndId(videoType, videoId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val owner = video.user

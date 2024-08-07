@@ -37,11 +37,6 @@ class ReplyReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findWithNestedRelationsByUuidRequest(uuid: String): Tuple? {
-        return customReplyReaderStore.findWithNestedRelationsByUuidRequest(uuid)
-    }
-
-    @Transactional(readOnly = true)
     override fun findReplyRequest(command: SingleReplySearchCommand): Tuple? {
         return customReplyReaderStore.findReplyRequest(command)
     }

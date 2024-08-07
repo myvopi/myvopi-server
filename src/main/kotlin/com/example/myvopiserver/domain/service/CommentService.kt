@@ -49,8 +49,8 @@ class CommentService(
         return commentMapper.to(comment = comment)
     }
 
-    fun findCommentWithUserAndVideoRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
-        val comment = commentReaderStore.findCommentByUuid(uuid)
+    fun findCommentRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
+        val comment = commentReaderStore.findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         return extractEntityToCommand(comment)
     }

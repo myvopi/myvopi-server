@@ -122,16 +122,4 @@ class QueryConstructor(
                 Expressions.stringPath(qEntityAlias.qReplyLike2, "like_status").eq(LikeStatus.LIKED.name)
             )
     }
-
-    fun constructReplyRelatedEntitySelectQuery(): JPASQLQuery<Tuple> {
-        val query = JPASQLQuery<Any>(em, mysqlTemplates)
-        return query.select(
-            qEntityAlias.qReply,
-            qEntityAlias.qReplyUser,
-            qEntityAlias.qComment,
-            qEntityAlias.qCommentUser,
-            qEntityAlias.qVideo,
-            qEntityAlias.qVideoUser,
-        )
-    }
 }

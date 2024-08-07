@@ -9,8 +9,6 @@ import com.example.myvopiserver.infrastructure.custom.queryDsl.QueryConstructor
 import com.example.myvopiserver.infrastructure.custom.repository.CustomReplyReaderStore
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
-import com.querydsl.sql.SQLTemplates
-import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -82,18 +80,6 @@ class CustomReplyReaderStoreImpl(
                 Expressions.stringPath(qEntityAlias.qReply, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
             )
             .groupBy(qEntityAlias.qReply.id)
-            .fetchOne()
-    }
-
-    override fun findWithNestedRelationsByUuidRequest(uuid: String): Tuple? {
-        return queryConstructor.constructReplyRelatedEntitySelectQuery()
-            .from(qEntityAlias.qReply)
-            .join(qEntityAlias.qComment).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "comment_id").eq(qEntityAlias.qComment.id))
-            .join(qEntityAlias.qVideo).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
-            .join(qEntityAlias.qReplyUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qReplyUser.id))
-            .join(qEntityAlias.qCommentUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qCommentUser.id))
-            .join(qEntityAlias.qVideoUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qVideo, "user_id").eq(qEntityAlias.qVideoUser.id))
-            .where(qEntityAlias.qReply.uuid.eq(uuid))
             .fetchOne()
     }
 }

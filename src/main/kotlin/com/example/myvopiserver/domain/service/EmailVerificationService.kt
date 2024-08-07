@@ -22,7 +22,7 @@ class EmailVerificationService(
     // Db-transactions
     fun updateEmailCode(command: InternalUserCommand): EmailVerificationCommand {
         val newCode = CodeGenerator.sixDigitCode()
-        val user = User(command)
+        val user = User(command = command)
         val emailVerification = emailVerificationReaderStore.findByUser(user)
             ?.apply { setNewCode(newCode) }
             ?: run { EmailVerification(code = newCode, user = user) }
@@ -35,7 +35,7 @@ class EmailVerificationService(
 
     // Validation
     fun verifyCode(command: EmailVerifyReqCommand) {
-        val user = User(command.internalUserCommand)
+        val user = User(command = command.internalUserCommand)
         val emailVerification = emailVerificationReaderStore.findByUser(user)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         if(command.reqCode != emailVerification.code) throw BadRequestException(ErrorCode.BAD_REQUEST, "Verification code invalid")

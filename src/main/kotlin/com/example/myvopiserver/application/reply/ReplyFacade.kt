@@ -25,7 +25,7 @@ class ReplyFacade(
     }
 
     fun requestReplyPost(command: ReplyPostCommand): ReplyBaseInfo {
-        val internalCommentCommand = commentService.findCommentWithUserAndVideoRelations(command.commentUuid)
+        val internalCommentCommand = commentService.findCommentRelations(command.commentUuid)
         val internalReplyCommand = replyService.createNewReply(command, internalCommentCommand)
         return replyService.constructInitialReplyBaseInfo(internalReplyCommand)
     }
