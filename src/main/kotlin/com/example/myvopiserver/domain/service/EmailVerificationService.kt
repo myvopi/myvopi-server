@@ -23,7 +23,7 @@ class EmailVerificationService(
     fun updateEmailCode(command: InternalUserCommand): EmailVerificationCommand {
         val newCode = CodeGenerator.sixDigitCode()
         val user = User(command = command)
-        val emailVerification = emailVerificationReaderStore.findByUser(user)
+        val emailVerification = emailVerificationReaderStore.findEmailVerificationByUser(user)
             ?.apply { setNewCode(newCode) }
             ?: run { EmailVerification(code = newCode, user = user) }
         val storedVerification = emailVerificationReaderStore.saveEmailVerification(emailVerification)
@@ -34,11 +34,16 @@ class EmailVerificationService(
     }
 
     // Validation
-    fun verifyCode(command: EmailVerifyReqCommand) {
-        // TODO verify attempt count
+    fun verifyCodeAndDeleteVerification(command: EmailVerifyReqCommand) {
         val user = User(command = command.internalUserCommand)
-        val emailVerification = emailVerificationReaderStore.findByUser(user)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        if(command.reqCode != emailVerification.code) throw BadRequestException(ErrorCode.BAD_REQUEST, "Verification code invalid")
+        val emailVerification = emailVerificationReaderStore.findEmailVerificationByUser(user)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Request a verification code first")
+        if(emailVerification.chance == 0) throw BadRequestException(ErrorCode.BAD_REQUEST, "Please request another verification code")
+        if(command.reqCode != emailVerification.code) {
+            emailVerification.removeChance()
+            emailVerificationReaderStore.saveEmailVerification(emailVerification)
+            throw BadRequestException(ErrorCode.BAD_REQUEST, "Verification code invalid")
+        }
+        emailVerificationReaderStore.deleteEmailVerification(emailVerification)
     }
 }

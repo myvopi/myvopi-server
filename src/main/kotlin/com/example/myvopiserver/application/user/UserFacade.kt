@@ -39,7 +39,7 @@ class UserFacade(
     }
 
     fun verifyEmail(command: EmailVerifyReqCommand) {
-        emailVerificationService.verifyCode(command)
+        emailVerificationService.verifyCodeAndDeleteVerification(command)
         userService.updateUserMemberRole(command.internalUserCommand)
     }
 

@@ -13,12 +13,17 @@ class EmailVerificationReaderStoreImpl(
 ): EmailVerificationReaderStore {
 
     @Transactional(readOnly = true)
-    override fun findByUser(user: User): EmailVerification? {
+    override fun findEmailVerificationByUser(user: User): EmailVerification? {
         return emailVerificationRepository.findByUser(user)
     }
 
     @Transactional
     override fun saveEmailVerification(emailVerification: EmailVerification): EmailVerification {
         return emailVerificationRepository.save(emailVerification)
+    }
+
+    @Transactional
+    override fun deleteEmailVerification(emailVerification: EmailVerification) {
+        emailVerificationRepository.delete(emailVerification)
     }
 }
