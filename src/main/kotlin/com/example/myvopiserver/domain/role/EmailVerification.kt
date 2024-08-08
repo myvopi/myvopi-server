@@ -26,13 +26,20 @@ class EmailVerification(
     var code: String = code
         protected set
 
-    // TODO need limit of tries and verification emails sent
+    @Column(name = "chance", nullable = false, updatable = true)
+    var chance: Int = 3
+        protected set
 
     fun setNewCode(code: String) {
         this.code = code
+        this.chance = 3
+    }
+
+    fun removeChance() {
+        this.chance -= 1
     }
 
     override fun toString(): String {
-        return "EmailVerification(id=$id, code='$code')"
+        return "EmailVerification(id=$id, code='$code', chance=$chance)"
     }
 }
