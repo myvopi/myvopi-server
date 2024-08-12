@@ -1,8 +1,9 @@
 package com.example.myvopiserver.domain.service
 
+import com.example.myvopiserver.common.cipher.Cipher
 import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.NotFoundException
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.command.UserLoginCommand
 import com.example.myvopiserver.domain.command.UserRegisterCommand
@@ -18,6 +19,7 @@ class UserService(
     private val userMapper: UserMapper,
     private val jwtTokenGenerator: JwtTokenGenerator,
     private val validationService: ValidationService,
+    private val cipher: Cipher,
 ) {
 
     // Db-transactions
@@ -26,7 +28,7 @@ class UserService(
             name = command.name,
             userId = command.userId,
             nationality = command.nationality,
-            password = command.password, // TODO encrypt
+            password = cipher.encrypt(command.password),
             email = command.email,
         )
         val user = userReaderStore.saveUser(userCommand)
@@ -43,7 +45,6 @@ class UserService(
     fun validateUserLogin(command: UserLoginCommand): AuthenticationTokenInfo {
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        // TODO encryption
         val reqPassword = command.password
         val password = user.password
         validationService.validatePassword(reqPassword, password)

@@ -1,4 +1,4 @@
-package com.example.myvopiserver.common.config.exception
+package com.example.myvopiserver.common.util.exception
 
 import com.example.myvopiserver.common.util.EnumCodeCompanion
 

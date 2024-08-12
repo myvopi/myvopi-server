@@ -1,4 +1,4 @@
-package com.example.myvopiserver.common.config.exception
+package com.example.myvopiserver.common.util.exception
 
 data class BaseException(
     val errorCode: ErrorCode,
@@ -31,6 +31,16 @@ data class UnauthorizedException(
 }
 
 data class NotFoundException(
+    val errorCode: ErrorCode,
+    override val message: String = errorCode.engErrorMsg
+): RuntimeException(message)
+{
+    override fun toString(): String {
+        return super.toString()
+    }
+}
+
+data class InternalException(
     val errorCode: ErrorCode,
     override val message: String = errorCode.engErrorMsg
 ): RuntimeException(message)

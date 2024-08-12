@@ -1,6 +1,6 @@
 package com.example.myvopiserver.common.config.filter
 
-import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.util.exception.UnauthorizedException
 import com.example.myvopiserver.common.config.response.CommonResponse
 import com.google.gson.Gson
 import jakarta.servlet.FilterChain

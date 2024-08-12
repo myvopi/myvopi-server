@@ -1,7 +1,7 @@
 package com.example.myvopiserver.domain
 
-import com.example.myvopiserver.common.config.exception.BaseException
-import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.BaseException
+import com.example.myvopiserver.common.util.exception.ErrorCode
 import com.example.myvopiserver.common.enums.LikeStatus
 import com.example.myvopiserver.domain.role.User
 import jakarta.persistence.*

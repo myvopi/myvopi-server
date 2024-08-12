@@ -1,7 +1,7 @@
 package com.example.myvopiserver.common.config.authentication
 
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.TokenType
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
@@ -20,8 +20,8 @@ class JwtTokenGenerator(
     private val userMapper: UserMapper,
 ) {
 
-    private final val accessTokenExpireTime = 1L
-    private final val refreshTokenExpireDate = 1L
+    private val accessTokenExpireTime = 1L
+    private val refreshTokenExpireDate = 1L
 
     fun createAccessToken(command: InternalUserCommand): String {
         val jwsHeader = JwsHeader.with{"HS256"}.build()

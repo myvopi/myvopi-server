@@ -1,6 +1,6 @@
 package com.example.myvopiserver.common.config.response
 
-import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.ErrorCode
 import com.example.myvopiserver.common.util.extension.getCurrentDateTime
 import com.example.myvopiserver.common.util.extension.toStrings
 

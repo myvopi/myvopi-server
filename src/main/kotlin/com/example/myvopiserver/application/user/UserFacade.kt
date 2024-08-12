@@ -1,8 +1,8 @@
 package com.example.myvopiserver.application.user
 
 import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.TokenType
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.AuthenticationTokenInfo

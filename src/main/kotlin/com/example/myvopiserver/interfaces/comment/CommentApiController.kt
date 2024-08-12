@@ -2,8 +2,8 @@ package com.example.myvopiserver.interfaces.comment
 
 import com.example.myvopiserver.application.comment.CommentFacade
 import com.example.myvopiserver.common.config.authentication.toUserInfo
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.NotFoundException
 import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
 import com.example.myvopiserver.common.enums.SearchFilter

@@ -1,8 +1,8 @@
 package com.example.myvopiserver.domain.service
 
-import com.example.myvopiserver.common.config.exception.BadRequestException
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.common.util.exception.BadRequestException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.NotFoundException
 import com.example.myvopiserver.common.util.CodeGenerator
 import com.example.myvopiserver.domain.command.EmailVerificationCommand
 import com.example.myvopiserver.domain.command.EmailVerifyReqCommand

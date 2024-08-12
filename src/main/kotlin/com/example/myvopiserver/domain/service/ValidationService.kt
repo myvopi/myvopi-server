@@ -1,9 +1,10 @@
 package com.example.myvopiserver.domain.service
 
-import com.example.myvopiserver.common.config.exception.BadRequestException
-import com.example.myvopiserver.common.config.exception.BaseException
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.cipher.Cipher
+import com.example.myvopiserver.common.util.exception.BadRequestException
+import com.example.myvopiserver.common.util.exception.BaseException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.common.enums.CountryCode
 import com.example.myvopiserver.common.enums.LikeStatus
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service
 @Service
 class ValidationService(
     private val userReaderStore: UserReaderStore,
+    private val cipher: Cipher,
 ) {
 
     fun validateUserIdExists(userId: String) {
@@ -48,9 +50,9 @@ class ValidationService(
         }
     }
 
-    // TODO encryption
     fun validatePassword(requestPassword: String, password: String) {
-        if(requestPassword != password) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
+        val decryptedPassword = cipher.decrypt(password)
+        if(requestPassword != decryptedPassword) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
     }
 
     fun validateIfRequestContentMatchesOriginalContent(requestContent: String, commentContent: String): Boolean {
