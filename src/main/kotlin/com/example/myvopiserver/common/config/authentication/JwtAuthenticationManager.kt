@@ -1,7 +1,7 @@
 package com.example.myvopiserver.common.config.authentication
 
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.UnauthorizedException
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

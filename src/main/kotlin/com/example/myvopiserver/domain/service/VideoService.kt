@@ -1,8 +1,8 @@
 package com.example.myvopiserver.domain.service
 
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.NotFoundException
-import com.example.myvopiserver.common.config.exception.UnauthorizedException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.NotFoundException
+import com.example.myvopiserver.common.util.exception.UnauthorizedException
 import com.example.myvopiserver.common.enums.MemberRole
 import com.example.myvopiserver.common.enums.VideoType
 import com.example.myvopiserver.domain.Video

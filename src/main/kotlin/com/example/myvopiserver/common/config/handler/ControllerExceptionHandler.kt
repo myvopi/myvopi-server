@@ -1,10 +1,10 @@
 package com.example.myvopiserver.common.config.handler
 
 import com.example.myvopiserver.common.config.authentication.toUserInfo
-import com.example.myvopiserver.common.config.exception.*
 import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
 import com.example.myvopiserver.common.enums.MemberRole
+import com.example.myvopiserver.common.util.exception.*
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.context.SecurityContextHolder
@@ -46,6 +46,12 @@ class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException::class)
     fun handleAccessDeniedException(e: NotFoundException): CommonResult<String> {
+        return CommonResponse.fail(e.message, e.errorCode)
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(InternalException::class)
+    fun handleInternalException(e: InternalException): CommonResult<String> {
         return CommonResponse.fail(e.message, e.errorCode)
     }
 }

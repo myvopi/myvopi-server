@@ -1,7 +1,5 @@
 package com.example.myvopiserver.domain
 
-import com.example.myvopiserver.common.config.exception.BadRequestException
-import com.example.myvopiserver.common.config.exception.ErrorCode
 import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.domain.command.InternalCommentCommand
 import com.example.myvopiserver.domain.role.User

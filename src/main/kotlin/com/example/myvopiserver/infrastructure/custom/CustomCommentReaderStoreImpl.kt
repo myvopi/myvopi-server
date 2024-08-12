@@ -19,7 +19,7 @@ class CustomCommentReaderStoreImpl(
     private val queryConstructor: QueryConstructor,
 ): CustomCommentReaderStore {
 
-    private final val maxFetchCnt = 10L
+    private val maxFetchCnt = 10L
 
     /**
      * <- comment search from initial video request api ->

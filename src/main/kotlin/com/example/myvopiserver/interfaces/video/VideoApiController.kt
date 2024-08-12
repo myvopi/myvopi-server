@@ -2,8 +2,8 @@ package com.example.myvopiserver.interfaces.video
 
 import com.example.myvopiserver.application.video.VideoFacade
 import com.example.myvopiserver.common.config.authentication.toUserInfo
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.NotFoundException
 import com.example.myvopiserver.common.config.response.CommonResponse
 import com.example.myvopiserver.common.config.response.CommonResult
 import com.example.myvopiserver.common.enums.SearchFilter
@@ -29,7 +29,7 @@ class VideoApiController(
         @RequestBody body: CommentRequestDto,
     ): CommonResult<List<CommentBaseInfo>>
     {
-        val urlCommand = customParser.validateAndParse(url)
+        val urlCommand = customParser.validateAndParseVideoUrl(url)
         val userCommand = authentication?.toUserInfo()
         val searchFilter = SearchFilter.decode(body.filter)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")

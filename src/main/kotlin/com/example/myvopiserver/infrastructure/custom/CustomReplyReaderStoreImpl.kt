@@ -18,7 +18,7 @@ class CustomReplyReaderStoreImpl(
     private val qEntityAlias: QEntityAlias,
 ): CustomReplyReaderStore {
 
-    private final val maxFetchCnt = 10L
+    private val maxFetchCnt = 10L
 
     /**
      * select r.uuid

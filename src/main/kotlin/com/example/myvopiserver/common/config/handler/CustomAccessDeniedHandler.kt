@@ -1,6 +1,6 @@
 package com.example.myvopiserver.common.config.handler
 
-import com.example.myvopiserver.common.config.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.ErrorCode
 import com.example.myvopiserver.common.config.response.CommonResponse
 import com.google.gson.Gson
 import jakarta.servlet.http.HttpServletRequest

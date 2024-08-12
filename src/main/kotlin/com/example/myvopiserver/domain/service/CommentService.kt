@@ -1,9 +1,9 @@
 package com.example.myvopiserver.domain.service
 
-import com.example.myvopiserver.common.config.exception.BadRequestException
-import com.example.myvopiserver.common.config.exception.BaseException
-import com.example.myvopiserver.common.config.exception.ErrorCode
-import com.example.myvopiserver.common.config.exception.NotFoundException
+import com.example.myvopiserver.common.util.exception.BadRequestException
+import com.example.myvopiserver.common.util.exception.BaseException
+import com.example.myvopiserver.common.util.exception.ErrorCode
+import com.example.myvopiserver.common.util.exception.NotFoundException
 import com.example.myvopiserver.common.enums.CommentStatus
 import com.example.myvopiserver.common.util.extension.toStrings
 import com.example.myvopiserver.domain.Comment

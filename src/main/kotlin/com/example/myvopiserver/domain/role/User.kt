@@ -56,7 +56,6 @@ class User(
     var nationality: CountryCode = nationality
         protected set
 
-    // TODO encryption
     @Column(name = "password", nullable = false, updatable = true)
     var password: String = password
         protected set
