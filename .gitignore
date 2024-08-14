@@ -40,9 +40,5 @@ out/
 .kotlin
 
 ### Environment Variables ###
-**/src/main/resources/env.properties
-**/src/main/resources/*.properties
-/src/main/resources/env.properties
-/src/main/resources/*.properties
-src/main/resources/env.properties
-src/main/resources/*.properties
+**/env.properties
+/env.properties
