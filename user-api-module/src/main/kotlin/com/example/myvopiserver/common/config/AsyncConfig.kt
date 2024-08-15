@@ -10,7 +10,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import java.lang.reflect.Method
 import java.util.concurrent.Executor
 
-// TODO multi module
 @Configuration
 @EnableAsync
 class AsyncConfig : AsyncConfigurer {

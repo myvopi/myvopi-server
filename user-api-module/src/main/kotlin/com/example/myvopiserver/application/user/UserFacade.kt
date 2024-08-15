@@ -9,7 +9,7 @@ import com.entitycoremodule.info.AuthenticationTokenInfo
 import com.example.myvopiserver.domain.service.EmailVerificationService
 import com.example.myvopiserver.domain.service.UserService
 import com.example.myvopiserver.domain.service.ValidationService
-import com.example.myvopiserver.external.MailService
+import com.externalapimodule.mail.MailService
 import org.springframework.stereotype.Service
 
 @Service

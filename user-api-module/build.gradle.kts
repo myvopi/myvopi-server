@@ -2,6 +2,7 @@ dependencies {
     api(project(":common-core-module"))
     api(project(":entity-core-module"))
     api(project(":auth-core-module"))
+    api(project(":external-api-module"))
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
