@@ -5,4 +5,5 @@ include(
     "entity-core-module",
     "common-core-module",
     "auth-core-module",
+    "external-api-module",
 )

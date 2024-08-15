@@ -13,14 +13,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     "com.entitycoremodule.infrastructure"
 ])
 @ComponentScan(basePackages = [
-    "com.entitycoremodule.mapper",
-    "com.entitycoremodule.domain.user",
-    "com.entitycoremodule.domain.comment",
-    "com.entitycoremodule.domain.email",
-    "com.entitycoremodule.domain.like",
-    "com.entitycoremodule.domain.reply",
-    "com.entitycoremodule.domain.video",
-    "com.entitycoremodule.infrastructure",
-    "com.authcoremodule",
+    "com.entitycoremodule.mapper",              // mapper
+    "com.entitycoremodule.domain.user",         // Jpa, QEntity
+    "com.entitycoremodule.domain.comment",      // Jpa, QEntity
+    "com.entitycoremodule.domain.email",        // Jpa, QEntity
+    "com.entitycoremodule.domain.like",         // Jpa, QEntity
+    "com.entitycoremodule.domain.reply",        // Jpa, QEntity
+    "com.entitycoremodule.domain.video",        // Jpa, QEntity
+    "com.entitycoremodule.infrastructure",      // ReaderStore
+    "com.authcoremodule",                       // Authentication, Filter
+    "com.externalapimodule.mail",               // JavaMail
 ])
 class BeanConfig {}

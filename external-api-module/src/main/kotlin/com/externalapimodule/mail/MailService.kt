@@ -1,4 +1,4 @@
-package com.example.myvopiserver.external
+package com.externalapimodule.mail
 
 import com.entitycoremodule.command.EmailVerificationCommand
 import jakarta.mail.internet.MimeMessage
