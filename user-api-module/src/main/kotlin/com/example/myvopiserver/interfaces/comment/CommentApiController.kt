@@ -1,6 +1,7 @@
 package com.example.myvopiserver.interfaces.comment
 
 import com.authcoremodule.authentication.toUserInfo
+import com.commoncoremodule.enums.ReportType
 import com.example.myvopiserver.application.comment.CommentFacade
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
@@ -8,7 +9,7 @@ import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.commoncoremodule.enums.SearchFilter
 import com.commoncoremodule.enums.VideoType
-import com.entitycoremodule.command.CommentSearchFromCommentCommand
+import com.entitycoremodule.command.*
 import com.entitycoremodule.info.CommentBaseInfo
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
@@ -57,7 +58,7 @@ class CommentApiController(
         val videoTypeEnum = VideoType.decode(videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
-        val command = com.entitycoremodule.command.CommentUpdateCommand(
+        val command = CommentUpdateCommand(
             internalUserCommand = internalUserCommand,
             content = body.content,
             commentUuid = body.uuid,
@@ -80,7 +81,7 @@ class CommentApiController(
         val videoTypeEnum = VideoType.decode(videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
-        val command = com.entitycoremodule.command.CommentPostCommand(
+        val command = CommentPostCommand(
             internalUserCommand = internalUserCommand,
             content = body.content,
             videoType = videoTypeEnum,
@@ -102,7 +103,7 @@ class CommentApiController(
         val videoTypeEnum = VideoType.decode(videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
-        val command = com.entitycoremodule.command.CommentDeleteCommand(
+        val command = CommentDeleteCommand(
             internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
@@ -124,7 +125,7 @@ class CommentApiController(
         val videoTypeEnum = VideoType.decode(videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
-        val command = com.entitycoremodule.command.CommentLikeCommand(
+        val command = CommentLikeCommand(
             internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
@@ -146,7 +147,7 @@ class CommentApiController(
         val videoTypeEnum = VideoType.decode(videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
-        val command = com.entitycoremodule.command.CommentLikeCommand(
+        val command = CommentLikeCommand(
             internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
@@ -154,5 +155,24 @@ class CommentApiController(
         )
         commentFacade.requestCommentUnlike(command)
         return CommonResponse.success("Comment unliked")
+    }
+
+    @Secured("ROLE_USER")
+    @PostMapping("/report")
+    fun postReport(
+        authentication: Authentication,
+        @RequestBody body: CommentReportDto,
+    ): CommonResult<String>
+    {
+        val internalUserCommand = authentication.toUserInfo()
+        val reportType = ReportType.decode(body.reportType)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Report type not provided")
+        val command = CommentReportCommand(
+            internalUserCommand = internalUserCommand,
+            commentUuid = body.uuid,
+            reportType = reportType,
+        )
+        commentFacade.requestReportComment(command)
+        return CommonResponse.success("Reported")
     }
 }

@@ -18,3 +18,7 @@ data class ReplyLikeDto(
     val uuid: String,
 )
 
+data class ReplyReportDto(
+    val uuid: String,
+    val reportType: String,
+)

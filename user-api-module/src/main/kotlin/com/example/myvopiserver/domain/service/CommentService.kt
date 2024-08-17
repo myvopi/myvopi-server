@@ -5,11 +5,14 @@ import com.commoncoremodule.exception.BaseException
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.enums.CommentStatus
+import com.commoncoremodule.enums.ContentType
 import com.commoncoremodule.extension.toStrings
 import com.entitycoremodule.command.*
 import com.entitycoremodule.domain.comment.Comment
 import com.entitycoremodule.domain.interfaces.users.CommentReaderStore
 import com.entitycoremodule.domain.interfaces.users.LikeReaderStore
+import com.entitycoremodule.domain.interfaces.users.ReportReaderStore
+import com.entitycoremodule.domain.report.Report
 import com.entitycoremodule.domain.user.User
 import com.entitycoremodule.domain.video.Video
 import com.entitycoremodule.info.CommentBaseInfo
@@ -29,6 +32,7 @@ class CommentService(
     private val commentMapper: CommentMapper,
     private val videoMapper: VideoMapper,
     private val userMapper: UserMapper,
+    private val reportReaderStore: ReportReaderStore,
 ) {
 
     // Db-transactions (readOnly)
@@ -51,7 +55,23 @@ class CommentService(
         return commentMapper.to(comment = comment)
     }
 
-    fun findCommentRelations(uuid: String): com.entitycoremodule.command.InternalCommentWithUserAndVideoCommand {
+    fun findCommentAndOwnerAndUpdateFlagged(uuid: String): InternalCommentAndOwnerCommand {
+        val comment = commentReaderStore.findCommentWithUserByUuid(uuid)
+            ?.let {
+                if(!validationService.validateIfFlagged(it.status)) {
+                    it.flagComment()
+                    commentReaderStore.saveComment(it)
+                } else it
+            }
+            ?: run { throw NotFoundException(ErrorCode.NOT_FOUND) }
+        val owner = comment.user
+        return InternalCommentAndOwnerCommand(
+            internalCommentCommand = commentMapper.to(comment),
+            commentOwnerCommand = userMapper.to(owner)!!,
+        )
+    }
+
+    fun findCommentRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
         val comment = commentReaderStore.findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         return extractEntityToCommand(comment)
@@ -59,7 +79,7 @@ class CommentService(
 
     // Db-transactions
     fun createNewComment(
-        postCommand: com.entitycoremodule.command.CommentPostCommand,
+        postCommand: CommentPostCommand,
         internalVideoCommand: InternalVideoAndOwnerCommand,
     ): InternalCommentCommand {
         val videoOwner = User(command = internalVideoCommand.internalUserCommand)
@@ -115,7 +135,7 @@ class CommentService(
     }
 
     // Validation
-    fun validateAndUpdateContent(command: com.entitycoremodule.command.CommentUpdateCommand) {
+    fun validateAndUpdateContent(command: CommentUpdateCommand) {
         val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
@@ -127,7 +147,7 @@ class CommentService(
         commentReaderStore.saveComment(comment)
     }
 
-    fun validateAndUpdateStatus(command: com.entitycoremodule.command.CommentDeleteCommand) {
+    fun validateAndUpdateStatus(command: CommentDeleteCommand) {
         val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
@@ -139,6 +159,26 @@ class CommentService(
 
     fun validateStatus(command: InternalCommentCommand) {
         if(command.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This comment has already been deleted")
+    }
+
+    fun validateReportOrStore(
+        commentReportCommand: CommentReportCommand,
+        commentAndOwnerCommand: InternalCommentAndOwnerCommand,
+    ) {
+        val reporter = User(command = commentReportCommand.internalUserCommand)
+        reportReaderStore.findCommentReportByContentUuidAndUser(commentReportCommand.commentUuid, reporter)
+            ?: run {
+                val reportTarget = User(commentAndOwnerCommand.commentOwnerCommand)
+                val report = Report(
+                    contentType = ContentType.COMMENT,
+                    reportType = commentReportCommand.reportType,
+                    contentUuid = commentAndOwnerCommand.internalCommentCommand.uuid,
+                    contentId = commentAndOwnerCommand.internalCommentCommand.id,
+                    reporter = reporter,
+                    reportTarget = reportTarget,
+                )
+                reportReaderStore.saveReport(report)
+            }
     }
 
     // Private & constructors
@@ -179,7 +219,7 @@ class CommentService(
     }
 
     fun constructSingleCommentSearchCommand(
-        command: com.entitycoremodule.command.CommentUpdateCommand,
+        command: CommentUpdateCommand,
     ): SingleCommentSearchCommand {
         return SingleCommentSearchCommand(
             internalUserCommand = command.internalUserCommand,
@@ -189,11 +229,11 @@ class CommentService(
         )
     }
 
-    private fun extractEntityToCommand(comment: Comment): com.entitycoremodule.command.InternalCommentWithUserAndVideoCommand {
+    private fun extractEntityToCommand(comment: Comment): InternalCommentWithUserAndVideoCommand {
         val commentOwner = comment.user
         val video = comment.video
         val videoOwner = video.user
-        return com.entitycoremodule.command.InternalCommentWithUserAndVideoCommand(
+        return InternalCommentWithUserAndVideoCommand(
             internalCommentCommand = commentMapper.to(comment = comment),
             internalCommentOwnerCommand = userMapper.to(user = commentOwner)!!,
             internalVideoCommand = videoMapper.to(video = video),

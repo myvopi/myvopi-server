@@ -108,6 +108,10 @@ class Comment(
         this.content = content
     }
 
+    fun flagComment() {
+        this.status = CommentStatus.FLAGGED
+    }
+
     // Admin
     fun verified() {
         this.verificationStatus = VerifyStatus.VERIFIED

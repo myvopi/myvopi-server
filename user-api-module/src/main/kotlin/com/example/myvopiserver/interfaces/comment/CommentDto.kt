@@ -16,3 +16,8 @@ data class CommentDeleteDto(
 data class CommentLikeDto(
     val uuid: String,
 )
+
+data class CommentReportDto(
+    val uuid: String,
+    val reportType: String,
+)

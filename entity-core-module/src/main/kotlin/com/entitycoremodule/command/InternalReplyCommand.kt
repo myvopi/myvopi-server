@@ -14,3 +14,8 @@ data class InternalReplyCommand(
     val userId: String?,
     val verificationStatus: VerifyStatus,
 )
+
+data class InternalReplyAndOwnerCommand(
+    val internalReplyCommand: InternalReplyCommand,
+    val commentOwnerCommand: InternalUserCommand,
+)

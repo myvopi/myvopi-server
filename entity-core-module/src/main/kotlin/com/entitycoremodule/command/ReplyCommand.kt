@@ -1,5 +1,7 @@
 package com.entitycoremodule.command
 
+import com.commoncoremodule.enums.ReportType
+
 data class ReplyUpdateCommand(
     val internalUserCommand: InternalUserCommand,
     val content: String,
@@ -29,4 +31,10 @@ data class InternalReplyWithUserCommentAndVideoCommand(
     val internalCommentOwnerCommand: InternalUserCommand,
     val internalVideoCommand: InternalVideoCommand,
     val internalVideoOwnerCommand: InternalUserCommand,
+)
+
+data class ReplyReportCommand(
+    val internalUserCommand: InternalUserCommand,
+    val replyUuid: String,
+    val reportType: ReportType,
 )

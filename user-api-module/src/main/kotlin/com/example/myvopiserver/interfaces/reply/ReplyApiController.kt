@@ -2,6 +2,9 @@ package com.example.myvopiserver.interfaces.reply
 
 import com.example.myvopiserver.application.reply.ReplyFacade
 import com.authcoremodule.authentication.toUserInfo
+import com.commoncoremodule.enums.ReportType
+import com.commoncoremodule.exception.ErrorCode
+import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.entitycoremodule.command.*
@@ -120,5 +123,24 @@ class ReplyApiController(
         )
         replyFacade.requestReplyUnlike(command)
         return CommonResponse.success("Reply unliked")
+    }
+
+    @Secured("ROLE_USER")
+    @PostMapping("/report")
+    fun postReport(
+        authentication: Authentication,
+        @RequestBody body: ReplyReportDto,
+    ): CommonResult<String>
+    {
+        val internalUserCommand = authentication.toUserInfo()
+        val reportType = ReportType.decode(body.reportType)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Report type not provided")
+        val command = ReplyReportCommand(
+            internalUserCommand = internalUserCommand,
+            replyUuid = body.uuid,
+            reportType = reportType,
+        )
+        replyFacade.requestReportReply(command)
+        return CommonResponse.success("Reported")
     }
 }

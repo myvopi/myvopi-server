@@ -1,7 +1,7 @@
 package com.entitycoremodule.domain.report
 
-import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.ContentType
+import com.commoncoremodule.enums.ReportType
 import com.entitycoremodule.domain.BaseTime
 import com.entitycoremodule.domain.user.User
 import jakarta.persistence.*
@@ -10,6 +10,7 @@ import jakarta.persistence.*
 @Table(name ="report")
 class Report(
     contentType: ContentType,   // 콘텐츠 유형
+    reportType: ReportType,     // 신고 내용
     contentUuid: String,        // 콘텐츠 UUID
     contentId: Long,            // 콘텐츠 ID
     reporter: User,             // 신고자
@@ -25,7 +26,10 @@ class Report(
     var contentType: ContentType = contentType
         protected set
 
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "report_type", nullable = false, updatable = true)
+    var reportType: ReportType = reportType
+        protected set
 
     @Column(name = "content_uuid", nullable = false, updatable = true)
     var contentUuid: String = contentUuid
