@@ -14,3 +14,8 @@ data class InternalCommentCommand(
     val createdDate: LocalDateTime,
     val verificationStatus: VerifyStatus,
 )
+
+data class InternalCommentAndOwnerCommand(
+    val internalCommentCommand: InternalCommentCommand,
+    val commentOwnerCommand: InternalUserCommand,
+)

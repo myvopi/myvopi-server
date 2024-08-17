@@ -43,4 +43,9 @@ class ReplyFacade(
         val internalReplyCommand = replyService.findOnlyReply(command.replyUuid)
         replyService.searchAndUpdateUnlike(command.internalUserCommand, internalReplyCommand)
     }
+
+    fun requestReportReply(command: ReplyReportCommand) {
+        val internalReplyAndOwnerCommand = replyService.findReplyAndOwnerAndUpdateFlagged(command.replyUuid)
+        replyService.validateReportOrStore(command, internalReplyAndOwnerCommand)
+    }
 }

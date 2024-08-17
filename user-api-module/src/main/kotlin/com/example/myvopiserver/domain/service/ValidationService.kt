@@ -70,4 +70,8 @@ class ValidationService(
     fun validateIsUnliked(status: LikeStatus) {
         if(status == LikeStatus.UNLIKED) throw BaseException(ErrorCode.BAD_REQUEST, "Cannot unlike this")
     }
+
+    fun validateIfFlagged(status: CommentStatus): Boolean {
+        return status == CommentStatus.FLAGGED
+    }
 }

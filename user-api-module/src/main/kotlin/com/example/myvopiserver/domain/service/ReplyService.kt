@@ -1,5 +1,6 @@
 package com.example.myvopiserver.domain.service
 
+import com.commoncoremodule.enums.ContentType
 import com.commoncoremodule.exception.BaseException
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
@@ -9,6 +10,8 @@ import com.entitycoremodule.domain.comment.Comment
 import com.entitycoremodule.domain.interfaces.users.LikeReaderStore
 import com.entitycoremodule.domain.reply.Reply
 import com.entitycoremodule.domain.interfaces.users.ReplyReaderStore
+import com.entitycoremodule.domain.interfaces.users.ReportReaderStore
+import com.entitycoremodule.domain.report.Report
 import com.entitycoremodule.domain.user.User
 import com.entitycoremodule.domain.video.Video
 import com.entitycoremodule.info.ReplyBaseInfo
@@ -32,6 +35,7 @@ class ReplyService(
     private val commentMapper: CommentMapper,
     private val likeReaderStore: LikeReaderStore,
     private val entityAlias: QEntityAlias,
+    private val reportReaderStore: ReportReaderStore,
 ) {
 
     // Db-transactions (readOnly)
@@ -48,6 +52,22 @@ class ReplyService(
     fun findReply(command: SingleReplySearchCommand): Tuple {
         return replyReaderStore.findReplyRequest(command)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+    }
+
+    fun findReplyAndOwnerAndUpdateFlagged(uuid: String): InternalReplyAndOwnerCommand {
+        val reply = replyReaderStore.findReplyWithUserByUuid(uuid)
+            ?.let {
+                if(!validationService.validateIfFlagged(it.status)) {
+                    it.flagComment()
+                    replyReaderStore.saveReply(it)
+                } else it
+            }
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        val owner = reply.user
+        return InternalReplyAndOwnerCommand(
+            internalReplyCommand = replyMapper.to(reply),
+            commentOwnerCommand = userMapper.to(owner)!!,
+        )
     }
 
     // Db-transactions
@@ -133,6 +153,26 @@ class ReplyService(
         validationService.validateIsDeleted(reply.status)
         reply.deleteComment()
         replyReaderStore.saveReply(reply)
+    }
+
+    fun validateReportOrStore(
+        replyReportCommand: ReplyReportCommand,
+        replyAndOwnerCommand: InternalReplyAndOwnerCommand,
+    ) {
+        val reporter = User(command = replyReportCommand.internalUserCommand)
+        reportReaderStore.findCommentReportByContentUuidAndUser(replyReportCommand.replyUuid, reporter)
+            ?: run {
+                val reportTarget = User(replyAndOwnerCommand.commentOwnerCommand)
+                val report = Report(
+                    contentType = ContentType.REPLY,
+                    reportType = replyReportCommand.reportType,
+                    contentUuid = replyAndOwnerCommand.internalReplyCommand.uuid,
+                    contentId = replyAndOwnerCommand.internalReplyCommand.id,
+                    reporter = reporter,
+                    reportTarget = reportTarget,
+                )
+                reportReaderStore.saveReport(report)
+            }
     }
 
     // Private & constructors

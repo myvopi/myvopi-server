@@ -43,4 +43,9 @@ class CommentFacade(
         val internalCommentCommand = commentService.findOnlyComment(command.commentUuid)
         commentService.searchAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
     }
+
+    fun requestReportComment(command: CommentReportCommand) {
+        val internalCommentAndOwnerCommand = commentService.findCommentAndOwnerAndUpdateFlagged(command.commentUuid)
+        commentService.validateReportOrStore(command, internalCommentAndOwnerCommand)
+    }
 }

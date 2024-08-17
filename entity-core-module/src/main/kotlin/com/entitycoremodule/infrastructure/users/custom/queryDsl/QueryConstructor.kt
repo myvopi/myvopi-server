@@ -32,6 +32,7 @@ class QueryConstructor(
 
     fun constructAuthCommentSelectQuery(command: InternalUserCommand): JPASQLQuery<Tuple> {
         val query = JPASQLQuery<Any>(em, mysqlTemplates)
+        // TODO report filter
         return query.select(
             qEntityAlias.qComment.uuid.`as`(alias.columnCommentUuid),
             qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
@@ -88,6 +89,7 @@ class QueryConstructor(
 
     fun constructAuthReplySelectQuery(command: InternalUserCommand): JPASQLQuery<Tuple> {
         val query = JPASQLQuery<Any>(em, mysqlTemplates)
+        // TODO report filter
         return query.select(
             qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
             qEntityAlias.qReply.content.`as`(alias.columnReplyContent),

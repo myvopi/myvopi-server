@@ -1,5 +1,6 @@
 package com.entitycoremodule.command
 
+import com.commoncoremodule.enums.ReportType
 import com.commoncoremodule.enums.VideoType
 
 data class CommentUpdateCommand(
@@ -36,4 +37,10 @@ data class CommentLikeCommand(
     val commentUuid: String,
     val videoType: VideoType,
     val videoId: String,
+)
+
+data class CommentReportCommand(
+    val internalUserCommand: InternalUserCommand,
+    val commentUuid: String,
+    val reportType: ReportType,
 )
