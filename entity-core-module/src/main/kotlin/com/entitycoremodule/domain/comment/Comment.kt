@@ -1,6 +1,7 @@
 package com.entitycoremodule.domain.comment
 
 import com.commoncoremodule.enums.CommentStatus
+import com.commoncoremodule.enums.VerifyStatus
 import com.entitycoremodule.command.InternalCommentCommand
 import com.entitycoremodule.domain.BaseTime
 import com.entitycoremodule.domain.like.CommentLike
@@ -55,6 +56,11 @@ class Comment(
     var status: CommentStatus = CommentStatus.SHOW
         protected set
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "verification_status", nullable = false, updatable = true)
+    var verificationStatus: VerifyStatus = VerifyStatus.NEED_VERIFICATION
+        protected set
+
     @ManyToOne(
         fetch = FetchType.LAZY,
         targetEntity = Video::class,
@@ -89,20 +95,25 @@ class Comment(
     var user: User = user
         protected set
 
-    fun updateContent(
-        content: String,
-    ) {
-        // TODO verify request to admin
-        this.modifiedCnt++
-        this.content = content
-    }
-
+    // Common
     fun deleteComment() {
         this.status = CommentStatus.DELETED
     }
 
-    override fun toString(): String {
-        return "Comment(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status)"
+    fun updateContent(
+        content: String,
+    ) {
+        this.verificationStatus = VerifyStatus.NEED_VERIFICATION
+        this.modifiedCnt++
+        this.content = content
     }
-    // TODO verified
+
+    // Admin
+    fun verified() {
+        this.verificationStatus = VerifyStatus.VERIFIED
+    }
+
+    override fun toString(): String {
+        return "Comment(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status, verificationStatus=$verificationStatus)"
+    }
 }

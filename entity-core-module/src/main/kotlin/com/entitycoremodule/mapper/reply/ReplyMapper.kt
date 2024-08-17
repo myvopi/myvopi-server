@@ -18,6 +18,7 @@ interface ReplyMapper {
         Mapping(source = "reply.status", target = "status"),
         Mapping(source = "userId", target = "userId"),
         Mapping(source = "reply.createdDt", target = "createdDate"),
+        Mapping(source = "reply.verificationStatus", target = "verificationStatus"),
     )
     fun to(
         reply: Reply,
@@ -31,6 +32,7 @@ interface ReplyMapper {
         Mapping(source = "reply.modifiedCnt", target = "modifiedCnt"),
         Mapping(source = "reply.status", target = "status"),
         Mapping(source = "reply.createdDt", target = "createdDate"),
+        Mapping(source = "reply.verificationStatus", target = "verificationStatus"),
     )
     fun to(
         reply: Reply,

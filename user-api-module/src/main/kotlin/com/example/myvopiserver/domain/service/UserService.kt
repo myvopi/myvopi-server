@@ -8,7 +8,7 @@ import com.entitycoremodule.command.InternalUserCommand
 import com.entitycoremodule.command.UserLoginCommand
 import com.entitycoremodule.command.UserRegisterCommand
 import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.domain.user.UserReaderStore
+import com.entitycoremodule.domain.interfaces.users.UserReaderStore
 import com.entitycoremodule.info.AuthenticationTokenInfo
 import com.entitycoremodule.mapper.common.UserMapper
 import org.springframework.stereotype.Service

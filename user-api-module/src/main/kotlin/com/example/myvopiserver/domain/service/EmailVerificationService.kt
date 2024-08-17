@@ -8,7 +8,7 @@ import com.entitycoremodule.command.EmailVerificationCommand
 import com.entitycoremodule.command.EmailVerifyReqCommand
 import com.entitycoremodule.command.InternalUserCommand
 import com.entitycoremodule.domain.email.EmailVerification
-import com.entitycoremodule.domain.email.EmailVerificationReaderStore
+import com.entitycoremodule.domain.interfaces.users.EmailVerificationReaderStore
 import com.entitycoremodule.domain.user.User
 import com.entitycoremodule.mapper.email.EmailVerificationMapper
 import org.springframework.stereotype.Service

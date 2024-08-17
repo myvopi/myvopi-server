@@ -18,6 +18,7 @@ interface CommentMapper {
         Mapping(source = "comment.status", target = "status"),
         Mapping(source = "userId", target = "userId"),
         Mapping(source = "comment.createdDt", target = "createdDate"),
+        Mapping(source = "comment.verificationStatus", target = "verificationStatus"),
     )
     fun to(
         comment: Comment,
@@ -31,6 +32,7 @@ interface CommentMapper {
         Mapping(source = "comment.modifiedCnt", target = "modifiedCnt"),
         Mapping(source = "comment.status", target = "status"),
         Mapping(source = "comment.createdDt", target = "createdDate"),
+        Mapping(source = "comment.verificationStatus", target = "verificationStatus"),
     )
     fun to(
         comment: Comment,

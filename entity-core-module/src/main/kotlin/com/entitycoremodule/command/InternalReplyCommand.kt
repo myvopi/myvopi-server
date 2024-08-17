@@ -1,6 +1,7 @@
 package com.entitycoremodule.command
 
 import com.commoncoremodule.enums.CommentStatus
+import com.commoncoremodule.enums.VerifyStatus
 import java.time.LocalDateTime
 
 data class InternalReplyCommand(
@@ -11,4 +12,5 @@ data class InternalReplyCommand(
     val status: CommentStatus,
     val createdDate: LocalDateTime,
     val userId: String?,
+    val verificationStatus: VerifyStatus,
 )

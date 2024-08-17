@@ -10,7 +10,7 @@ import com.commoncoremodule.enums.CountryCode
 import com.commoncoremodule.enums.LikeStatus
 import com.entitycoremodule.command.InternalUserCommand
 import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.domain.user.UserReaderStore
+import com.entitycoremodule.domain.interfaces.users.UserReaderStore
 import org.springframework.stereotype.Service
 
 @Service

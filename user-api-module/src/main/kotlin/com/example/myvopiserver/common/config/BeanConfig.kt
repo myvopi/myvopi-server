@@ -10,18 +10,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     "com.entitycoremodule.domain",
 ])
 @EnableJpaRepositories(basePackages = [
-    "com.entitycoremodule.infrastructure"
+    "com.entitycoremodule.infrastructure.repository",
 ])
 @ComponentScan(basePackages = [
-    "com.entitycoremodule.mapper",              // mapper
-    "com.entitycoremodule.domain.user",         // Jpa, QEntity
-    "com.entitycoremodule.domain.comment",      // Jpa, QEntity
-    "com.entitycoremodule.domain.email",        // Jpa, QEntity
-    "com.entitycoremodule.domain.like",         // Jpa, QEntity
-    "com.entitycoremodule.domain.reply",        // Jpa, QEntity
-    "com.entitycoremodule.domain.video",        // Jpa, QEntity
-    "com.entitycoremodule.infrastructure",      // ReaderStore
-    "com.authcoremodule",                       // Authentication, Filter
-    "com.externalapimodule.mail",               // JavaMail
+    "com.entitycoremodule.mapper",                      // Mapper
+    "com.entitycoremodule.domain.user",                 // Jpa, QEntity
+    "com.entitycoremodule.domain.comment",              // Jpa, QEntity
+    "com.entitycoremodule.domain.email",                // Jpa, QEntity
+    "com.entitycoremodule.domain.like",                 // Jpa, QEntity
+    "com.entitycoremodule.domain.reply",                // Jpa, QEntity
+    "com.entitycoremodule.domain.video",                // Jpa, QEntity
+    "com.entitycoremodule.infrastructure.users",        // ReaderStore
+    "com.authcoremodule",                               // Authentication, Filter
+    "com.externalapimodule.mail",                       // JavaMail
 ])
 class BeanConfig {}
