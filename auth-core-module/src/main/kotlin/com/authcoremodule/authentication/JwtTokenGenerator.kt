@@ -4,7 +4,7 @@ import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.UnauthorizedException
 import com.commoncoremodule.enums.TokenType
 import com.entitycoremodule.command.InternalUserCommand
-import com.entitycoremodule.domain.user.UserReaderStore
+import com.entitycoremodule.domain.interfaces.users.UserReaderStore
 import com.entitycoremodule.mapper.common.UserMapper
 import org.springframework.security.oauth2.jwt.*
 import org.springframework.stereotype.Service

@@ -5,7 +5,7 @@ import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.exception.UnauthorizedException
 import com.commoncoremodule.enums.MemberRole
 import com.commoncoremodule.enums.VideoType
-import com.entitycoremodule.domain.video.VideoReaderStore
+import com.entitycoremodule.domain.interfaces.users.VideoReaderStore
 import com.entitycoremodule.command.InternalVideoAndOwnerCommand
 import com.entitycoremodule.command.InternalVideoCommandWithMessage
 import com.entitycoremodule.command.VideoSearchCommand

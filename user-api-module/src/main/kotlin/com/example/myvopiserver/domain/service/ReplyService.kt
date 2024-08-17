@@ -6,13 +6,14 @@ import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.extension.toStrings
 import com.entitycoremodule.command.*
 import com.entitycoremodule.domain.comment.Comment
-import com.entitycoremodule.domain.like.LikeReaderStore
+import com.entitycoremodule.domain.interfaces.users.LikeReaderStore
 import com.entitycoremodule.domain.reply.Reply
-import com.entitycoremodule.domain.reply.ReplyReaderStore
+import com.entitycoremodule.domain.interfaces.users.ReplyReaderStore
 import com.entitycoremodule.domain.user.User
 import com.entitycoremodule.domain.video.Video
 import com.entitycoremodule.info.ReplyBaseInfo
-import com.entitycoremodule.infrastructure.custom.alias.BasicAlias
+import com.entitycoremodule.infrastructure.users.custom.alias.BasicAlias
+import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
 import com.entitycoremodule.mapper.comment.CommentMapper
 import com.entitycoremodule.mapper.common.UserMapper
 import com.entitycoremodule.mapper.reply.ReplyMapper
@@ -30,7 +31,7 @@ class ReplyService(
     private val videoMapper: VideoMapper,
     private val commentMapper: CommentMapper,
     private val likeReaderStore: LikeReaderStore,
-    private val entityAlias: com.entitycoremodule.infrastructure.custom.alias.QEntityAlias,
+    private val entityAlias: QEntityAlias,
 ) {
 
     // Db-transactions (readOnly)

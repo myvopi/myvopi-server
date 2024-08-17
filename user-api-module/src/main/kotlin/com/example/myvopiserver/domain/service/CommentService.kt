@@ -8,12 +8,12 @@ import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.extension.toStrings
 import com.entitycoremodule.command.*
 import com.entitycoremodule.domain.comment.Comment
-import com.entitycoremodule.domain.comment.CommentReaderStore
-import com.entitycoremodule.domain.like.LikeReaderStore
+import com.entitycoremodule.domain.interfaces.users.CommentReaderStore
+import com.entitycoremodule.domain.interfaces.users.LikeReaderStore
 import com.entitycoremodule.domain.user.User
 import com.entitycoremodule.domain.video.Video
 import com.entitycoremodule.info.CommentBaseInfo
-import com.entitycoremodule.infrastructure.custom.alias.BasicAlias
+import com.entitycoremodule.infrastructure.users.custom.alias.BasicAlias
 import com.entitycoremodule.mapper.comment.CommentMapper
 import com.entitycoremodule.mapper.common.UserMapper
 import com.entitycoremodule.mapper.video.VideoMapper
