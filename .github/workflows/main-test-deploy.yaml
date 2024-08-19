@@ -1,0 +1,57 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Main-test-deploy
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main-test]
+
+permissions: write-all
+
+jobs:
+  main-merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Construct action secrets to env.properties
+        run: |
+          echo "DEV_DB_URL=${{secrets.ENV_DEV_DB_URL}}" >> env.properties
+          echo "DEV_DB_USER=${{secrets.ENV_DEV_DB_USER}}" >> env.properties
+          echo "DEV_DB_PASSWORD=${{secrets.ENV_DEV_DB_PASSWORD}}" >> env.properties
+          
+          echo "SECURITY_KEY=${{secrets.ENV_SECURITY_KEY}}" >> env.properties
+          echo "EMAIL_USERNAME=${{secrets.ENV_EMAIL_USERNAME}}" >> env.properties
+          echo "EMAIL_PASSWORD=${{secrets.ENV_EMAIL_PASSWORD}}" >> env.properties
+          echo "SSL_OR_TLS=587" >> env.properties
+          
+          echo "DB_HIKARI_MAX_LIFETIME=580000" >> env.properties
+          echo "DB_HIKARI_MAX_POOLSIZE=10" >> env.properties
+          echo "DB_HIKARI_INIT_SQL=set wait_timeout = 600" >> env.properties
+          echo "DB_HIKARI_CONNECTION_TIMEOUT=20000" >> env.properties
+          echo "DB_HIKARI_VALIDATION_TIMEOUT=10000" >> env.properties
+          echo "DB_HIKARI_IDLE_TIMEOUT=300000" >> env.properties
+          echo "DB_HIKARI_MINIMUM_IDLE=5" >> env.properties
+
+          echo "CIPHER_SECRET=${{secrets.ENV_CIPHER_SECRET}}" >> env.properties
+          echo "CIPHER_IV=${{secrets.ENV_CIPHER_IV}}" >> env.properties
+        shell: bash
+
+      - name: Grant authorization env.properties
+        run: sudo chmod +x env.properties
+
+      - name: Upload files to gdrive
+        uses: adityak74/google-drive-upload-git-action@main
+        with:
+          credentials: ${{secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_CREDENTIALS}}
+          filename: "env.properties"
+          folderId: ${{secrets.GOOGLE_DRIVE_TEST_DEPLOY_FOLDER_ID}}
+          name: "env.properties" # optional string
+          overwrite: "true" # optional boolean
