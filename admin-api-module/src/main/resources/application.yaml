@@ -1,0 +1,50 @@
+spring:
+  config:
+    import: "file:./env.properties"
+    activate:
+      on-profile:
+  sql:
+    init:
+      mode: always
+  jpa:
+    properties:
+      hibernate:
+        show-sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: ${DEV_DB_URL}
+    username: ${DEV_DB_USER}
+    password: ${DEV_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: ${DB_HIKARI_MAX_LIFETIME}
+      maximum-pool-size: ${DB_HIKARI_MAX_POOLSIZE}
+      connection-init-sql: ${DB_HIKARI_INIT_SQL}
+      validation-timeout: ${DB_HIKARI_VALIDATION_TIMEOUT}
+      connection-timeout: ${DB_HIKARI_CONNECTION_TIMEOUT}
+      idle-timeout: ${DB_HIKARI_IDLE_TIMEOUT}
+      minimum-idle: ${DB_HIKARI_MINIMUM_IDLE}
+
+  mail:
+    default-encoding: UTF-8
+    host: "smtp.gmail.com"
+    port: ${SSL_OR_TLS}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    test-connection: false
+
+security:
+  key: ${SECURITY_KEY}
+
+# TODO
+server:
+  port: 8081
