@@ -1,2 +1,5 @@
 // TODO github actions or ci tool? how to deploy to server
 // TODO iptables for request limits
+// TODO logging for admin and main
+// TODO nginX and iptables?
+// TODO macroing?
