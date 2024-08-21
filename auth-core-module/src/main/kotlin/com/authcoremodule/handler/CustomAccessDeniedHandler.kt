@@ -18,7 +18,7 @@ class CustomAccessDeniedHandler: AccessDeniedHandler {
         accessDeniedException: AccessDeniedException
     )
     {
-        response.status = HttpServletResponse.SC_UNAUTHORIZED
+        response.status = HttpServletResponse.SC_FORBIDDEN
         response.contentType = "application/json; charset=UTF-8"
 
         val exceptionResponse = CommonResponse.fail(

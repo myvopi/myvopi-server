@@ -5,6 +5,8 @@ import com.example.myvopiserver.common.config.filter.CorsFilter
 import com.authcoremodule.filter.JwtAuthenticationExceptionFilter
 import com.authcoremodule.filter.JwtAuthenticationFilter
 import com.authcoremodule.handler.CustomAccessDeniedHandler
+import com.authcoremodule.handler.CustomAuthenticationEntryPoint
+import com.authcoremodule.handler.CustomUnauthorizedAccessDeniedHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -28,6 +30,8 @@ class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val jwtAuthenticationExceptionFilter: JwtAuthenticationExceptionFilter,
     private val customAccessDeniedHandler: CustomAccessDeniedHandler,
+    private val customUnauthorizedAccessDeniedHandler: CustomUnauthorizedAccessDeniedHandler,
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
 ) {
 
     @Bean
@@ -39,7 +43,9 @@ class SecurityConfig(
         http.authenticationManager(jwtAuthenticationManager)
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         http.addFilterBefore(jwtAuthenticationExceptionFilter, JwtAuthenticationFilter::class.java)
-            .exceptionHandling{ authenticationManager -> authenticationManager.accessDeniedHandler(customAccessDeniedHandler)}
+            .exceptionHandling{
+                it.accessDeniedHandler(customUnauthorizedAccessDeniedHandler)
+            }
         http.httpBasic { obj: HttpBasicConfigurer<HttpSecurity> -> obj.disable() }
         http.cors { obj: CorsConfigurer<HttpSecurity> -> obj.disable() }
         http.csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
@@ -53,7 +59,7 @@ class SecurityConfig(
         }
 
         http.authorizeHttpRequests { authorize ->
-            authorize.requestMatchers(HttpMethod.POST, "/{url}").permitAll()
+            authorize.requestMatchers(HttpMethod.GET, "/{url}").permitAll()
 
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/register").permitAll()
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
@@ -74,6 +80,12 @@ class SecurityConfig(
             authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/reply/**").authenticated()
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/like").authenticated()
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/unlike").authenticated()
+
+            authorize.anyRequest().authenticated()
+        }
+        .exceptionHandling{
+            it.accessDeniedHandler(customAccessDeniedHandler)
+            it.authenticationEntryPoint(customAuthenticationEntryPoint)
         }
         return http.build()
     }

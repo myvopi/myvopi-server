@@ -2,6 +2,7 @@ package com.entitycoremodule.command
 
 import com.commoncoremodule.enums.CountryCode
 import com.commoncoremodule.enums.MemberRole
+import com.commoncoremodule.enums.RoleStatus
 
 data class InternalUserCommand(
     val id: Long,
@@ -12,4 +13,5 @@ data class InternalUserCommand(
     val nationality: CountryCode,
     val email: String,
     val role: MemberRole,
+    val status: RoleStatus,
 )

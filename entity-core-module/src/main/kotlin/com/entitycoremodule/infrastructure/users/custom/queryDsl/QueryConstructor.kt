@@ -3,9 +3,9 @@ package com.entitycoremodule.infrastructure.users.custom.queryDsl
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.LikeStatus
 import com.entitycoremodule.command.InternalUserCommand
-import com.entitycoremodule.infrastructure.users.custom.alias.BasicAlias
+import com.entitycoremodule.infrastructure.alias.BasicAlias
 import com.entitycoremodule.infrastructure.users.custom.expression.CommentQueryExpressions
-import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
+import com.entitycoremodule.infrastructure.alias.QEntityAlias
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.JPAExpressions
@@ -32,7 +32,6 @@ class QueryConstructor(
 
     fun constructAuthCommentSelectQuery(command: InternalUserCommand): JPASQLQuery<Tuple> {
         val query = JPASQLQuery<Any>(em, mysqlTemplates)
-        // TODO report filter
         return query.select(
             qEntityAlias.qComment.uuid.`as`(alias.columnCommentUuid),
             qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
@@ -89,7 +88,6 @@ class QueryConstructor(
 
     fun constructAuthReplySelectQuery(command: InternalUserCommand): JPASQLQuery<Tuple> {
         val query = JPASQLQuery<Any>(em, mysqlTemplates)
-        // TODO report filter
         return query.select(
             qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
             qEntityAlias.qReply.content.`as`(alias.columnReplyContent),

@@ -3,8 +3,8 @@ package com.entitycoremodule.infrastructure.users.custom
 import com.commoncoremodule.enums.CommentStatus
 import com.entitycoremodule.command.ReplySearchCommand
 import com.entitycoremodule.command.SingleReplySearchCommand
-import com.entitycoremodule.infrastructure.users.custom.alias.BasicAlias
-import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
+import com.entitycoremodule.infrastructure.alias.BasicAlias
+import com.entitycoremodule.infrastructure.alias.QEntityAlias
 import com.entitycoremodule.infrastructure.users.custom.queryDsl.QueryConstructor
 import com.entitycoremodule.infrastructure.users.custom.repository.CustomReplyReaderStore
 import com.querydsl.core.Tuple

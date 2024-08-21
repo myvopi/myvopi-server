@@ -15,8 +15,8 @@ import com.entitycoremodule.domain.report.Report
 import com.entitycoremodule.domain.user.User
 import com.entitycoremodule.domain.video.Video
 import com.entitycoremodule.info.ReplyBaseInfo
-import com.entitycoremodule.infrastructure.users.custom.alias.BasicAlias
-import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
+import com.entitycoremodule.infrastructure.alias.BasicAlias
+import com.entitycoremodule.infrastructure.alias.QEntityAlias
 import com.entitycoremodule.mapper.comment.CommentMapper
 import com.entitycoremodule.mapper.common.UserMapper
 import com.entitycoremodule.mapper.reply.ReplyMapper
@@ -73,7 +73,7 @@ class ReplyService(
     // Db-transactions
     fun createNewReply(
         postCommand: ReplyPostCommand,
-        internalCommentCommand: com.entitycoremodule.command.InternalCommentWithUserAndVideoCommand,
+        internalCommentCommand: InternalCommentWithUserAndVideoCommand,
     ): InternalReplyCommand
     {
         val requester = User(command = postCommand.internalUserCommand)

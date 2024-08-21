@@ -27,21 +27,6 @@ spring:
       idle-timeout: ${DB_HIKARI_IDLE_TIMEOUT}
       minimum-idle: ${DB_HIKARI_MINIMUM_IDLE}
 
-  mail:
-    default-encoding: UTF-8
-    host: "smtp.gmail.com"
-    port: ${SSL_OR_TLS}
-    username: ${EMAIL_USERNAME}
-    password: ${EMAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-    protocol: smtp
-    test-connection: false
-
 security:
   key: ${SECURITY_KEY}
 

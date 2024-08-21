@@ -1,7 +1,7 @@
 package com.entitycoremodule.infrastructure.users.custom.expression
 
 import com.commoncoremodule.enums.LikeStatus
-import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
+import com.entitycoremodule.infrastructure.alias.QEntityAlias
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.JPAExpressions

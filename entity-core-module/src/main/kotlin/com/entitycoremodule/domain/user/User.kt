@@ -34,6 +34,7 @@ class User(
         this.id = command.id
         this.uuid = command.uuid
         this.role = command.role
+        this.status = command.status
     }
 
     @Id

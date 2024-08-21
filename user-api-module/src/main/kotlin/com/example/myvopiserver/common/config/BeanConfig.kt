@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     "com.entitycoremodule.domain.video",                // Jpa, QEntity
     "com.entitycoremodule.domain.report",               // Jpa, QEntity
     "com.entitycoremodule.infrastructure.users",        // ReaderStore
+    "com.entitycoremodule.infrastructure.alias",        // QEntity alias
     "com.authcoremodule",                               // Authentication, Filter
     "com.externalapimodule.mail",                       // JavaMail
 ])

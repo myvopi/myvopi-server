@@ -5,9 +5,9 @@ import com.commoncoremodule.enums.SearchFilter
 import com.entitycoremodule.command.CommentSearchFromCommentCommand
 import com.entitycoremodule.command.CommentSearchFromVideoCommand
 import com.entitycoremodule.command.SingleCommentSearchCommand
-import com.entitycoremodule.infrastructure.users.custom.alias.BasicAlias
+import com.entitycoremodule.infrastructure.alias.BasicAlias
 import com.entitycoremodule.infrastructure.users.custom.repository.CustomCommentReaderStore
-import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
+import com.entitycoremodule.infrastructure.alias.QEntityAlias
 import com.entitycoremodule.infrastructure.users.custom.queryDsl.QueryConstructor
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions

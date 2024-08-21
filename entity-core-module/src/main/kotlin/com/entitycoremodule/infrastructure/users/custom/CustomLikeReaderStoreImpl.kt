@@ -6,7 +6,7 @@ import com.entitycoremodule.command.ReplyLikePostCommand
 import com.entitycoremodule.domain.like.CommentLike
 import com.entitycoremodule.domain.like.ReplyLike
 import com.entitycoremodule.infrastructure.users.custom.repository.CustomLikeReaderStore
-import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
+import com.entitycoremodule.infrastructure.alias.QEntityAlias
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository

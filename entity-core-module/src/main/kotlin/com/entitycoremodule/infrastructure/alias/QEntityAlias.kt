@@ -1,4 +1,4 @@
-package com.entitycoremodule.infrastructure.users.custom.alias
+package com.entitycoremodule.infrastructure.alias
 
 import com.entitycoremodule.domain.comment.QComment
 import com.entitycoremodule.domain.like.QCommentLike

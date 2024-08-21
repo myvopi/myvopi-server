@@ -13,6 +13,7 @@ enum class ErrorCode(val engErrorMsg: String, val korErrorMsg: String) {
     NOT_FOUND("Not found", "찾지 못했습니다."),
     EXPIRED_TOKEN("Token has expired","기한이 만료된 토큰입니다."),
     REFRESH_TOKEN_EXPIRED("Token has expired, need to re-login", "기한이 만료된 토큰입니다. 다시 로그인을 해주시기 바랍니다."),
+    PAGE_NOT_FOUND("Page not found", "요청한 페이지를 찾지 못했습니다.")
     ;
     companion object: EnumCodeCompanion<ErrorCode, String>(ErrorCode.entries.associateBy(ErrorCode::engErrorMsg))
 }
