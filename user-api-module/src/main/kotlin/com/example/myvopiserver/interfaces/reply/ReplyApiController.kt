@@ -1,14 +1,14 @@
 package com.example.myvopiserver.interfaces.reply
 
 import com.example.myvopiserver.application.reply.ReplyFacade
-import com.authcoremodule.authentication.toUserInfo
 import com.commoncoremodule.enums.ReportType
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.ReplyBaseInfo
+import com.example.myvopiserver.common.config.authentication.toUserInfo
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.ReplyBaseInfo
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping

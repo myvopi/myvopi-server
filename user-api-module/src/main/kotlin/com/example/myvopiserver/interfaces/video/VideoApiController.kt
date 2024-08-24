@@ -1,13 +1,13 @@
 package com.example.myvopiserver.interfaces.video
 
 import com.example.myvopiserver.application.video.VideoFacade
-import com.authcoremodule.authentication.toUserInfo
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.commoncoremodule.enums.SearchFilter
-import com.entitycoremodule.command.VideoSearchCommand
-import com.entitycoremodule.info.CommentBaseInfo
+import com.example.myvopiserver.common.config.authentication.toUserInfo
 import com.example.myvopiserver.common.util.CustomParser
+import com.example.myvopiserver.domain.command.VideoSearchCommand
+import com.example.myvopiserver.domain.info.CommentBaseInfo
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

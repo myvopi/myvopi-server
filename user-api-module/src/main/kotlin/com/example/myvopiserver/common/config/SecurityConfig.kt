@@ -1,12 +1,12 @@
 package com.example.myvopiserver.common.config
 
-import com.authcoremodule.authentication.JwtAuthenticationManager
 import com.example.myvopiserver.common.config.filter.CorsFilter
-import com.authcoremodule.filter.JwtAuthenticationExceptionFilter
-import com.authcoremodule.filter.JwtAuthenticationFilter
-import com.authcoremodule.handler.CustomAccessDeniedHandler
-import com.authcoremodule.handler.CustomAuthenticationEntryPoint
-import com.authcoremodule.handler.CustomUnauthorizedAccessDeniedHandler
+import com.example.myvopiserver.common.config.filter.JwtAuthenticationExceptionFilter
+import com.example.myvopiserver.common.handler.CustomAccessDeniedHandler
+import com.example.myvopiserver.common.handler.CustomAuthenticationEntryPoint
+import com.example.myvopiserver.common.handler.CustomUnauthorizedAccessDeniedHandler
+import com.example.myvopiserver.common.config.authentication.JwtAuthenticationManager
+import com.example.myvopiserver.common.config.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -41,6 +41,8 @@ class SecurityConfig(
     {
         http.oauth2ResourceServer { oauth2 -> oauth2.jwt(Customizer.withDefaults()) }
         http.authenticationManager(jwtAuthenticationManager)
+        // TODO Velog 같은 곳을 봐도 Authorization 태우는 방식을 알려주지 않을 뿐더러 태우더라도 변조가 되었는지 안되었는지 알려주지 않은체
+        // 그냥 200만 계속 내려준다. 서버가 어떤 응답을 해주는지 숨겨야 될 의무가 있는 듯
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         http.addFilterBefore(jwtAuthenticationExceptionFilter, JwtAuthenticationFilter::class.java)
             .exceptionHandling{

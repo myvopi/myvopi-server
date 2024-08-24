@@ -60,27 +60,17 @@ project(":user-api-module") {
     }
 }
 
+project(":admin-api-module") {
+    tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+        enabled = true // Disable bootJar task
+    }
+
+    tasks.getByName<Jar>("jar") {
+        enabled = false // Enable jar task to create a JAR file
+    }
+}
+
 project(":common-core-module") {
-    tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-        enabled = false
-    }
-
-    tasks.getByName<Jar>("jar") {
-        enabled = true
-    }
-}
-
-project(":entity-core-module") {
-    tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-        enabled = false
-    }
-
-    tasks.getByName<Jar>("jar") {
-        enabled = true
-    }
-}
-
-project(":auth-core-module") {
     tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
         enabled = false
     }

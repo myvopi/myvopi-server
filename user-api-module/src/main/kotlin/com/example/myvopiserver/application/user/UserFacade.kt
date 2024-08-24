@@ -1,11 +1,11 @@
 package com.example.myvopiserver.application.user
 
-import com.authcoremodule.authentication.JwtTokenGenerator
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.UnauthorizedException
 import com.commoncoremodule.enums.TokenType
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.AuthenticationTokenInfo
+import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
 import com.example.myvopiserver.domain.service.EmailVerificationService
 import com.example.myvopiserver.domain.service.UserService
 import com.example.myvopiserver.domain.service.ValidationService
@@ -30,12 +30,18 @@ class UserFacade(
     }
 
     fun loginUser(command: UserLoginCommand): AuthenticationTokenInfo {
-        return userService.validateUserLogin(command)
+        val internalUserCommand = userService.validateUserLogin(command)
+        return userService.createAuthenticationInfo(internalUserCommand)
     }
 
     fun requestEmailVerificationCode(command: InternalUserCommand) {
         val emailVerificationCommand = emailVerificationService.updateEmailCode(command)
-        mailService.sendVerificationEmail(emailVerificationCommand)
+        mailService.sendVerificationEmail(
+            id = emailVerificationCommand.id,
+            userId = emailVerificationCommand.userId,
+            email = emailVerificationCommand.email,
+            code = emailVerificationCommand.code,
+        )
     }
 
     fun verifyEmail(command: EmailVerifyReqCommand) {

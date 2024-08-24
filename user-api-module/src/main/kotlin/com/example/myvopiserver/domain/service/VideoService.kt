@@ -5,14 +5,14 @@ import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.exception.UnauthorizedException
 import com.commoncoremodule.enums.MemberRole
 import com.commoncoremodule.enums.VideoType
-import com.entitycoremodule.domain.interfaces.users.VideoReaderStore
-import com.entitycoremodule.command.InternalVideoAndOwnerCommand
-import com.entitycoremodule.command.InternalVideoCommandWithMessage
-import com.entitycoremodule.command.VideoSearchCommand
-import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.domain.video.Video
-import com.entitycoremodule.mapper.common.UserMapper
-import com.entitycoremodule.mapper.video.VideoMapper
+import com.example.myvopiserver.domain.User
+import com.example.myvopiserver.domain.Video
+import com.example.myvopiserver.domain.command.InternalVideoAndOwnerCommand
+import com.example.myvopiserver.domain.command.InternalVideoCommandWithMessage
+import com.example.myvopiserver.domain.command.VideoSearchCommand
+import com.example.myvopiserver.domain.interfaces.VideoReaderStore
+import com.example.myvopiserver.domain.mapper.UserMapper
+import com.example.myvopiserver.domain.mapper.VideoMapper
 import org.springframework.stereotype.Service
 
 @Service

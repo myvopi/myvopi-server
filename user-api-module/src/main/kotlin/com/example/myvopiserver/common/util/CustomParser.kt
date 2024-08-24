@@ -4,7 +4,7 @@ import com.commoncoremodule.exception.BadRequestException
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.enums.VideoType
-import com.entitycoremodule.command.UrlCommand
+import com.example.myvopiserver.domain.command.UrlCommand
 import org.springframework.stereotype.Component
 
 @Component

@@ -1,6 +1,5 @@
 package com.example.myvopiserver.interfaces.comment
 
-import com.authcoremodule.authentication.toUserInfo
 import com.commoncoremodule.enums.ReportType
 import com.example.myvopiserver.application.comment.CommentFacade
 import com.commoncoremodule.exception.ErrorCode
@@ -9,8 +8,9 @@ import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.commoncoremodule.enums.SearchFilter
 import com.commoncoremodule.enums.VideoType
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.CommentBaseInfo
+import com.example.myvopiserver.common.config.authentication.toUserInfo
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.CommentBaseInfo
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*

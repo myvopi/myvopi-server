@@ -1,16 +1,14 @@
 package com.example.myvopiserver.domain.service
 
 import com.commoncoremodule.util.Cipher
-import com.commoncoremodule.exception.BadRequestException
-import com.commoncoremodule.exception.BaseException
-import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.UnauthorizedException
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.CountryCode
 import com.commoncoremodule.enums.LikeStatus
-import com.entitycoremodule.command.InternalUserCommand
-import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.domain.interfaces.users.UserReaderStore
+import com.commoncoremodule.enums.RoleStatus
+import com.commoncoremodule.exception.*
+import com.example.myvopiserver.domain.User
+import com.example.myvopiserver.domain.command.InternalUserCommand
+import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import org.springframework.stereotype.Service
 
 @Service
@@ -73,5 +71,9 @@ class ValidationService(
 
     fun validateIfFlagged(status: CommentStatus): Boolean {
         return status == CommentStatus.FLAGGED
+    }
+
+    fun validateIfBanned(status: RoleStatus) {
+        if(status == RoleStatus.BANNED) throw BannedException(ErrorCode.BANNED)
     }
 }

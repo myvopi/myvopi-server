@@ -1,7 +1,7 @@
 package com.example.myvopiserver.application.reply
 
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.ReplyBaseInfo
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.ReplyBaseInfo
 import com.example.myvopiserver.domain.service.CommentService
 import com.example.myvopiserver.domain.service.ReplyService
 import org.springframework.stereotype.Service

@@ -1,7 +1,7 @@
 package com.example.myvopiserver.application.comment
 
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.CommentBaseInfo
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.CommentBaseInfo
 import com.example.myvopiserver.domain.service.CommentService
 import com.example.myvopiserver.domain.service.VideoService
 import org.springframework.stereotype.Service

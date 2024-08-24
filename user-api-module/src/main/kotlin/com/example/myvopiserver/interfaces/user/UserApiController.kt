@@ -1,14 +1,14 @@
 package com.example.myvopiserver.interfaces.user
 
-import com.entitycoremodule.command.EmailVerifyReqCommand
 import com.example.myvopiserver.application.user.UserFacade
-import com.authcoremodule.authentication.toUserInfo
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
-import com.entitycoremodule.command.ReissueAccessTokenCommand
-import com.entitycoremodule.command.UserLoginCommand
-import com.entitycoremodule.command.UserRegisterCommand
-import com.entitycoremodule.info.AuthenticationTokenInfo
+import com.example.myvopiserver.common.config.authentication.toUserInfo
+import com.example.myvopiserver.domain.command.EmailVerifyReqCommand
+import com.example.myvopiserver.domain.command.ReissueAccessTokenCommand
+import com.example.myvopiserver.domain.command.UserLoginCommand
+import com.example.myvopiserver.domain.command.UserRegisterCommand
+import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.PostMapping
