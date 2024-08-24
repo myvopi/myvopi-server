@@ -1,4 +1,4 @@
-package com.entitycoremodule.command
+package com.example.adminmyvopiserver.domain.command
 
 import com.commoncoremodule.enums.CountryCode
 import com.commoncoremodule.enums.MemberRole

@@ -1,4 +1,4 @@
-package com.entitycoremodule.command
+package com.example.adminmyvopiserver.domain.command
 
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.VerifyStatus
@@ -14,7 +14,6 @@ data class InternalCommentCommand(
     val createdDate: LocalDateTime,
     val verificationStatus: VerifyStatus,
 )
-
 data class InternalCommentAndOwnerCommand(
     val internalCommentCommand: InternalCommentCommand,
     val commentOwnerCommand: InternalUserCommand,
