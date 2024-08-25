@@ -98,11 +98,6 @@ class Reply(
         this.status = CommentStatus.FLAGGED
     }
 
-    // Admin
-    fun verified() {
-        this.verificationStatus = VerifyStatus.VERIFIED
-    }
-
     override fun toString(): String {
         return "Reply(id=$id, uuid='$uuid', content='$content', modifiedCnt=$modifiedCnt, status=$status, verificationStatus=$verificationStatus)"
     }

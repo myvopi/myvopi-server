@@ -22,6 +22,7 @@ class UserFacade(
 ) {
 
     fun registerUser(command: UserRegisterCommand) {
+        // TODO servicewize
         validationService.validateUserIdExists(command.userId)
         validationService.validateEmailExists(command.email)
         validationService.validatePasswordFormat(command.password)

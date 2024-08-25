@@ -32,6 +32,7 @@ class Comment(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     var id: Long = 0L
 
     @Column(name = "uuid", nullable = false, updatable = true)
@@ -105,11 +106,6 @@ class Comment(
 
     fun flagComment() {
         this.status = CommentStatus.FLAGGED
-    }
-
-    // Admin
-    fun verified() {
-        this.verificationStatus = VerifyStatus.VERIFIED
     }
 
     override fun toString(): String {

@@ -22,6 +22,7 @@ import com.example.myvopiserver.domain.mapper.VideoMapper
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
 import org.springframework.stereotype.Service
 import com.querydsl.core.Tuple
+import org.springframework.cache.annotation.Cacheable
 
 @Service
 class CommentService(
@@ -49,6 +50,7 @@ class CommentService(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
     }
 
+    @Cacheable(value = ["cacheStore"], key = "#uuid")
     fun findOnlyComment(uuid: String): InternalCommentCommand {
         val comment = commentReaderStore.findCommentByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)

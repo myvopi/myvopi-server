@@ -1,10 +1,7 @@
 package com.example.myvopiserver.domain.service
 
+import com.commoncoremodule.enums.*
 import com.commoncoremodule.util.Cipher
-import com.commoncoremodule.enums.CommentStatus
-import com.commoncoremodule.enums.CountryCode
-import com.commoncoremodule.enums.LikeStatus
-import com.commoncoremodule.enums.RoleStatus
 import com.commoncoremodule.exception.*
 import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.command.InternalUserCommand
@@ -75,5 +72,9 @@ class ValidationService(
 
     fun validateIfBanned(status: RoleStatus) {
         if(status == RoleStatus.BANNED) throw BannedException(ErrorCode.BANNED)
+    }
+
+    fun validateIfIsUserRole(role: MemberRole) {
+        if(role != MemberRole.ROLE_USER) throw BaseException(ErrorCode.BAD_REQUEST)
     }
 }

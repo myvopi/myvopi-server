@@ -51,6 +51,8 @@ class UserService(
         validationService.validatePassword(reqPassword, password)
         // Banned status
         validationService.validateIfBanned(user.status)
+        // User role
+        validationService.validateIfIsUserRole(user.role)
         return userMapper.to(user = user)!!
     }
 

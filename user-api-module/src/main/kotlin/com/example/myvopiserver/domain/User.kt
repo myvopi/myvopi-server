@@ -99,17 +99,11 @@ class User(
     var verifications: MutableList<EmailVerification> = mutableListOf()
         protected set
 
-    fun setRoleStatusBanned() {
-        this.status = RoleStatus.BANNED
-    }
-
-    fun setRoleStatusActive() {
-        this.status = RoleStatus.ACTIVE
-    }
-
     fun setMemberRoleUser() {
         this.role = MemberRole.ROLE_USER
     }
+
+    // TODO daily video topic create chance
 
     override fun toString(): String {
         return "User(id=$id, uuid='$uuid', name='$name', userId='$userId', nationality=$nationality, password='$password', email='$email', status=$status, role=$role)"

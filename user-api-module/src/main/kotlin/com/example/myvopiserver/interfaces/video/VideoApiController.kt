@@ -25,6 +25,7 @@ class VideoApiController(
         @PathVariable(value = "url", required = true) url: String,
     ): CommonResult<List<CommentBaseInfo>>
     {
+        // TODO create topic cnt
         val urlCommand = customParser.validateAndParseVideoUrl(url)
         val userCommand = authentication?.toUserInfo()
         val command = VideoSearchCommand(
