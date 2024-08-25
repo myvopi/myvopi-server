@@ -92,7 +92,7 @@ class Comment(
 
     // Common
     fun deleteComment() {
-        this.status = CommentStatus.DELETED
+        this.status = CommentStatus.DELETED_ADMIN
     }
 
     fun updateContent(

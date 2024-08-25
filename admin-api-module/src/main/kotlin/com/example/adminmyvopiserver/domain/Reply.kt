@@ -82,8 +82,8 @@ class Reply(
         protected set
 
     // Common
-    fun deleteComment() {
-        this.status = CommentStatus.DELETED
+    fun deleteReply() {
+        this.status = CommentStatus.DELETED_ADMIN
     }
 
     fun updateContent(

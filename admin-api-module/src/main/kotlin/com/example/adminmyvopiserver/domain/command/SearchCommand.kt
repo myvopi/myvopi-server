@@ -16,4 +16,5 @@ data class UserAdminSearchCommand(
 data class CommentAdminSearchCommand(
     val userId: Long,
     val userUuid: String,
+    val reqPage: Int,
 )

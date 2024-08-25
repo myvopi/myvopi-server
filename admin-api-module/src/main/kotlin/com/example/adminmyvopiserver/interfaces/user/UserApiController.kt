@@ -28,7 +28,7 @@ class UserApiController(
         @RequestParam("nationality", required = false) nationality: CountryCode?,
         @RequestParam("email", required = false) email: String?,
         @RequestParam("status", required = false) status: RoleStatus?,
-        @RequestParam("reqPage", required = false) reqPage: Int,
+        @RequestParam("reqPage", required = true, defaultValue = "0") reqPage: Int,
     ): CommonResult<List<UserInfo>>
     {
         val command = UserAdminSearchCommand(
@@ -45,8 +45,8 @@ class UserApiController(
     }
 
     @Secured("ROLE_ADMIN")
-    @PostMapping("/status")
-    fun setStatus(
+    @PostMapping("/status/active")
+    fun setStatusActive(
         authentication: Authentication,
         @RequestBody body: UserAdminSetRoleStatusDto,
     ): CommonResult<String>
@@ -55,9 +55,24 @@ class UserApiController(
             userId = body.userId,
             userUuid = body.userUuid,
             email = body.email,
-            status = body.status,
         )
-        userFacade.requestUserStatus(command)
+        userFacade.requestUserStatusActive(command)
         return CommonResponse.success("Status changed")
+    }
+
+    @Secured("ROLE_ADMIN")
+    @PostMapping("/status/ban")
+    fun setStatusBanned(
+        authentication: Authentication,
+        @RequestBody body: UserAdminSetRoleStatusDto,
+    ): CommonResult<String>
+    {
+        val command = UserAdminSetRoleStatusCommand(
+            userId = body.userId,
+            userUuid = body.userUuid,
+            email = body.email,
+        )
+        userFacade.requestUserStatusBanned(command)
+        return CommonResponse.success("Banned user")
     }
 }

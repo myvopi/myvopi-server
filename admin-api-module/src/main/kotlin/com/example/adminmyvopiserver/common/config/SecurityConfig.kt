@@ -60,8 +60,10 @@ class SecurityConfig(
 
         http.authorizeHttpRequests { authorize ->
             authorize.requestMatchers("*", "/admin/api/v1/user/**").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/admin/api/v1/admin/login").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/admin/api/v1/admin/token/re-issue").authenticated()
+            authorize.requestMatchers("*", "/admin/api/v1/reply/**").authenticated()
+            authorize.requestMatchers("*", "/admin/api/v1/comment/**").authenticated()
+            authorize.requestMatchers(HttpMethod.POST, "/admin/api/v1/admin/login").permitAll()
+            authorize.requestMatchers(HttpMethod.POST, "/admin/api/v1/admin/token/re-issue").permitAll()
 
             authorize.anyRequest().authenticated()
         }

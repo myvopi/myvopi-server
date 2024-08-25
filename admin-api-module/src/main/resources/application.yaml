@@ -14,7 +14,7 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: ${DEV_DB_URL}
+    url: ${DEV_DB_URL}${DATABASE_NAME}
     username: ${DEV_DB_USER}
     password: ${DEV_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -28,7 +28,7 @@ spring:
       minimum-idle: ${DB_HIKARI_MINIMUM_IDLE}
 
 security:
-  key: ${SECURITY_KEY}
+  key: ${USER_SECURITY_KEY}
 
 # TODO
 server:

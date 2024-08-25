@@ -15,8 +15,9 @@ class CustomUserReaderStoreImpl(
     private val expression: UserExpression,
 ): CustomUserReaderStore {
 
+    val maxFetchCnt = 100L
+
     override fun searchUsersRequest(command: UserAdminSearchCommand): List<User> {
-        val maxFetchCnt = 100L
         return jpaQueryFactory.selectFrom(qEntityAlias.qUser)
             .where(
                 expression.uuid(command.userUuid),
