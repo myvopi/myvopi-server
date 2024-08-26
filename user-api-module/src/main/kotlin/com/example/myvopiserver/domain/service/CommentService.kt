@@ -37,27 +37,27 @@ class CommentService(
 ) {
 
     // Db-transactions (readOnly)
-    fun findCommentsFromVideo(command: CommentSearchFromVideoCommand): List<Tuple> {
+    fun getCommentsFromVideo(command: CommentSearchFromVideoCommand): List<Tuple> {
         return commentReaderStore.findCommentsFromVideoRequest(command)
     }
 
-    fun findComments(command: CommentSearchFromCommentCommand): List<Tuple> {
+    fun getComments(command: CommentSearchFromCommentCommand): List<Tuple> {
         return commentReaderStore.findCommentsFromCommentRequest(command)
     }
 
-    fun findComment(command: SingleCommentSearchCommand): Tuple {
+    fun getComment(command: SingleCommentSearchCommand): Tuple {
         return commentReaderStore.findCommentRequest(command)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
     }
 
     @Cacheable(value = ["cacheStore"], key = "#uuid")
-    fun findOnlyComment(uuid: String): InternalCommentCommand {
+    fun getOnlyComment(uuid: String): InternalCommentCommand {
         val comment = commentReaderStore.findCommentByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         return commentMapper.to(comment = comment)
     }
 
-    fun findCommentAndOwnerAndUpdateFlagged(uuid: String): InternalCommentAndOwnerCommand {
+    fun getCommentAndOwnerAndUpdateFlagged(uuid: String): InternalCommentAndOwnerCommand {
         val comment = commentReaderStore.findCommentWithUserByUuid(uuid)
             ?.let {
                 if(!validationService.validateIfFlagged(it.status)) {
@@ -73,7 +73,7 @@ class CommentService(
         )
     }
 
-    fun findCommentRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
+    fun getCommentRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
         val comment = commentReaderStore.findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         return extractEntityToCommand(comment)
@@ -102,7 +102,7 @@ class CommentService(
         )
     }
 
-    fun searchAndUpdateLikeOrCreateNew(
+    fun getAndUpdateLikeOrCreateNew(
         requesterUserCommand: InternalUserCommand,
         internalCommentCommand: InternalCommentCommand,
     ) {
@@ -121,7 +121,7 @@ class CommentService(
         }
     }
 
-    fun searchAndUpdateUnlike(
+    fun getAndUpdateUnlike(
         requesterUserCommand: InternalUserCommand,
         internalCommentCommand: InternalCommentCommand,
     ) {

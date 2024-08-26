@@ -43,6 +43,7 @@ class SecurityConfig(
         http.authenticationManager(jwtAuthenticationManager)
         // TODO Velog 같은 곳을 봐도 Authorization 태우는 방식을 알려주지 않을 뿐더러 태우더라도 변조가 되었는지 안되었는지 알려주지 않은체
         // 그냥 200만 계속 내려준다. 서버가 어떤 응답을 해주는지 숨겨야 될 의무가 있는 듯
+        // TODO 접속자 수 filtering
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         http.addFilterBefore(jwtAuthenticationExceptionFilter, JwtAuthenticationFilter::class.java)
             .exceptionHandling{

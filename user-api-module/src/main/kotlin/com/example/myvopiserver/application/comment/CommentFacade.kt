@@ -13,19 +13,19 @@ class CommentFacade(
 ) {
 
     fun requestComments(command: CommentSearchFromCommentCommand): List<CommentBaseInfo> {
-        val result = commentService.findComments(command)
+        val result = commentService.getComments(command)
         return commentService.constructCommentBaseInfo(result)
     }
 
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
         commentService.validateAndUpdateContent(command)
         val searchCommand = commentService.constructSingleCommentSearchCommand(command)
-        val result = commentService.findComment(searchCommand)
+        val result = commentService.getComment(searchCommand)
         return commentService.constructCommentBaseInfo(result)
     }
 
     fun requestCommentPost(command: CommentPostCommand): CommentBaseInfo {
-        val internalVideoCommand = videoService.findVideoWithOwner(command.videoType, command.videoId)
+        val internalVideoCommand = videoService.getVideoWithOwner(command.videoType, command.videoId)
         val internalCommentCommand = commentService.createNewComment(command, internalVideoCommand)
         return commentService.constructInitialCommentBaseInfo(internalCommentCommand)
     }
@@ -35,17 +35,17 @@ class CommentFacade(
     }
 
     fun requestCommentLike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findOnlyComment(command.commentUuid)
-        commentService.searchAndUpdateLikeOrCreateNew(command.internalUserCommand, internalCommentCommand)
+        val internalCommentCommand = commentService.getOnlyComment(command.commentUuid)
+        commentService.getAndUpdateLikeOrCreateNew(command.internalUserCommand, internalCommentCommand)
     }
 
     fun requestCommentUnlike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findOnlyComment(command.commentUuid)
-        commentService.searchAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
+        val internalCommentCommand = commentService.getOnlyComment(command.commentUuid)
+        commentService.getAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
     }
 
     fun requestReportComment(command: CommentReportCommand) {
-        val internalCommentAndOwnerCommand = commentService.findCommentAndOwnerAndUpdateFlagged(command.commentUuid)
+        val internalCommentAndOwnerCommand = commentService.getCommentAndOwnerAndUpdateFlagged(command.commentUuid)
         commentService.validateReportOrStore(command, internalCommentAndOwnerCommand)
     }
 }

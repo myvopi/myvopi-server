@@ -23,7 +23,7 @@ class VideoService(
 ) {
 
     // Db-transactions (readOnly)
-    fun findVideoWithOwner(videoType: VideoType, videoId: String): InternalVideoAndOwnerCommand {
+    fun getVideoWithOwner(videoType: VideoType, videoId: String): InternalVideoAndOwnerCommand {
         val video = videoReaderStore.findVideoWithUserByTypeAndId(videoType, videoId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val owner = video.user

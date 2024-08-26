@@ -39,22 +39,22 @@ class ReplyService(
 ) {
 
     // Db-transactions (readOnly)
-    fun findReplies(command: ReplySearchCommand): List<Tuple> {
+    fun getReplies(command: ReplySearchCommand): List<Tuple> {
         return replyReaderStore.findRepliesRequest(command)
     }
 
-    fun findOnlyReply(uuid: String): InternalReplyCommand {
+    fun getOnlyReply(uuid: String): InternalReplyCommand {
         val reply = replyReaderStore.findReplyByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         return replyMapper.to(reply = reply)
     }
 
-    fun findReply(command: SingleReplySearchCommand): Tuple {
+    fun getReply(command: SingleReplySearchCommand): Tuple {
         return replyReaderStore.findReplyRequest(command)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
     }
 
-    fun findReplyAndOwnerAndUpdateFlagged(uuid: String): InternalReplyAndOwnerCommand {
+    fun getReplyAndOwnerAndUpdateFlagged(uuid: String): InternalReplyAndOwnerCommand {
         val reply = replyReaderStore.findReplyWithUserByUuid(uuid)
             ?.let {
                 if(!validationService.validateIfFlagged(it.status)) {
@@ -100,7 +100,7 @@ class ReplyService(
         )
     }
 
-    fun searchAndUpdateLikeOrCreateNew(
+    fun getAndUpdateLikeOrCreateNew(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
@@ -118,7 +118,7 @@ class ReplyService(
         }
     }
 
-    fun searchAndUpdateUnlike(
+    fun getAndUpdateUnlike(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
@@ -181,7 +181,7 @@ class ReplyService(
             uuid = result.get(alias.columnReplyUuid)!!,
             content = result.get(alias.columnReplyContent)!!,
             userId = result.get(alias.columnUserId)!!,
-            replyLikeCount = result.get(alias.columnReplyLikesCount)!!,
+            likeCount = result.get(alias.columnReplyLikesCount)!!,
             modified = result.get(alias.columnReplyModifiedCnt)!! > 0,
             createdDate = result.get(alias.columnCreatedDateTuple)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
             userLiked = result.get(alias.columnUserLiked)?: false,
@@ -203,7 +203,7 @@ class ReplyService(
             uuid = command.uuid,
             content = command.content,
             userId = command.userId ?: "",
-            replyLikeCount = 0,
+            likeCount = 0,
             createdDate = command.createdDate.toStrings("yyyy-MM-dd HH:mm:ss"),
             modified = command.modifiedCnt > 0,
             userLiked = false,
