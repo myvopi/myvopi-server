@@ -12,6 +12,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("io.micrometer:micrometer-tracing:1.3.3")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.3")
+
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")

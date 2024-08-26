@@ -13,16 +13,14 @@ import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/user")
 class UserApiController(
     private val userFacade: UserFacade,
 ) {
 
-    @PostMapping("/register")
+    @PostMapping("/op/api/v1/user/register")
     fun register(
         @RequestBody body: RegisterDto,
     ): CommonResult<String>
@@ -38,7 +36,7 @@ class UserApiController(
         return CommonResponse.success("Register success")
     }
 
-    @PostMapping("/login")
+    @PostMapping("/op/api/v1/user/login")
     fun login(
         @RequestBody body: LoginDto,
     ): CommonResult<AuthenticationTokenInfo>
@@ -52,7 +50,7 @@ class UserApiController(
     }
 
     @Secured("ROLE_UNVERIFIED")
-    @PostMapping("/email/verification/newCode")
+    @PostMapping("/cv/api/v1/user/email/verification/newCode")
     fun emailVerificationNewCode(
         authentication: Authentication,
     ): CommonResult<String>
@@ -63,7 +61,7 @@ class UserApiController(
     }
 
     @Secured("ROLE_UNVERIFIED")
-    @PostMapping("/email/verification")
+    @PostMapping("/cv/api/v1/user/email/verification")
     fun emailVerification(
         authentication: Authentication,
         @RequestBody body: EmailVerificationDto,
@@ -78,7 +76,7 @@ class UserApiController(
         return CommonResponse.success("Verification successful")
     }
 
-    @PostMapping("/token/re-issue")
+    @PostMapping("/op/api/v1/user/token/re-issue")
     fun reissueAccessToken(
         @RequestBody body: ReissueAccessTokenDto,
     ): CommonResult<AuthenticationTokenInfo>

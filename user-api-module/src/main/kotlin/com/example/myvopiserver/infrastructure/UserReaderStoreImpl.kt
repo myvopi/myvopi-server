@@ -27,12 +27,7 @@ class UserReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun userExistsByUserId(userId: String): Boolean {
-        return userRepository.existsUserByUuid(userId)
-    }
-
-    @Transactional(readOnly = true)
-    override fun userExistsByEmail(email: String): Boolean {
-        return userRepository.existsUserByEmail(email)
+    override fun userExistsByUserIdOrEmail(userId: String, email: String): Boolean {
+        return userRepository.existsByUserIdOrEmail(userId, email)
     }
 }

@@ -47,7 +47,7 @@ spring:
     test-connection: false
 
 security:
-  key: ${SECURITY_KEY}
+  key: ${USER_SECURITY_KEY}
 
 # TODO
 server:

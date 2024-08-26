@@ -1,4 +1,4 @@
-package com.example.myvopiserver.common.config.filter
+package com.example.myvopiserver.common.filter
 
 import jakarta.servlet.*
 import jakarta.servlet.http.HttpServletRequest

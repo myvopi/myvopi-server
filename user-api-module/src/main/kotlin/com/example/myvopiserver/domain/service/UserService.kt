@@ -42,6 +42,12 @@ class UserService(
     }
 
     // Validation & constructors
+    fun validateUserRegisterRequest(command: UserRegisterCommand) {
+        validationService.validateUserIdOrEmailExists(command.userId, command.email)
+        validationService.validatePasswordFormat(command.password)
+        validationService.validateValidCountryCode(command.nationality)
+    }
+
     fun validateUserLogin(command: UserLoginCommand): InternalUserCommand {
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
@@ -49,10 +55,8 @@ class UserService(
         val password = user.password
         // Password authentication
         validationService.validatePassword(reqPassword, password)
-        // Banned status
+        // Banned status validation
         validationService.validateIfBanned(user.status)
-        // User role
-        validationService.validateIfIsUserRole(user.role)
         return userMapper.to(user = user)!!
     }
 
@@ -63,5 +67,13 @@ class UserService(
             accessToken = jwtTokenGenerator.createAccessToken(internalUserCommand),
             refreshToken = jwtTokenGenerator.createRefreshToken(internalUserCommand),
         )
+    }
+
+    fun getUserAndValidateStatus(uuid: String): InternalUserCommand {
+        val user = userReaderStore.findUserByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        // Banned status validation
+        validationService.validateIfBanned(user.status)
+        return userMapper.to(user = user)!!
     }
 }

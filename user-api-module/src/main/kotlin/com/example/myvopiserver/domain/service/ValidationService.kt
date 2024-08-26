@@ -14,14 +14,9 @@ class ValidationService(
     private val cipher: Cipher,
 ) {
 
-    fun validateUserIdExists(userId: String) {
-        val verification = userReaderStore.userExistsByUserId(userId)
-        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username")
-    }
-
-    fun validateEmailExists(email: String) {
-        val verification = userReaderStore.userExistsByEmail(email)
-        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email")
+    fun validateUserIdOrEmailExists(userId: String, email: String) {
+        val verification = userReaderStore.userExistsByUserIdOrEmail(userId, email)
+        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username or email")
     }
 
     fun validatePasswordFormat(password: String) {
@@ -71,10 +66,10 @@ class ValidationService(
     }
 
     fun validateIfBanned(status: RoleStatus) {
-        if(status == RoleStatus.BANNED) throw BannedException(ErrorCode.BANNED)
+        if(status == RoleStatus.BANNED) throw AccessDeniedException(ErrorCode.BANNED)
     }
 
     fun validateIfIsUserRole(role: MemberRole) {
-        if(role != MemberRole.ROLE_USER) throw BaseException(ErrorCode.BAD_REQUEST)
+        if(role == MemberRole.ROLE_ADMIN) throw BaseException(ErrorCode.BAD_REQUEST, "CODE 1")
     }
 }

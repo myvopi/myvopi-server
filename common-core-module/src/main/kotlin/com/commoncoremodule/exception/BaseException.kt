@@ -59,3 +59,23 @@ data class BannedException(
         return super.toString()
     }
 }
+
+data class JwtException(
+    val errorCode: ErrorCode,
+    override val message: String = errorCode.engErrorMsg
+): RuntimeException(message)
+{
+    override fun toString(): String {
+        return super.toString()
+    }
+}
+
+data class AccessDeniedException(
+    val errorCode: ErrorCode,
+    override val message: String = errorCode.engErrorMsg
+): RuntimeException(message)
+{
+    override fun toString(): String {
+        return super.toString()
+    }
+}

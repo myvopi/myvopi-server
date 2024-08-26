@@ -16,17 +16,15 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/reply")
 class ReplyApiController(
     private val replyFacade: ReplyFacade,
 ) {
 
-    @GetMapping("/")
+    @GetMapping("/op/api/v1/reply")
     fun getComments(
         authentication: Authentication?,
         @RequestParam(value = "uuid", required = true) uuid: String,
@@ -44,7 +42,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PutMapping("/")
+    @PutMapping("/cv/api/v1/reply")
     fun updateReply(
         authentication: Authentication,
         @RequestBody body: ReplyUpdateDto,
@@ -61,7 +59,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/")
+    @PostMapping("/cv/api/v1/reply")
     fun postReply(
         authentication: Authentication,
         @RequestBody body: ReplyPostDto,
@@ -78,7 +76,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @DeleteMapping("/")
+    @DeleteMapping("/cv/api/v1/reply")
     fun deleteReply(
         authentication: Authentication,
         @RequestBody body: ReplyDeleteDto,
@@ -94,7 +92,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/like")
+    @PostMapping("/cv/api/v1/reply/like")
     fun postReplyLike(
         authentication: Authentication,
         @RequestBody body: ReplyLikeDto,
@@ -110,7 +108,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/unlike")
+    @PostMapping("/cv/api/v1/reply/unlike")
     fun postReplyUnlike(
         authentication: Authentication,
         @RequestBody body: ReplyLikeDto,
@@ -126,7 +124,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/report")
+    @PostMapping("/cv/api/v1/reply/report")
     fun postReport(
         authentication: Authentication,
         @RequestBody body: ReplyReportDto,
