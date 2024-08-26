@@ -25,7 +25,7 @@ class CustomCommentReaderStoreImpl(
     private val qEntityAlias: QEntityAlias,
 ): CustomCommentReaderStore {
 
-    private val maxFetchCnt = 100L
+    private val maxFetchCnt = 10L
 
     override fun findCommentsByUserRequest(command: CommentAdminSearchCommand): List<Tuple> {
         return constructCommentSelectQuery()

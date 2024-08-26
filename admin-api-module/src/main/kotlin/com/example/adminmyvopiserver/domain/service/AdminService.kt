@@ -21,7 +21,7 @@ class AdminService(
     private val cipher: Cipher,
 ) {
 
-    // Validation
+    // Validation and constructor
     fun validateAdminLogin(command: AdminLoginCommand): InternalUserCommand {
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
@@ -30,6 +30,14 @@ class AdminService(
         val decryptedPassword = cipher.decrypt(password)
         // Password authentication
         if(reqPassword != decryptedPassword) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
+        // Role authentication
+        if(user.role != MemberRole.ROLE_ADMIN) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
+        return userMapper.to(user = user)!!
+    }
+
+    fun getAdminAndValidateRole(uuid: String): InternalUserCommand {
+        val user = userReaderStore.findUserByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         // Role authentication
         if(user.role != MemberRole.ROLE_ADMIN) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
         return userMapper.to(user = user)!!

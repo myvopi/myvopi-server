@@ -10,7 +10,7 @@ class CommentFacade(
 ) {
 
     fun requestTodayComments(reqPage: Int): List<CommentBaseInfo> {
-        val results = commentService.findTodayCommentsRequest(reqPage)
+        val results = commentService.getTodayCommentsRequest(reqPage)
         return commentService.mapCommentBaseInfoOfResults(results)
     }
 }

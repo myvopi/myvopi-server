@@ -4,8 +4,6 @@ import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.UnauthorizedException
 import com.commoncoremodule.enums.TokenType
 import com.example.adminmyvopiserver.domain.command.InternalUserCommand
-import com.example.adminmyvopiserver.domain.interfaces.UserReaderStore
-import com.example.adminmyvopiserver.domain.mapper.UserMapper
 import org.springframework.security.oauth2.jwt.*
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -16,8 +14,6 @@ import java.util.*
 class JwtTokenGenerator(
     private val jwtDecoder: JwtDecoder,
     private val jwtEncoder: JwtEncoder,
-    private val userReaderStore: UserReaderStore,
-    private val userMapper: UserMapper,
 ) {
 
     private val accessTokenExpireTime = 30L
@@ -48,64 +44,22 @@ class JwtTokenGenerator(
         return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).tokenValue
     }
 
-    fun parseAccessToken(
-        token: String
-    ): InternalUserCommand?
-    {
-        return try{
-            val jwt = this.parseTokenFilter(token, TokenType.ACCESS_TOKEN)
-            val claims = jwt.claims
-            val uuid = claims["unique"] as String
-            val user = userReaderStore.findUserByUuid(uuid)
-            userMapper.to(user = user)
-        } catch (e: JwtException) {
-            null
-        }
-    }
-
-    fun parseRefreshToken(
-        jwt: Jwt
-    ): InternalUserCommand?
-    {
-        return try{
-            val key = jwt.subject
-            val user = userReaderStore.findUserByUuid(key)
-            userMapper.to(user = user)
-        } catch (e: JwtException) {
-            null
-        }
-    }
-
-    fun parseTokenFilter(token: String, tokenType: TokenType): Jwt {
-        try{
-            return decodeToken(token)
-        }
-        catch (e: JwtValidationException) {
+    fun decodeAndParse(token: String, tokenType: TokenType): String {
+        try {
+            val validatedJwt = jwtDecoder.decode(token)
+            return if(tokenType == TokenType.ACCESS_TOKEN) validatedJwt.claims["unique"]?.let { it as String }!!
+            else validatedJwt.subject
+        } catch (e: JwtValidationException) {
             when(tokenType) {
                 TokenType.ACCESS_TOKEN -> throw UnauthorizedException(ErrorCode.EXPIRED_TOKEN)
                 TokenType.REFRESH_TOKEN -> throw UnauthorizedException(ErrorCode.REFRESH_TOKEN_EXPIRED)
             }
         } catch (e: BadJwtException) {
-            throw UnauthorizedException(ErrorCode.JWT_CORRUPT)
+            throw UnauthorizedException(ErrorCode.JWT_CORRUPT, ErrorCode.JWT_CORRUPT.engErrorMsg + " value 1")
         } catch (e: NullPointerException) {
-            throw UnauthorizedException(ErrorCode.UNAUTHORIZED)
+            throw UnauthorizedException(ErrorCode.UNAUTHORIZED, ErrorCode.UNAUTHORIZED.engErrorMsg + " value 2")
+        } catch (e: JwtException) {
+            throw UnauthorizedException(ErrorCode.JWT_CORRUPT, ErrorCode.JWT_CORRUPT.engErrorMsg + " value 3")
         }
-    }
-
-    fun parseTokenFilter(token: String): Jwt {
-        try {
-            return decodeToken(token)
-        }
-        catch (e: JwtValidationException) {
-            throw UnauthorizedException(ErrorCode.EXPIRED_TOKEN)
-        } catch (e: BadJwtException) {
-            throw UnauthorizedException(ErrorCode.JWT_CORRUPT)
-        } catch (e: NullPointerException) {
-            throw UnauthorizedException(ErrorCode.UNAUTHORIZED)
-        }
-    }
-
-    fun decodeToken(token: String): Jwt {
-        return jwtDecoder.decode(token)
     }
 }

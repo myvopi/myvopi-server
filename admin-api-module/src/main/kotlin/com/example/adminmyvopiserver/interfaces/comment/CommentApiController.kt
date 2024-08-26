@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/admin/api/v1/comment")
+@RequestMapping("/cv/admin/api/v1/comment")
 class CommentApiController(
     private val commentFacade: CommentFacade,
 ) {
@@ -24,9 +24,6 @@ class CommentApiController(
         val info = commentFacade.requestTodayComments(reqPage)
         return CommonResponse.success(info)
     }
-
-    // TODO get comments by user
-    // @GetMapping
 
     // TODO get find comments
 

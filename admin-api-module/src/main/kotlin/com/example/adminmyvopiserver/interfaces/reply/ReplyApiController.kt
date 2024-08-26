@@ -4,11 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/admin/api/v1/reply")
+@RequestMapping("/cv/admin/api/v1/reply")
 class ReplyApiController {
-
-    // TODO get replies by user
-    // @GetMapping
 
     // TODO get find reply
 

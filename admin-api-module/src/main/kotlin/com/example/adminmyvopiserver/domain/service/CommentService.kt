@@ -22,18 +22,18 @@ class CommentService(
 ) {
 
     // Db-transactions (readOnly)
-    fun findTodayComments(reqPage: Int): List<InternalCommentCommand> {
+    fun getTodayComments(reqPage: Int): List<InternalCommentCommand> {
         val todayDateCommand = getTodayBetweenDates()
         val results = commentReaderStore.findCommentsBetweenDate(todayDateCommand.fromDate, todayDateCommand.toDate)
         return results.map { commentMapper.to(it) }
     }
 
-    fun findTodayCommentsRequest(reqPage: Int): List<Tuple> {
+    fun getTodayCommentsRequest(reqPage: Int): List<Tuple> {
         val todayDateCommand = getTodayBetweenDates()
         return commentReaderStore.findCommentsBetweenDateRequest(todayDateCommand.fromDate, todayDateCommand.toDate, reqPage)
     }
 
-    fun findCommentsByUser(command: CommentAdminSearchCommand): List<Tuple> {
+    fun getCommentsByUserRequest(command: CommentAdminSearchCommand): List<Tuple> {
         return commentReaderStore.findCommentsByUserRequest(command)
     }
 

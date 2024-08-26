@@ -15,3 +15,9 @@ data class UserInfo(
     val role: MemberRole,
     val status: RoleStatus,
 )
+
+data class UserContentsInfo(
+    val videoId: String,
+    val comments: List<CommentBaseJpaInfo>,
+    val replies: List<ReplyBaseJpaInfo>,
+)

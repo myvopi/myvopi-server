@@ -1,7 +1,9 @@
 package com.example.adminmyvopiserver.application.user
 
+import com.example.adminmyvopiserver.domain.command.ContentsByUserCommand
 import com.example.adminmyvopiserver.domain.command.UserAdminSearchCommand
 import com.example.adminmyvopiserver.domain.command.UserAdminSetRoleStatusCommand
+import com.example.adminmyvopiserver.domain.info.UserContentsInfo
 import com.example.adminmyvopiserver.domain.info.UserInfo
 import com.example.adminmyvopiserver.domain.mapper.UserMapper
 import com.example.adminmyvopiserver.domain.service.CommentService
@@ -23,7 +25,7 @@ class UserFacade(
     }
 
     fun requestUserStatusActive(command: UserAdminSetRoleStatusCommand) {
-        val internalUserCommand = userService.findUserByUserIdAndUuid(command.userId, command.userUuid)
+        val internalUserCommand = userService.getUserByUserIdAndUuid(command.userId, command.userUuid)
         userService.setUserStatusActive(internalUserCommand)
     }
 
@@ -31,5 +33,10 @@ class UserFacade(
         val internalUserCommand = userService.setUserStatusBanned(command)
         commentService.deleteAllCommentsDueToBan(internalUserCommand)
         replyService.deleteAllRepliesDueToBan(internalUserCommand)
+    }
+
+    fun requestContentsByUser(command: ContentsByUserCommand): List<UserContentsInfo> {
+        val internalUserCommand = userService.getUserByUserIdAndUuid(command.userId, command.userUuid)
+        return userService.getContentsByUserAndConvertToInfo(internalUserCommand, command)
     }
 }

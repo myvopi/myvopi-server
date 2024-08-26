@@ -2,14 +2,12 @@ package com.example.adminmyvopiserver.common.config
 
 import com.example.adminmyvopiserver.common.config.filter.CorsFilter
 import com.example.adminmyvopiserver.common.config.filter.JwtAuthenticationFilter
-import com.example.adminmyvopiserver.common.config.authentication.JwtAuthenticationManager
 import com.example.adminmyvopiserver.common.config.filter.JwtAuthenticationExceptionFilter
 import com.example.adminmyvopiserver.common.handler.CustomAccessDeniedHandler
 import com.example.adminmyvopiserver.common.handler.CustomAuthenticationEntryPoint
 import com.example.adminmyvopiserver.common.handler.CustomUnauthorizedAccessDeniedHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -26,7 +24,6 @@ import org.springframework.security.web.session.SessionManagementFilter
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class SecurityConfig(
-    private val jwtAuthenticationManager: JwtAuthenticationManager,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val jwtAuthenticationExceptionFilter: JwtAuthenticationExceptionFilter,
     private val customAccessDeniedHandler: CustomAccessDeniedHandler,
@@ -40,7 +37,6 @@ class SecurityConfig(
     ): SecurityFilterChain
     {
         http.oauth2ResourceServer { oauth2 -> oauth2.jwt(Customizer.withDefaults()) }
-        http.authenticationManager(jwtAuthenticationManager)
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         http.addFilterBefore(jwtAuthenticationExceptionFilter, JwtAuthenticationFilter::class.java)
             .exceptionHandling{
@@ -57,15 +53,9 @@ class SecurityConfig(
         http.headers { headers ->
             headers.xssProtection { xssProtection -> xssProtection.disable() }
         }
-
         http.authorizeHttpRequests { authorize ->
-            authorize.requestMatchers("*", "/admin/api/v1/user/**").authenticated()
-            authorize.requestMatchers("*", "/admin/api/v1/reply/**").authenticated()
-            authorize.requestMatchers("*", "/admin/api/v1/comment/**").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/admin/api/v1/admin/login").permitAll()
-            authorize.requestMatchers(HttpMethod.POST, "/admin/api/v1/admin/token/re-issue").permitAll()
-
-            authorize.anyRequest().authenticated()
+            authorize.requestMatchers("*", "/op/**").permitAll()
+            authorize.requestMatchers("*", "/cv/**").authenticated()
         }
         .exceptionHandling{
             it.accessDeniedHandler(customAccessDeniedHandler)

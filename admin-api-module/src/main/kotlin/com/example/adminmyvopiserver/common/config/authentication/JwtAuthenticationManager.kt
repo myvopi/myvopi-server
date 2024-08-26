@@ -1,25 +1,21 @@
 package com.example.adminmyvopiserver.common.config.authentication
 
-import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.UnauthorizedException
+import com.commoncoremodule.enums.TokenType
 import com.example.adminmyvopiserver.domain.command.InternalUserCommand
-import org.springframework.security.authentication.AuthenticationManager
+import com.example.adminmyvopiserver.domain.service.AdminService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken
 import org.springframework.stereotype.Component
 
 @Component
 class JwtAuthenticationManager(
-    private val tokenGenerator: JwtTokenGenerator
-): AuthenticationManager
-{
-    override fun authenticate(authentication: Authentication): Authentication {
-        val jwt = authentication as BearerTokenAuthenticationToken
-        val token = jwt.token
-        val internalUserCommand = tokenGenerator.parseAccessToken(token)
-            ?: throw UnauthorizedException(ErrorCode.INVALID_TOKEN)
+    private val tokenGenerator: JwtTokenGenerator,
+    private val adminService: AdminService,
+) {
+    fun authenticate(jwtToken: String): Authentication {
+        val adminUuid = tokenGenerator.decodeAndParse(jwtToken, TokenType.ACCESS_TOKEN)
+        val internalUserCommand = adminService.getAdminAndValidateRole(adminUuid)
         return UsernamePasswordAuthenticationToken(internalUserCommand, "", listOf(SimpleGrantedAuthority(internalUserCommand.role.name)))
     }
 }

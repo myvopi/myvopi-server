@@ -5,15 +5,18 @@ import com.commoncoremodule.enums.RoleStatus
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.example.adminmyvopiserver.application.user.UserFacade
+import com.example.adminmyvopiserver.common.PageableDto
+import com.example.adminmyvopiserver.domain.command.ContentsByUserCommand
 import com.example.adminmyvopiserver.domain.command.UserAdminSearchCommand
 import com.example.adminmyvopiserver.domain.command.UserAdminSetRoleStatusCommand
+import com.example.adminmyvopiserver.domain.info.UserContentsInfo
 import com.example.adminmyvopiserver.domain.info.UserInfo
+import org.springframework.data.domain.Sort
 import org.springframework.security.access.annotation.Secured
-import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/admin/api/v1/user")
+@RequestMapping("/cv/admin/api/v1/user")
 class UserApiController(
     private val userFacade: UserFacade,
 ) {
@@ -21,7 +24,6 @@ class UserApiController(
     @Secured("ROLE_ADMIN")
     @GetMapping("/users")
     fun searchUsers(
-        authentication: Authentication,
         @RequestParam("userId", required = false) userId: String?,
         @RequestParam("userUuid", required = false) userUuid: String?,
         @RequestParam("userName", required = false) userName: String?,
@@ -47,7 +49,6 @@ class UserApiController(
     @Secured("ROLE_ADMIN")
     @PostMapping("/status/active")
     fun setStatusActive(
-        authentication: Authentication,
         @RequestBody body: UserAdminSetRoleStatusDto,
     ): CommonResult<String>
     {
@@ -63,7 +64,6 @@ class UserApiController(
     @Secured("ROLE_ADMIN")
     @PostMapping("/status/ban")
     fun setStatusBanned(
-        authentication: Authentication,
         @RequestBody body: UserAdminSetRoleStatusDto,
     ): CommonResult<String>
     {
@@ -74,5 +74,25 @@ class UserApiController(
         )
         userFacade.requestUserStatusBanned(command)
         return CommonResponse.success("Banned user")
+    }
+
+    @Secured("ROLE_ADMIN")
+    @PostMapping("/contents")
+    fun getUserContents(
+        @RequestBody body: ContentsByUserDto,
+    ): CommonResult<List<UserContentsInfo>>
+    {
+        val command = ContentsByUserCommand(
+            userId = body.userId,
+            userUuid = body.userUuid,
+            email = body.email,
+            pageable = PageableDto(
+                page = body.reqPage,
+                size = 10,
+                sorts = listOf(PageableDto.SortDto(Sort.Direction.DESC, "createdDt"))
+            ).toPageable(),
+        )
+        val info = userFacade.requestContentsByUser(command)
+        return CommonResponse.success(info)
     }
 }

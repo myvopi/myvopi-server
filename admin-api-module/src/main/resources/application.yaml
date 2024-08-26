@@ -28,7 +28,7 @@ spring:
       minimum-idle: ${DB_HIKARI_MINIMUM_IDLE}
 
 security:
-  key: ${USER_SECURITY_KEY}
+  key: ${ADMIN_SECURITY_KEY}
 
 # TODO
 server:

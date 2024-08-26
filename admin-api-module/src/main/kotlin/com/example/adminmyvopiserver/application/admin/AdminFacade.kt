@@ -1,8 +1,6 @@
 package com.example.adminmyvopiserver.application.admin
 
 import com.commoncoremodule.enums.TokenType
-import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.UnauthorizedException
 import com.example.adminmyvopiserver.common.config.authentication.JwtTokenGenerator
 import com.example.adminmyvopiserver.domain.command.AdminLoginCommand
 import com.example.adminmyvopiserver.domain.command.ReissueAccessTokenCommand
@@ -22,9 +20,8 @@ class AdminFacade(
     }
 
     fun reissueAccessToken(command: ReissueAccessTokenCommand): AuthenticationTokenInfo {
-        val validatedRefreshToken = jwtTokenGenerator.parseTokenFilter(command.refreshToken, TokenType.REFRESH_TOKEN)
-        val internalUserCommand = jwtTokenGenerator.parseRefreshToken(validatedRefreshToken)
-            ?: throw UnauthorizedException(ErrorCode.INVALID_TOKEN)
+        val adminUuid = jwtTokenGenerator.decodeAndParse(command.refreshToken, TokenType.REFRESH_TOKEN)
+        val internalUserCommand = adminService.getAdminAndValidateRole(adminUuid)
         val newAccessToken = jwtTokenGenerator.createAccessToken(internalUserCommand)
         return AuthenticationTokenInfo(
             accessToken = newAccessToken,
