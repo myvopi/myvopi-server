@@ -12,8 +12,8 @@ class CommentFacade(
     private val videoService: VideoService,
 ) {
 
-    fun requestComments(command: CommentSearchFromCommentCommand): List<CommentBaseInfo> {
-        val result = commentService.getComments(command)
+    fun requestComments(command: CommentsSearchCommand): List<CommentBaseInfo> {
+        val result = commentService.getCommentsRequest(command)
         return commentService.constructCommentBaseInfo(result)
     }
 

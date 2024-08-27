@@ -3,9 +3,13 @@ package com.example.myvopiserver.domain
 import com.commoncoremodule.enums.ContentType
 import com.commoncoremodule.enums.ReportType
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
 @Table(name ="report")
+@DynamicUpdate
+@DynamicInsert
 class Report(
     contentType: ContentType,   // 콘텐츠 유형
     reportType: ReportType,     // 신고 내용

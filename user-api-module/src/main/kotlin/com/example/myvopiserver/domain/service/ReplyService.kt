@@ -137,11 +137,11 @@ class ReplyService(
         val reply = replyReaderStore.findReplyWithUserByUuid(command.replyUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = reply.user
+        // validate if is owner
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
+        // validate if it's deleted
         validationService.validateIsDeleted(reply.status)
-        if(!validationService.validateIfRequestContentMatchesOriginalContent(command.content, reply.content)) {
-            reply.updateContent(command.content)
-        }
+        reply.updateContent(command.content)
         replyReaderStore.saveReply(reply)
     }
 

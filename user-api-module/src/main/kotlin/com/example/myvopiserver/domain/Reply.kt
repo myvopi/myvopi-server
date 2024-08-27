@@ -4,10 +4,14 @@ import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.VerifyStatus
 import com.example.myvopiserver.domain.command.InternalReplyCommand
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 import java.util.*
 
 @Entity
 @Table(name ="reply")
+@DynamicUpdate
+@DynamicInsert
 class Reply(
     content: String,            // 내용
     comment: Comment,           // 상위 댓글

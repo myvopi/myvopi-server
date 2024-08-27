@@ -5,15 +5,7 @@ import com.commoncoremodule.enums.RoleStatus
 import com.commoncoremodule.enums.SearchFilter
 import com.commoncoremodule.enums.VideoType
 
-data class CommentSearchFromVideoCommand(
-    val internalUserCommand: InternalUserCommand?,
-    val filter: SearchFilter,
-    val reqPage: Int,
-    val videoId: Long,
-    val videoType: VideoType,
-)
-
-data class CommentSearchFromCommentCommand(
+data class CommentsSearchCommand(
     val internalUserCommand: InternalUserCommand?,
     val filter: SearchFilter,
     val reqPage: Int,

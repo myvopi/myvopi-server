@@ -5,10 +5,14 @@ import com.commoncoremodule.enums.MemberRole
 import com.commoncoremodule.enums.RoleStatus
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 import java.util.*
 
 @Entity
 @Table(name = "user")
+@DynamicUpdate
+@DynamicInsert
 class User(
     name: String,               // 성명
     userId: String,             // 아이디

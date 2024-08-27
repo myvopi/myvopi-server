@@ -2,8 +2,7 @@ package com.example.myvopiserver.infrastructure.custom
 
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.SearchFilter
-import com.example.myvopiserver.domain.command.CommentSearchFromCommentCommand
-import com.example.myvopiserver.domain.command.CommentSearchFromVideoCommand
+import com.example.myvopiserver.domain.command.CommentsSearchCommand
 import com.example.myvopiserver.domain.command.SingleCommentSearchCommand
 import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
 import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
@@ -13,7 +12,6 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
 import org.springframework.stereotype.Repository
 
-// TODO need to change all values to object oriented
 @Repository
 class CustomCommentReaderStoreImpl(
     private val alias: BasicAlias,
@@ -60,39 +58,21 @@ class CustomCommentReaderStoreImpl(
      *   order by like_count desc
      *   limit 10 offset 0;
     * */
-    override fun pageableCommentAndReplyFromVideoRequest(command: CommentSearchFromVideoCommand): List<Tuple> {
+    override fun findCommentsRequest(command: CommentsSearchCommand): List<Tuple> {
         return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qComment)
-            .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
-            .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply).on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
-            .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
-            .join(qEntityAlias.qVideo).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
+            .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike)
+                .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
+            .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply)
+                .on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
+            .join(qEntityAlias.qUser)
+                .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
+            .join(qEntityAlias.qVideo)
+                .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
             .where(
-                Expressions.numberPath(Long::class.java, qEntityAlias.qComment, "video_id").eq(command.videoId),
-                Expressions.stringPath(qEntityAlias.qComment, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
-                Expressions.stringPath(qEntityAlias.qVideo, "videoType").eq(command.videoType.name)
-            )
-            .groupBy(qEntityAlias.qComment.id)
-            .orderBy(
-                if(command.filter == SearchFilter.POPULAR) alias.columnCommentLikesCount.desc()
-                else alias.columnCreatedDate.desc()
-            )
-            .limit(maxFetchCnt)
-            .offset(command.reqPage.toLong() * maxFetchCnt)
-            .fetch()
-    }
-
-    override fun pageableCommentAndReplyFromCommentRequest(command: CommentSearchFromCommentCommand): List<Tuple> {
-        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
-            .from(qEntityAlias.qComment)
-            .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
-            .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply).on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
-            .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
-            .join(qEntityAlias.qVideo).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
-            .where(
-                Expressions.stringPath(qEntityAlias.qVideo, "videoId").eq(command.videoId),
-                Expressions.stringPath(qEntityAlias.qComment, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
-                Expressions.stringPath(qEntityAlias.qVideo, "videoType").eq(command.videoType.name)
+                Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qVideo.videoId.metadata.name).eq(command.videoId),
+                Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qComment.video.videoType.metadata.name).eq(command.videoType.name),
+                Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
             )
             .groupBy(qEntityAlias.qComment.id)
             .orderBy(
@@ -105,17 +85,21 @@ class CustomCommentReaderStoreImpl(
     }
 
     override fun findCommentRequest(command: SingleCommentSearchCommand): Tuple? {
-        return queryConstructor.constructAuthCommentSelectQuery(command.internalUserCommand)
+        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qComment)
-            .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
-            .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply).on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
-            .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
-            .join(qEntityAlias.qVideo).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
+            .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike)
+                .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
+            .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply)
+                .on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
+            .join(qEntityAlias.qUser)
+                .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
+            .join(qEntityAlias.qVideo)
+                .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
             .where(
                 qEntityAlias.qUser.uuid.eq(command.internalUserCommand.uuid),
-                Expressions.stringPath(qEntityAlias.qUser, "userId").eq(command.internalUserCommand.userId),
-                Expressions.stringPath(qEntityAlias.qVideo, "videoId").eq(command.videoId),
-                Expressions.stringPath(qEntityAlias.qVideo, "videoType").eq(command.videoType.name),
+                Expressions.stringPath(qEntityAlias.qUser, qEntityAlias.qUser.userId.metadata.name).eq(command.internalUserCommand.userId),
+                Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qVideo.videoId.metadata.name).eq(command.videoId),
+                Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qVideo.videoType.metadata.name).eq(command.videoType.name),
                 qEntityAlias.qComment.uuid.eq(command.commentUuid)
             )
             .groupBy(qEntityAlias.qComment.id)

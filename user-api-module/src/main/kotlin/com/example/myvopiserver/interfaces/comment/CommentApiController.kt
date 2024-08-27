@@ -34,7 +34,7 @@ class CommentApiController(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val searchFilter = SearchFilter.decode(filter)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")
-        val command = CommentSearchFromCommentCommand(
+        val command = CommentsSearchCommand(
             internalUserCommand = userCommand,
             filter = searchFilter,
             reqPage = reqPage,

@@ -44,7 +44,7 @@ class UserFacade(
 
     fun reissueAccessToken(command: ReissueAccessTokenCommand): AuthenticationTokenInfo {
         val userUuid = jwtTokenGenerator.decodeAndParse(command.refreshToken, TokenType.REFRESH_TOKEN)
-        val internalUserCommand = userService.getUserAndValidateStatus(userUuid)
+        val internalUserCommand = userService.getUserAndValidateStatusWithRole(userUuid)
         val newAccessToken = jwtTokenGenerator.createAccessToken(internalUserCommand)
         return AuthenticationTokenInfo(
             accessToken = newAccessToken,

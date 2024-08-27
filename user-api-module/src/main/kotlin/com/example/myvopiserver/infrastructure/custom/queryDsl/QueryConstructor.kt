@@ -26,22 +26,11 @@ class QueryConstructor(
 ) {
 
     fun verifyAuthAndConstructCommentSelectQuery(command: InternalUserCommand?): JPASQLQuery<Tuple> {
-        return command?.let { constructAuthCommentSelectQuery(it) }
-            ?: run { constructNonAuthCommentSelectQuery() }
-    }
-
-    fun constructAuthCommentSelectQuery(command: InternalUserCommand): JPASQLQuery<Tuple> {
-        val query = JPASQLQuery<Any>(em, mysqlTemplates)
-        return query.select(
-            qEntityAlias.qComment.uuid.`as`(alias.columnCommentUuid),
-            qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
-            qEntityAlias.qComment.modifiedCnt.`as`(alias.columnCommentModifiedCnt),
-            qEntityAlias.qUser.userId.`as`(alias.columnUserId),
-            Expressions.numberPath(Long::class.java, alias.subQueryCommentLike, "id").countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
-            Expressions.numberPath(Long::class.java, alias.subQueryReply, "id").countDistinct().`as`(alias.columnReplyCount), // replyCount
-            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qComment, "createdDt").`as`(alias.columnCreatedDate), // created_dt
-            expressions.commentLikeSubQuery(command.id).`as`(alias.columnUserLiked)
-        )
+        return constructNonAuthCommentSelectQuery().apply {
+                command?.let {
+                    expressions.commentLikeSubQuery(command.id).`as`(alias.columnUserLiked)
+                }
+            }
     }
 
     fun constructNonAuthCommentSelectQuery(): JPASQLQuery<Tuple> {
@@ -51,9 +40,9 @@ class QueryConstructor(
             qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
             qEntityAlias.qComment.modifiedCnt.`as`(alias.columnCommentModifiedCnt),
             qEntityAlias.qUser.userId.`as`(alias.columnUserId),
-            Expressions.numberPath(Long::class.java, alias.subQueryCommentLike, "id").countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
-            Expressions.numberPath(Long::class.java, alias.subQueryReply, "id").countDistinct().`as`(alias.columnReplyCount), // replyCount
-            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qComment, "createdDt").`as`(alias.columnCreatedDate), // created_dt
+            Expressions.numberPath(Long::class.java, alias.subQueryCommentLike, qEntityAlias.qCommentLike.id.metadata.name).countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
+            Expressions.numberPath(Long::class.java, alias.subQueryReply, qEntityAlias.qReply.id.metadata.name).countDistinct().`as`(alias.columnReplyCount), // replyCount
+            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qComment, qEntityAlias.qComment.createdDt.metadata.name).`as`(alias.columnCreatedDate), // created_dt
         )
     }
 

@@ -3,10 +3,12 @@ package com.example.myvopiserver.domain
 import com.commoncoremodule.enums.VideoType
 import com.example.myvopiserver.domain.command.InternalVideoCommand
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
 import java.util.*
 
 @Entity
 @Table(name = "video")
+@DynamicInsert
 class Video(
     videoId: String,     // 유튜브 UUID (비디오 아이디)
     user: User,          // 생성한 유저 아이디
@@ -44,7 +46,7 @@ class Video(
         protected set
 
     @ManyToOne(
-        fetch = FetchType.EAGER,
+        fetch = FetchType.LAZY,
         targetEntity = User::class,
     )
     @JoinColumn(name = "user_id", nullable = false)

@@ -1,6 +1,5 @@
 package com.example.myvopiserver.application.video
 
-import com.example.myvopiserver.domain.command.CommentSearchFromVideoCommand
 import com.example.myvopiserver.domain.command.VideoSearchCommand
 import com.example.myvopiserver.domain.info.VideoBaseInfo
 import com.example.myvopiserver.domain.service.CommentService
@@ -24,19 +23,10 @@ class VideoFacade(
         // 주제 생성 시 댓글 조회 생략
         return if(!returnCommand.search) VideoBaseInfo(comments = emptyList(), message = returnCommand.message)
         else {
-            val searchCommand = CommentSearchFromVideoCommand(
-                filter = command.filter,
-                reqPage = command.reqPage,
-                videoId = returnCommand.internalVideoCommand.id,
-                videoType = command.videoType,
-                internalUserCommand = command.internalUserCommand,
-            )
-            val result = commentService.getCommentsFromVideo(searchCommand)
+            val searchCommand = commentService.constructCommentSearchCommandForVideoRequest(command)
+            val result = commentService.getCommentsRequest(searchCommand)
             val commentBaseInfoList = commentService.constructCommentBaseInfo(result)
-            VideoBaseInfo(
-                comments = commentBaseInfoList,
-                message = returnCommand.message,
-            )
+            VideoBaseInfo(comments = commentBaseInfoList, message = returnCommand.message)
         }
     }
 }

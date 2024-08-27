@@ -68,7 +68,8 @@ class CustomReplyReaderStoreImpl(
     }
 
     override fun findReplyRequest(command: SingleReplySearchCommand): Tuple? {
-        return queryConstructor.constructAuthCommentSelectQuery(command.internalUserCommand)
+        // TODO?
+        return queryConstructor.verifyAuthAndConstructReplySelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qReply)
             .leftJoin(qEntityAlias.qComment).on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id").eq(qEntityAlias.qComment.id))
             .leftJoin(queryConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)

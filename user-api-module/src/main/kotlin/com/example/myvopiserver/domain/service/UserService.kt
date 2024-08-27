@@ -1,5 +1,6 @@
 package com.example.myvopiserver.domain.service
 
+import com.commoncoremodule.enums.MemberRole
 import com.commoncoremodule.util.Cipher
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
@@ -7,7 +8,9 @@ import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
 import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
+import com.example.myvopiserver.domain.QUser
 import com.example.myvopiserver.domain.command.InternalUserCommand
+import com.example.myvopiserver.domain.command.UpdateClauseCommand
 import com.example.myvopiserver.domain.command.UserLoginCommand
 import com.example.myvopiserver.domain.command.UserRegisterCommand
 import com.example.myvopiserver.domain.mapper.UserMapper
@@ -36,9 +39,10 @@ class UserService(
     }
 
     fun updateUserMemberRole(command: InternalUserCommand) {
-        val user = User(command)
-        user.setMemberRoleUser()
-        userReaderStore.saveUser(user)
+        userReaderStore.updateUserRequest(
+            command,
+            listOf(UpdateClauseCommand(pathName = QUser.user.role.metadata.name, value = MemberRole.ROLE_USER)),
+        )
     }
 
     // Db-transactions(readOnly)
@@ -47,6 +51,16 @@ class UserService(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         // Banned status validation
         validationService.validateIfBanned(user.status)
+        return userMapper.to(user = user)!!
+    }
+
+    fun getUserAndValidateStatusWithRole(uuid: String): InternalUserCommand {
+        val user = userReaderStore.findUserByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        // Banned status validation
+        validationService.validateIfBanned(user.status)
+        // Role validation
+        validationService.validateIfIsUserRole(user.role)
         return userMapper.to(user = user)!!
     }
 

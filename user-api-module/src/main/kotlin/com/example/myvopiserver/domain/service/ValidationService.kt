@@ -45,10 +45,6 @@ class ValidationService(
         if(requestPassword != decryptedPassword) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
     }
 
-    fun validateIfRequestContentMatchesOriginalContent(requestContent: String, commentContent: String): Boolean {
-        return requestContent == commentContent
-    }
-
     fun validateIsDeleted(status: CommentStatus) {
         if(status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This has already been deleted")
     }
@@ -71,6 +67,7 @@ class ValidationService(
 
     fun validateIfIsUserRole(role: MemberRole) {
         if(role == MemberRole.ROLE_ADMIN) throw BaseException(ErrorCode.BAD_REQUEST, "CODE 1")
+        if(role == MemberRole.ROLE_UNVERIFIED) throw UnauthorizedException(ErrorCode.ACCESS_DENIED, "Please verify your email first")
     }
 
     fun validateIfDailyChanceExceeded(dailyChance: Int) {

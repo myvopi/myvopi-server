@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 @SpringBootApplication
 @EnableJpaAuditing
 // TODO --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.time=ALL-UNNAMED add on override or ecache
+// TODO need to check each api due to inefficient queries round backs
 class MyvopiServerApplication
 
 fun main(args: Array<String>) {

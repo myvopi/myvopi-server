@@ -37,12 +37,8 @@ class CommentService(
 ) {
 
     // Db-transactions (readOnly)
-    fun getCommentsFromVideo(command: CommentSearchFromVideoCommand): List<Tuple> {
-        return commentReaderStore.findCommentsFromVideoRequest(command)
-    }
-
-    fun getComments(command: CommentSearchFromCommentCommand): List<Tuple> {
-        return commentReaderStore.findCommentsFromCommentRequest(command)
+    fun getCommentsRequest(command: CommentsSearchCommand): List<Tuple> {
+        return commentReaderStore.findCommentsRequest(command)
     }
 
     fun getComment(command: SingleCommentSearchCommand): Tuple {
@@ -141,11 +137,11 @@ class CommentService(
         val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
+        // validate if is owner
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
+        // validate if it's deleted
         validationService.validateIsDeleted(comment.status)
-        if(!validationService.validateIfRequestContentMatchesOriginalContent(command.content, comment.content)) {
-            comment.updateContent(command.content)
-        }
+        comment.updateContent(command.content)
         commentReaderStore.saveComment(comment)
     }
 
@@ -228,6 +224,18 @@ class CommentService(
             videoId = command.videoId,
             videoType = command.videoType,
             commentUuid = command.commentUuid,
+        )
+    }
+
+    fun constructCommentSearchCommandForVideoRequest(
+        command: VideoSearchCommand
+    ): CommentsSearchCommand {
+        return CommentsSearchCommand(
+            filter = command.filter,
+            reqPage = command.reqPage,
+            videoId = command.videoId,
+            videoType = command.videoType,
+            internalUserCommand = command.internalUserCommand,
         )
     }
 

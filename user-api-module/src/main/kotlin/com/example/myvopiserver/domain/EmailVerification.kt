@@ -1,9 +1,13 @@
 package com.example.myvopiserver.domain
 
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
 @Table(name = "email_verification")
+@DynamicUpdate
+@DynamicInsert
 class EmailVerification(
     code: String,
     user: User,

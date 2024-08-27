@@ -1,8 +1,7 @@
 package com.example.myvopiserver.infrastructure
 
 import com.example.myvopiserver.domain.Comment
-import com.example.myvopiserver.domain.command.CommentSearchFromCommentCommand
-import com.example.myvopiserver.domain.command.CommentSearchFromVideoCommand
+import com.example.myvopiserver.domain.command.CommentsSearchCommand
 import com.example.myvopiserver.domain.command.SingleCommentSearchCommand
 import com.example.myvopiserver.domain.interfaces.CommentReaderStore
 import com.example.myvopiserver.infrastructure.custom.repository.CustomCommentReaderStore
@@ -18,13 +17,8 @@ class CommentReaderStoreImpl(
 ): CommentReaderStore {
 
     @Transactional(readOnly = true)
-    override fun findCommentsFromVideoRequest(command: CommentSearchFromVideoCommand): List<Tuple> {
-        return customCommentReaderStore.pageableCommentAndReplyFromVideoRequest(command)
-    }
-
-    @Transactional(readOnly = true)
-    override fun findCommentsFromCommentRequest(command: CommentSearchFromCommentCommand): List<Tuple> {
-        return customCommentReaderStore.pageableCommentAndReplyFromCommentRequest(command)
+    override fun findCommentsRequest(command: CommentsSearchCommand): List<Tuple> {
+        return customCommentReaderStore.findCommentsRequest(command)
     }
 
     @Transactional(readOnly = true)

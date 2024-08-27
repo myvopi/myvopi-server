@@ -41,6 +41,7 @@ class VideoService(
         return if(video == null) {
             // 인증 정보가 첨부 되었을시
             command.internalUserCommand?.let { internalUserCommand ->
+                // 사용자 토픽 생성 횟수 검사
                 validationService.validateIfDailyChanceExceeded(internalUserCommand.dailyChance)
                 val newDailyChance = internalUserCommand.dailyChance - 1
                 userReaderStore.updateUserRequest(
@@ -56,7 +57,6 @@ class VideoService(
                 )
                 val savedVideo = videoReaderStore.saveVideo(videoCommand)
                 returnMessage.append("Topic created")
-
                 InternalVideoCommandWithMessage(
                     internalVideoCommand = videoMapper.to(video = savedVideo),
                     message = returnMessage.toString(),

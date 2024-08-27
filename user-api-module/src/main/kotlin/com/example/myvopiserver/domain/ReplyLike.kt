@@ -2,9 +2,13 @@ package com.example.myvopiserver.domain
 
 import com.commoncoremodule.enums.LikeStatus
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
 @Table(name ="reply_like")
+@DynamicUpdate
+@DynamicInsert
 class ReplyLike(
     reply: Reply,   // 상위 댓글
     user: User,     // 생성자
