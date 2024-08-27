@@ -3,6 +3,7 @@ package com.example.myvopiserver.domain.command
 import com.commoncoremodule.enums.CountryCode
 import com.commoncoremodule.enums.MemberRole
 import com.commoncoremodule.enums.RoleStatus
+import com.querydsl.core.types.dsl.NumberPath
 
 data class UserRegisterCommand(
     val name: String,
@@ -27,4 +28,5 @@ data class InternalUserCommand(
     val email: String,
     val role: MemberRole,
     val status: RoleStatus,
+    val dailyChance: Int,
 )

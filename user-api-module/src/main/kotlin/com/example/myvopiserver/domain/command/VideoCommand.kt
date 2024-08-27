@@ -14,6 +14,7 @@ data class VideoSearchCommand(
 data class InternalVideoCommandWithMessage(
     val internalVideoCommand: InternalVideoCommand,
     val message: String,
+    val search: Boolean,
 )
 
 data class InternalVideoAndOwnerCommand(

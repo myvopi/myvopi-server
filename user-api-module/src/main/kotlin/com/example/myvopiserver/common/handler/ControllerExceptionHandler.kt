@@ -32,7 +32,7 @@ class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException::class)
     fun handleAccessDeniedException(e: AccessDeniedException): CommonResult<String> {
-        return CommonResponse.fail(ErrorCode.ACCESS_DENIED)
+        return CommonResponse.fail(e.message, e.errorCode)
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

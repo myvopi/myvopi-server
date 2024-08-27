@@ -20,6 +20,7 @@ interface UserMapper {
         Mapping(source = "user.email", target = "email"),
         Mapping(source = "user.role", target = "role"),
         Mapping(source = "user.status", target = "status"),
+        Mapping(source = "user.dailyChance", target = "dailyChance"),
     )
     fun to(user: User?): InternalUserCommand?
 }

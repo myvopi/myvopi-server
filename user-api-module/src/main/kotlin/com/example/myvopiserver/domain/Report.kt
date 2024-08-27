@@ -20,20 +20,20 @@ class Report(
     var id: Long = 0L
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "content_type", nullable = false, updatable = true)
+    @Column(name = "contentType", nullable = false, updatable = true)
     var contentType: ContentType = contentType
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "report_type", nullable = false, updatable = true)
+    @Column(name = "reportType", nullable = false, updatable = true)
     var reportType: ReportType = reportType
         protected set
 
-    @Column(name = "content_uuid", nullable = false, updatable = true)
+    @Column(name = "contentUuid", nullable = false, updatable = true)
     var contentUuid: String = contentUuid
         protected set
 
-    @Column(name = "content_id", nullable = false, updatable = true)
+    @Column(name = "contentId", nullable = false, updatable = true)
     var contentId: Long = contentId
         protected set
 
@@ -54,6 +54,6 @@ class Report(
         protected set
 
     override fun toString(): String {
-        return "Report(id=$id, contentType=$contentType, contentUuid='$contentUuid', contentId=$contentId)"
+        return "Report(id=$id, contentType=$contentType, contentUuid='$contentUuid', contentId=$contentId, reportType=$reportType)"
     }
 }

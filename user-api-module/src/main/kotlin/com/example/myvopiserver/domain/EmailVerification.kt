@@ -13,6 +13,10 @@ class EmailVerification(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
+    @Column(name = "chance", nullable = false, updatable = true)
+    var chance: Int = 3
+        protected set
+
     @ManyToOne(
         fetch = FetchType.LAZY,
         targetEntity = User::class,
@@ -23,10 +27,6 @@ class EmailVerification(
 
     @Column(name = "code", nullable = false, updatable = true)
     var code: String = code
-        protected set
-
-    @Column(name = "chance", nullable = false, updatable = true)
-    var chance: Int = 3
         protected set
 
     fun setNewCode(code: String) {

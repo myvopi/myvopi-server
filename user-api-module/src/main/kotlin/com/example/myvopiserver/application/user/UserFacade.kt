@@ -18,7 +18,7 @@ class UserFacade(
 ) {
 
     fun registerUser(command: UserRegisterCommand) {
-        userService.validateUserRegisterRequest(command)
+        userService.validateUserRegister(command)
         userService.registerUser(command)
     }
 

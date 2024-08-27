@@ -13,10 +13,10 @@ import java.time.LocalDateTime
 class BaseTime {
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "createdDt", updatable = false)
     var createdDt: LocalDateTime? = null
 
     @LastModifiedDate
-    @Column(updatable = true)
+    @Column(name = "updatedDt", updatable = true)
     var updatedDt: LocalDateTime? = null
 }

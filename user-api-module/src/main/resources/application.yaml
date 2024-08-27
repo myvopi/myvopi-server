@@ -13,6 +13,9 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
     # TODO active profile
     url: ${DEV_DB_URL}${DATABASE_NAME}

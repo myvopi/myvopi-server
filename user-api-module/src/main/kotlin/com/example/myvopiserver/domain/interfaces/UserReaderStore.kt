@@ -1,6 +1,8 @@
 package com.example.myvopiserver.domain.interfaces
 
 import com.example.myvopiserver.domain.User
+import com.example.myvopiserver.domain.command.InternalUserCommand
+import com.example.myvopiserver.domain.command.UpdateClauseCommand
 
 interface UserReaderStore {
 
@@ -11,4 +13,6 @@ interface UserReaderStore {
     fun findUserByUserId(userId: String): User?
 
     fun userExistsByUserIdOrEmail(userId: String, email: String): Boolean
+
+    fun updateUserRequest(command: InternalUserCommand, commandList: List<UpdateClauseCommand>)
 }

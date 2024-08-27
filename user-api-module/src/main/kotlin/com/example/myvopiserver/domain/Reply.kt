@@ -42,17 +42,17 @@ class Reply(
     var content: String = content
         protected set
 
-    @Column(name = "modified_cnt", nullable = false, updatable = true)
+    @Column(name = "modifiedCnt", nullable = false, updatable = true)
     var modifiedCnt: Int = 0
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "comment_status", nullable = false, updatable = true)
+    @Column(name = "status", nullable = false, updatable = true)
     var status: CommentStatus = CommentStatus.SHOW
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "verification_status", nullable = false, updatable = true)
+    @Column(name = "verificationStatus", nullable = false, updatable = true)
     var verificationStatus: VerifyStatus = VerifyStatus.NEED_VERIFICATION
         protected set
 
@@ -68,7 +68,6 @@ class Reply(
         mappedBy = "reply",
         fetch = FetchType.LAZY,
         targetEntity = ReplyLike::class,
-        cascade = [CascadeType.ALL],
     )
     var likes: MutableList<ReplyLike> = mutableListOf()
         protected set

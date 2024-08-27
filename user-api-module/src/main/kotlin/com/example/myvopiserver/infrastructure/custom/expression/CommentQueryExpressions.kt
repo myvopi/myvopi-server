@@ -22,7 +22,7 @@ class CommentQueryExpressions(
                     .eq(Expressions.numberPath(Long::class.java, qEntityAlias.qComment, "video_id")),
                 qEntityAlias.qComment2.id.eq(qEntityAlias.qComment.id),
                 Expressions.numberPath(Long::class.java, qEntityAlias.qCommentLike2, "user_id").eq(userId),
-                Expressions.stringPath(qEntityAlias.qCommentLike2, "like_status").eq(LikeStatus.LIKED.name),
+                Expressions.stringPath(qEntityAlias.qCommentLike2, "status").eq(LikeStatus.LIKED.name),
             )
             .exists()
     }
@@ -35,7 +35,7 @@ class CommentQueryExpressions(
             .where(
                 qEntityAlias.qReply2.id.eq(qEntityAlias.qReply.id),
                 Expressions.numberPath(Long::class.java, qEntityAlias.qReplyLike2, "user_id").eq(userId),
-                Expressions.stringPath(qEntityAlias.qReplyLike2, "like_status").eq(LikeStatus.LIKED.name),
+                Expressions.stringPath(qEntityAlias.qReplyLike2, "status").eq(LikeStatus.LIKED.name),
             )
             .exists()
     }

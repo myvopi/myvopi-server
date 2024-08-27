@@ -66,10 +66,18 @@ class ValidationService(
     }
 
     fun validateIfBanned(status: RoleStatus) {
-        if(status == RoleStatus.BANNED) throw AccessDeniedException(ErrorCode.BANNED)
+        if(status == RoleStatus.BANNED) throw AccessDeniedException(ErrorCode.BANNED, ErrorCode.BANNED.engErrorMsg)
     }
 
     fun validateIfIsUserRole(role: MemberRole) {
         if(role == MemberRole.ROLE_ADMIN) throw BaseException(ErrorCode.BAD_REQUEST, "CODE 1")
+    }
+
+    fun validateIfDailyChanceExceeded(dailyChance: Int) {
+        if(dailyChance < 1) throw BadRequestException(ErrorCode.BAD_REQUEST, "You have exceeded your daily requests")
+    }
+
+    fun validateIfUserEmailBeenVerified(role: MemberRole) {
+        if(role == MemberRole.ROLE_UNVERIFIED) throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Please verify your email address")
     }
 }

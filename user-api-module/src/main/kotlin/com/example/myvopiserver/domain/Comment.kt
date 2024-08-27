@@ -43,17 +43,17 @@ class Comment(
     var content: String = content
         protected set
 
-    @Column(name = "modified_cnt", nullable = false, updatable = true)
+    @Column(name = "modifiedCnt", nullable = false, updatable = true)
     var modifiedCnt: Int = 0
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "comment_status", nullable = false, updatable = true)
+    @Column(name = "status", nullable = false, updatable = true)
     var status: CommentStatus = CommentStatus.SHOW
         protected set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "verification_status", nullable = false, updatable = true)
+    @Column(name = "verificationStatus", nullable = false, updatable = true)
     var verificationStatus: VerifyStatus = VerifyStatus.NEED_VERIFICATION
         protected set
 
@@ -69,7 +69,6 @@ class Comment(
         mappedBy = "comment",
         fetch = FetchType.LAZY,
         targetEntity = Reply::class,
-        cascade = [CascadeType.ALL],
     )
     var replies: MutableList<Reply> = mutableListOf()
         protected set
@@ -78,7 +77,6 @@ class Comment(
         mappedBy = "comment",
         fetch = FetchType.LAZY,
         targetEntity = CommentLike::class,
-        cascade = [CascadeType.ALL],
     )
     var likes: MutableList<CommentLike> = mutableListOf()
         protected set

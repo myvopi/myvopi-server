@@ -13,7 +13,7 @@ import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
 import org.springframework.stereotype.Repository
 
-
+// TODO need to change all values to object oriented
 @Repository
 class CustomCommentReaderStoreImpl(
     private val alias: BasicAlias,
@@ -70,7 +70,7 @@ class CustomCommentReaderStoreImpl(
             .where(
                 Expressions.numberPath(Long::class.java, qEntityAlias.qComment, "video_id").eq(command.videoId),
                 Expressions.stringPath(qEntityAlias.qComment, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
-                Expressions.stringPath(qEntityAlias.qVideo, "video_type").eq(command.videoType.name)
+                Expressions.stringPath(qEntityAlias.qVideo, "videoType").eq(command.videoType.name)
             )
             .groupBy(qEntityAlias.qComment.id)
             .orderBy(
@@ -90,9 +90,9 @@ class CustomCommentReaderStoreImpl(
             .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
             .join(qEntityAlias.qVideo).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
             .where(
-                Expressions.stringPath(qEntityAlias.qVideo, "video_id").eq(command.videoId),
+                Expressions.stringPath(qEntityAlias.qVideo, "videoId").eq(command.videoId),
                 Expressions.stringPath(qEntityAlias.qComment, "status").`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
-                Expressions.stringPath(qEntityAlias.qVideo, "video_type").eq(command.videoType.name)
+                Expressions.stringPath(qEntityAlias.qVideo, "videoType").eq(command.videoType.name)
             )
             .groupBy(qEntityAlias.qComment.id)
             .orderBy(
@@ -113,9 +113,9 @@ class CustomCommentReaderStoreImpl(
             .join(qEntityAlias.qVideo).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
             .where(
                 qEntityAlias.qUser.uuid.eq(command.internalUserCommand.uuid),
-                Expressions.stringPath(qEntityAlias.qUser, "user_id").eq(command.internalUserCommand.userId),
-                Expressions.stringPath(qEntityAlias.qVideo, "video_id").eq(command.videoId),
-                Expressions.stringPath(qEntityAlias.qVideo, "video_type").eq(command.videoType.name),
+                Expressions.stringPath(qEntityAlias.qUser, "userId").eq(command.internalUserCommand.userId),
+                Expressions.stringPath(qEntityAlias.qVideo, "videoId").eq(command.videoId),
+                Expressions.stringPath(qEntityAlias.qVideo, "videoType").eq(command.videoType.name),
                 qEntityAlias.qComment.uuid.eq(command.commentUuid)
             )
             .groupBy(qEntityAlias.qComment.id)

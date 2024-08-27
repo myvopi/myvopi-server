@@ -37,9 +37,10 @@ class CustomLikeReaderStoreImpl(
             .fetchOne()
     }
 
+    // TODO need to refactor, might cause sql injection
     override fun saveCommentLikeRequest(command: CommentLikePostCommand) {
         val query = "INSERT INTO comment_like " +
-                "(created_dt, updated_dt, comment_id, user_id, like_status) " +
+                "(createdDt, updatedDt, comment_id, user_id, status) " +
                 "VALUES(NOW(), NOW(), ${command.commentId}, ${command.userId}, '${LikeStatus.LIKED.name}')"
         em.createNativeQuery(query).executeUpdate()
     }
@@ -58,7 +59,7 @@ class CustomLikeReaderStoreImpl(
 
     override fun saveReplyLikeRequest(command: ReplyLikePostCommand) {
         val query = "INSERT INTO reply_like " +
-                "(created_dt, updated_dt, reply_id, user_id, like_status) " +
+                "(createdDt, updatedDt, reply_id, user_id, status) " +
                 "VALUES(NOW(), NOW(), ${command.replyId}, ${command.userId}, '${LikeStatus.LIKED.name}')"
         em.createNativeQuery(query).executeUpdate()
     }

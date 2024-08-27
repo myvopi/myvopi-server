@@ -41,8 +41,17 @@ class UserService(
         userReaderStore.saveUser(user)
     }
 
+    // Db-transactions(readOnly)
+    fun getUserAndValidateStatus(uuid: String): InternalUserCommand {
+        val user = userReaderStore.findUserByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        // Banned status validation
+        validationService.validateIfBanned(user.status)
+        return userMapper.to(user = user)!!
+    }
+
     // Validation & constructors
-    fun validateUserRegisterRequest(command: UserRegisterCommand) {
+    fun validateUserRegister(command: UserRegisterCommand) {
         validationService.validateUserIdOrEmailExists(command.userId, command.email)
         validationService.validatePasswordFormat(command.password)
         validationService.validateValidCountryCode(command.nationality)
@@ -69,11 +78,10 @@ class UserService(
         )
     }
 
-    fun getUserAndValidateStatus(uuid: String): InternalUserCommand {
-        val user = userReaderStore.findUserByUuid(uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
-        // Banned status validation
-        validationService.validateIfBanned(user.status)
-        return userMapper.to(user = user)!!
+    fun validateIfAuthenticationHasBeenApplied(command: InternalUserCommand?) {
+        command?.let {
+            validationService.validateIfUserEmailBeenVerified(command.role)
+            validationService.validateIfBanned(command.status)
+        }
     }
 }

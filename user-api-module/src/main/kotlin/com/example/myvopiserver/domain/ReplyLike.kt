@@ -14,6 +14,11 @@ class ReplyLike(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0L
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, updatable = true)
+    var status: LikeStatus = LikeStatus.LIKED
+        protected set
+
     @ManyToOne(
         fetch = FetchType.LAZY,
         targetEntity = Reply::class,
@@ -28,11 +33,6 @@ class ReplyLike(
     )
     @JoinColumn(name = "user_id", nullable = false)
     var user: User = user
-        protected set
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "like_status", nullable = false, updatable = true)
-    var status: LikeStatus = LikeStatus.LIKED
         protected set
 
     fun unlike() {

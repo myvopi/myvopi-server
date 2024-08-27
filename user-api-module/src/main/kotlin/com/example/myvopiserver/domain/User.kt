@@ -45,7 +45,7 @@ class User(
     var name: String = name
         protected set
 
-    @Column(name = "user_id", nullable = false, updatable = true)
+    @Column(name = "userId", nullable = false, updatable = true)
     var userId: String = userId
         protected set
 
@@ -72,11 +72,14 @@ class User(
     var role: MemberRole = MemberRole.ROLE_UNVERIFIED
         protected set
 
+    @Column(name = "dailyChance", nullable = false, updatable = true)
+    var dailyChance: Int = 3
+        protected set
+
     @OneToMany(
         mappedBy = "user",
         fetch = FetchType.LAZY,
         targetEntity = Comment::class,
-        cascade = [CascadeType.ALL],
     )
     var comments: MutableList<Comment> = mutableListOf()
         protected set
@@ -85,7 +88,6 @@ class User(
         mappedBy = "user",
         fetch = FetchType.LAZY,
         targetEntity = Reply::class,
-        cascade = [CascadeType.ALL],
     )
     var replies: MutableList<Reply> = mutableListOf()
         protected set
@@ -94,7 +96,6 @@ class User(
         mappedBy = "user",
         fetch = FetchType.LAZY,
         targetEntity = EmailVerification::class,
-        cascade = [CascadeType.ALL],
     )
     var verifications: MutableList<EmailVerification> = mutableListOf()
         protected set
@@ -103,9 +104,7 @@ class User(
         this.role = MemberRole.ROLE_USER
     }
 
-    // TODO daily video topic create chance
-
     override fun toString(): String {
-        return "User(id=$id, uuid='$uuid', name='$name', userId='$userId', nationality=$nationality, password='$password', email='$email', status=$status, role=$role)"
+        return "User(id=$id, uuid='$uuid', name='$name', userId='$userId', nationality=$nationality, password='$password', email='$email', status=$status, role=$role, dailyChance=$dailyChance)"
     }
 }

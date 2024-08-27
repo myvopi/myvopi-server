@@ -34,8 +34,13 @@ class Video(
     var uuid: String = UUID.randomUUID().toString()
         protected set
 
-    @Column(name = "video_id", nullable = false, updatable = true)
+    @Column(name = "videoId", nullable = false, updatable = true)
     var videoId: String = videoId
+        protected set
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "videoType", nullable = false, updatable = true)
+    var videoType: VideoType = videoType
         protected set
 
     @ManyToOne(
@@ -46,16 +51,10 @@ class Video(
     var user: User = user
         protected set
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "video_type", nullable = false, updatable = true)
-    var videoType: VideoType = videoType
-        protected set
-
     @OneToMany(
         mappedBy = "video",
         fetch = FetchType.LAZY,
         targetEntity = Comment::class,
-        cascade = [CascadeType.ALL],
     )
     var comments: MutableList<Comment> = mutableListOf()
         protected set

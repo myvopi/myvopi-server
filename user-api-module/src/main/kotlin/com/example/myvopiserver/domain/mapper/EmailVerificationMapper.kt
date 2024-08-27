@@ -16,6 +16,7 @@ interface EmailVerificationMapper {
         Mapping(source = "user.userId", target = "userId"),
         Mapping(source = "user.email", target = "email"),
         Mapping(source = "emailVerification.code", target = "code"),
+        Mapping(source = "emailVerification.chance", target = "chance"),
     )
     fun to(user: User, emailVerification: EmailVerification): EmailVerificationCommand
 }

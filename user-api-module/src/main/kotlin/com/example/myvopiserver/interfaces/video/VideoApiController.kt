@@ -27,7 +27,6 @@ class VideoApiController(
         @RequestParam(value = "s", required = false) yts: String?,
     ): CommonResult<List<CommentBaseInfo>>
     {
-        // TODO create topic cnt
         if(ytv == null && yts == null) throw BadRequestException(ErrorCode.BAD_REQUEST, "Must specify ?v= or ?s=")
         val userCommand = authentication?.toUserInfo()
         val command = VideoSearchCommand(
