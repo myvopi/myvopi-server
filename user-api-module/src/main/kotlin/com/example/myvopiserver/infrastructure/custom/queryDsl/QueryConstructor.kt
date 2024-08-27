@@ -71,21 +71,11 @@ class QueryConstructor(
     }
 
     fun verifyAuthAndConstructReplySelectQuery(command: InternalUserCommand?): JPASQLQuery<Tuple> {
-        return command?.let { constructAuthReplySelectQuery(it) }
-            ?: run { constructNonAuthReplySelectQuery() }
-    }
-
-    fun constructAuthReplySelectQuery(command: InternalUserCommand): JPASQLQuery<Tuple> {
-        val query = JPASQLQuery<Any>(em, mysqlTemplates)
-        return query.select(
-            qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
-            qEntityAlias.qReply.content.`as`(alias.columnReplyContent),
-            qEntityAlias.qUser.userId.`as`(alias.columnUserId),
-            Expressions.numberPath(Long::class.java, alias.subQueryReplyLike, "id").countDistinct().`as`(alias.columnReplyLikesCount), // reply likeCount
-            qEntityAlias.qComment.modifiedCnt.`as`(alias.columnReplyModifiedCnt),
-            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qReply, "createdDt").`as`(alias.columnCreatedDate), // created_dt
-            expressions.replyLikeSubQuery(command.id).`as`(alias.columnUserLiked)
-        )
+        return constructNonAuthReplySelectQuery().apply {
+            command?.let {
+                expressions.replyLikeSubQuery(command.id).`as`(alias.columnUserLiked)
+            }
+        }
     }
 
     fun constructNonAuthReplySelectQuery(): JPASQLQuery<Tuple> {
@@ -94,9 +84,9 @@ class QueryConstructor(
             qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
             qEntityAlias.qReply.content.`as`(alias.columnReplyContent),
             qEntityAlias.qUser.userId.`as`(alias.columnUserId),
-            Expressions.numberPath(Long::class.java, alias.subQueryReplyLike, "id").countDistinct().`as`(alias.columnReplyLikesCount), // reply likeCount
+            Expressions.numberPath(Long::class.java, alias.subQueryReplyLike, qEntityAlias.qReplyLike.id.metadata.name).countDistinct().`as`(alias.columnReplyLikesCount), // reply likeCount
             qEntityAlias.qComment.modifiedCnt.`as`(alias.columnReplyModifiedCnt),
-            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qReply, "createdDt").`as`(alias.columnCreatedDate), // created_dt
+            Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qReply, qEntityAlias.qReply.createdDt.metadata.name).`as`(alias.columnCreatedDate), // created_dt
         )
     }
 
@@ -108,7 +98,7 @@ class QueryConstructor(
             )
             .from(qEntityAlias.qReplyLike2)
             .where(
-                Expressions.stringPath(qEntityAlias.qReplyLike2, "status").eq(LikeStatus.LIKED.name)
+                Expressions.stringPath(qEntityAlias.qReplyLike2, qEntityAlias.qReplyLike2.status.metadata.name).eq(LikeStatus.LIKED.name)
             )
     }
 }
