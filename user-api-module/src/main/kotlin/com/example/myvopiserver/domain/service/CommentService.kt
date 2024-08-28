@@ -19,7 +19,7 @@ import com.example.myvopiserver.domain.interfaces.ReportReaderStore
 import com.example.myvopiserver.domain.mapper.CommentMapper
 import com.example.myvopiserver.domain.mapper.UserMapper
 import com.example.myvopiserver.domain.mapper.VideoMapper
-import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
 import org.springframework.stereotype.Service
 import com.querydsl.core.Tuple
 import org.springframework.cache.annotation.Cacheable
@@ -38,11 +38,11 @@ class CommentService(
 
     // Db-transactions (readOnly)
     fun getCommentsRequest(command: CommentsSearchCommand): List<Tuple> {
-        return commentReaderStore.findCommentsRequest(command)
+        return commentReaderStore.findCommentsDslRequest(command)
     }
 
     fun getComment(command: SingleCommentSearchCommand): Tuple {
-        return commentReaderStore.findCommentRequest(command)
+        return commentReaderStore.findCommentDslRequest(command)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
     }
 
@@ -103,13 +103,13 @@ class CommentService(
         internalCommentCommand: InternalCommentCommand,
     ) {
         validateStatus(internalCommentCommand)
-        val commentLike = likeReaderStore.findCommentLikeRequest(internalCommentCommand.id, requesterUserCommand.id)
+        val commentLike = likeReaderStore.findCommentLikeDslRequest(internalCommentCommand.id, requesterUserCommand.id)
         if(commentLike == null) {
             val command = CommentLikePostCommand(
                 userId = requesterUserCommand.id,
                 commentId = internalCommentCommand.id,
             )
-            likeReaderStore.initialSaveCommentLikeRequest(command)
+            likeReaderStore.initialSaveCommentLikeJpqlRequest(command)
         } else {
             validationService.validateIsLiked(commentLike.status)
             commentLike.like()
@@ -122,7 +122,7 @@ class CommentService(
         internalCommentCommand: InternalCommentCommand,
     ) {
         validateStatus(internalCommentCommand)
-        val commentLike = likeReaderStore.findCommentLikeRequest(internalCommentCommand.id, requesterUserCommand.id)
+        val commentLike = likeReaderStore.findCommentLikeDslRequest(internalCommentCommand.id, requesterUserCommand.id)
         if(commentLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this comment")
         } else {

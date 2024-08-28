@@ -4,7 +4,7 @@ import com.example.myvopiserver.domain.Reply
 import com.example.myvopiserver.domain.command.ReplySearchCommand
 import com.example.myvopiserver.domain.command.SingleReplySearchCommand
 import com.example.myvopiserver.domain.interfaces.ReplyReaderStore
-import com.example.myvopiserver.infrastructure.custom.repository.CustomReplyReaderStore
+import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.ReplyReaderStoreDsl
 import com.example.myvopiserver.infrastructure.repository.ReplyRepository
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Repository
@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class ReplyReaderStoreImpl(
     private val replyRepository: ReplyRepository,
-    private val customReplyReaderStore: CustomReplyReaderStore,
+    private val replyReaderStoreDsl: ReplyReaderStoreDsl,
 ): ReplyReaderStore {
 
     @Transactional(readOnly = true)
-    override fun findRepliesRequest(command: ReplySearchCommand): List<Tuple> {
-        return customReplyReaderStore.findRepliesRequest(command)
+    override fun findRepliesDslRequest(command: ReplySearchCommand): List<Tuple> {
+        return replyReaderStoreDsl.findReplies(command)
     }
 
     @Transactional(readOnly = true)
@@ -37,7 +37,7 @@ class ReplyReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findReplyRequest(command: SingleReplySearchCommand): Tuple? {
-        return customReplyReaderStore.findReplyRequest(command)
+    override fun findReplyDslRequest(command: SingleReplySearchCommand): Tuple? {
+        return replyReaderStoreDsl.findReply(command)
     }
 }

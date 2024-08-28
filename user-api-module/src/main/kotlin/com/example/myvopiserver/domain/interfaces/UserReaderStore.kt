@@ -14,5 +14,5 @@ interface UserReaderStore {
 
     fun userExistsByUserIdOrEmail(userId: String, email: String): Boolean
 
-    fun updateUserRequest(command: InternalUserCommand, commandList: List<UpdateClauseCommand>)
+    fun updateUserDslRequest(command: InternalUserCommand, commandList: List<UpdateClauseCommand>)
 }

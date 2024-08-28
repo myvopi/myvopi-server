@@ -19,8 +19,8 @@ import com.example.myvopiserver.domain.mapper.CommentMapper
 import com.example.myvopiserver.domain.mapper.ReplyMapper
 import com.example.myvopiserver.domain.mapper.UserMapper
 import com.example.myvopiserver.domain.mapper.VideoMapper
-import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
-import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Service
 
@@ -40,7 +40,7 @@ class ReplyService(
 
     // Db-transactions (readOnly)
     fun getReplies(command: ReplySearchCommand): List<Tuple> {
-        return replyReaderStore.findRepliesRequest(command)
+        return replyReaderStore.findRepliesDslRequest(command)
     }
 
     fun getOnlyReply(uuid: String): InternalReplyCommand {
@@ -50,7 +50,7 @@ class ReplyService(
     }
 
     fun getReply(command: SingleReplySearchCommand): Tuple {
-        return replyReaderStore.findReplyRequest(command)
+        return replyReaderStore.findReplyDslRequest(command)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
     }
 
@@ -104,13 +104,13 @@ class ReplyService(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
-        val replyLike = likeReaderStore.findReplyLikeRequest(internalReplyCommand.id, requesterUserCommand.id)
+        val replyLike = likeReaderStore.findReplyLikeDslRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
             val command = ReplyLikePostCommand(
                 userId = requesterUserCommand.id,
                 replyId = internalReplyCommand.id,
             )
-            likeReaderStore.initialSaveReplyLikeRequest(command)
+            likeReaderStore.initialSaveReplyLikeJpqlRequest(command)
         } else {
             validationService.validateIsLiked(replyLike.status)
             replyLike.like()
@@ -122,7 +122,7 @@ class ReplyService(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
-        val replyLike = likeReaderStore.findReplyLikeRequest(internalReplyCommand.id, requesterUserCommand.id)
+        val replyLike = likeReaderStore.findReplyLikeDslRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this reply")
         } else {

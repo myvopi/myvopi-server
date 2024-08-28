@@ -44,7 +44,7 @@ class VideoService(
                 // 사용자 토픽 생성 횟수 검사
                 validationService.validateIfDailyChanceExceeded(internalUserCommand.dailyChance)
                 val newDailyChance = internalUserCommand.dailyChance - 1
-                userReaderStore.updateUserRequest(
+                userReaderStore.updateUserDslRequest(
                     internalUserCommand,
                     // 동적 쿼리 생성
                     listOf(UpdateClauseCommand(pathName = QUser.user.dailyChance.metadata.name, value = newDailyChance)),

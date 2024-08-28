@@ -1,7 +1,7 @@
-package com.example.myvopiserver.infrastructure.custom.expression
+package com.example.myvopiserver.infrastructure.custom.queryDsl.expression
 
 import com.commoncoremodule.enums.LikeStatus
-import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.JPAExpressions

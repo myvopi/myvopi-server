@@ -9,19 +9,17 @@ import com.example.myvopiserver.domain.command.ReplyLikePostCommand
 
 interface LikeReaderStore {
 
-    // Comment like
-    fun findCommentLikeRequest(commentId: Long, userId: Long): CommentLike?
+    fun findCommentLikeDslRequest(commentId: Long, userId: Long): CommentLike?
 
-    fun initialSaveCommentLikeRequest(command: CommentLikePostCommand)
+    fun initialSaveCommentLikeJpqlRequest(command: CommentLikePostCommand)
 
     fun saveCommentLike(commentLike: CommentLike): CommentLike
 
-    // Reply like
-    fun findReplyLikeRequest(replyId: Long, userId: Long): ReplyLike?
+    fun findReplyLikeDslRequest(replyId: Long, userId: Long): ReplyLike?
 
     fun findReplyLikeByUserAndReply(user: User, reply: Reply): ReplyLike?
 
     fun saveReplyLike(replyLike: ReplyLike): ReplyLike
 
-    fun initialSaveReplyLikeRequest(command: ReplyLikePostCommand)
+    fun initialSaveReplyLikeJpqlRequest(command: ReplyLikePostCommand)
 }

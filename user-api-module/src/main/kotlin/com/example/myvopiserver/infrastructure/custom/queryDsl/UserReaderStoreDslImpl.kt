@@ -1,23 +1,23 @@
-package com.example.myvopiserver.infrastructure.custom
+package com.example.myvopiserver.infrastructure.custom.queryDsl
 
 import com.example.myvopiserver.domain.QUser
 import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.command.UpdateClauseCommand
-import com.example.myvopiserver.infrastructure.custom.repository.CustomUserReaderStore
+import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.UserReaderStoreDsl
 import com.querydsl.core.types.dsl.PathBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
 
 @Repository
-class CustomUserReaderStoreImpl(
+class UserReaderStoreDslImpl(
     private val jpaQueryFactory: JPAQueryFactory,
-): CustomUserReaderStore {
+): UserReaderStoreDsl {
 
     private val path = PathBuilder(User::class.java, QUser.user.metadata.name)
+    private val qUser = QUser.user
 
-    override fun updateUserRequest(command: InternalUserCommand, commandList: List<UpdateClauseCommand>) {
-        val qUser = QUser.user
+    override fun updateUser(command: InternalUserCommand, commandList: List<UpdateClauseCommand>) {
         val updateClause = jpaQueryFactory.update(qUser)
             .where(
                 qUser.id.eq(command.id),

@@ -4,7 +4,7 @@ import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.command.CommentsSearchCommand
 import com.example.myvopiserver.domain.command.SingleCommentSearchCommand
 import com.example.myvopiserver.domain.interfaces.CommentReaderStore
-import com.example.myvopiserver.infrastructure.custom.repository.CustomCommentReaderStore
+import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.CommentReaderStoreDsl
 import com.example.myvopiserver.infrastructure.repository.CommentRepository
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Repository
@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class CommentReaderStoreImpl(
     private val commentRepository: CommentRepository,
-    private val customCommentReaderStore: CustomCommentReaderStore,
+    private val commentReaderStoreDsl: CommentReaderStoreDsl,
 ): CommentReaderStore {
 
     @Transactional(readOnly = true)
-    override fun findCommentsRequest(command: CommentsSearchCommand): List<Tuple> {
-        return customCommentReaderStore.findCommentsRequest(command)
+    override fun findCommentsDslRequest(command: CommentsSearchCommand): List<Tuple> {
+        return commentReaderStoreDsl.findComments(command)
     }
 
     @Transactional(readOnly = true)
@@ -42,7 +42,7 @@ class CommentReaderStoreImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findCommentRequest(command: SingleCommentSearchCommand): Tuple? {
-        return customCommentReaderStore.findCommentRequest(command)
+    override fun findCommentDslRequest(command: SingleCommentSearchCommand): Tuple? {
+        return commentReaderStoreDsl.findComment(command)
     }
 }

@@ -7,7 +7,7 @@ import com.querydsl.core.Tuple
 
 interface CommentReaderStore {
 
-    fun findCommentsRequest(command: CommentsSearchCommand): List<Tuple>
+    fun findCommentsDslRequest(command: CommentsSearchCommand): List<Tuple>
 
     fun findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid: String): Comment?
 
@@ -17,5 +17,5 @@ interface CommentReaderStore {
 
     fun saveComment(comment: Comment): Comment
 
-    fun findCommentRequest(command: SingleCommentSearchCommand): Tuple?
+    fun findCommentDslRequest(command: SingleCommentSearchCommand): Tuple?
 }

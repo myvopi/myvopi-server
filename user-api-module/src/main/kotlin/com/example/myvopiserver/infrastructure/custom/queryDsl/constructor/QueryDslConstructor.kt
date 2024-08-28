@@ -1,28 +1,25 @@
-package com.example.myvopiserver.infrastructure.custom.queryDsl
+package com.example.myvopiserver.infrastructure.custom.queryDsl.constructor
 
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.LikeStatus
 import com.example.myvopiserver.domain.command.InternalUserCommand
-import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
-import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
-import com.example.myvopiserver.infrastructure.custom.expression.CommentQueryExpressions
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.expression.CommentQueryExpressions
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.JPQLQuery
 import com.querydsl.jpa.sql.JPASQLQuery
-import com.querydsl.sql.SQLTemplates
-import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
-class QueryConstructor(
+class QueryDslConstructor(
     private val alias: BasicAlias,
     private val qEntityAlias: QEntityAlias,
-    private val em: EntityManager,
-    private val mysqlTemplates: SQLTemplates,
     private val expressions: CommentQueryExpressions,
+    private val jpaSqlQuery: JPASQLQuery<Any>,
 ) {
 
     fun verifyAuthAndConstructCommentSelectQuery(command: InternalUserCommand?): JPASQLQuery<Tuple> {
@@ -34,8 +31,7 @@ class QueryConstructor(
     }
 
     fun constructNonAuthCommentSelectQuery(): JPASQLQuery<Tuple> {
-        val query = JPASQLQuery<Any>(em, mysqlTemplates)
-        return query.select(
+        return jpaSqlQuery.select(
             qEntityAlias.qComment.uuid.`as`(alias.columnCommentUuid),
             qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
             qEntityAlias.qComment.modifiedCnt.`as`(alias.columnCommentModifiedCnt),
@@ -79,8 +75,7 @@ class QueryConstructor(
     }
 
     fun constructNonAuthReplySelectQuery(): JPASQLQuery<Tuple> {
-        val query = JPASQLQuery<Any>(em, mysqlTemplates)
-        return query.select(
+        return jpaSqlQuery.select(
             qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
             qEntityAlias.qReply.content.`as`(alias.columnReplyContent),
             qEntityAlias.qUser.userId.`as`(alias.columnUserId),

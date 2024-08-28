@@ -1,22 +1,22 @@
-package com.example.myvopiserver.infrastructure.custom
+package com.example.myvopiserver.infrastructure.custom.queryDsl
 
 import com.commoncoremodule.enums.CommentStatus
 import com.example.myvopiserver.domain.command.ReplySearchCommand
 import com.example.myvopiserver.domain.command.SingleReplySearchCommand
-import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
-import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
-import com.example.myvopiserver.infrastructure.custom.queryDsl.QueryConstructor
-import com.example.myvopiserver.infrastructure.custom.repository.CustomReplyReaderStore
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.constructor.QueryDslConstructor
+import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.ReplyReaderStoreDsl
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
 import org.springframework.stereotype.Repository
 
 @Repository
-class CustomReplyReaderStoreImpl(
-    private val queryConstructor: QueryConstructor,
+class ReplyReaderStoreDslImpl(
+    private val queryDslConstructor: QueryDslConstructor,
     private val alias: BasicAlias,
     private val qEntityAlias: QEntityAlias,
-): CustomReplyReaderStore {
+): ReplyReaderStoreDsl {
 
     private val maxFetchCnt = 10L
 
@@ -48,12 +48,12 @@ class CustomReplyReaderStoreImpl(
      *  group by r.id
      *  order by r.created_dt desc;
     * */
-    override fun findRepliesRequest(command: ReplySearchCommand): List<Tuple> {
-        return queryConstructor.verifyAuthAndConstructReplySelectQuery(command.internalUserCommand)
+    override fun findReplies(command: ReplySearchCommand): List<Tuple> {
+        return queryDslConstructor.verifyAuthAndConstructReplySelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qReply)
             .leftJoin(qEntityAlias.qComment)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id").eq(qEntityAlias.qComment.id))
-            .leftJoin(queryConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)
+            .leftJoin(queryDslConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReplyLike, "reply_id").eq(qEntityAlias.qReply.id))
             .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
             .where(
@@ -68,12 +68,12 @@ class CustomReplyReaderStoreImpl(
             .fetch()
     }
 
-    override fun findReplyRequest(command: SingleReplySearchCommand): Tuple? {
-        return queryConstructor.verifyAuthAndConstructReplySelectQuery(command.internalUserCommand)
+    override fun findReply(command: SingleReplySearchCommand): Tuple? {
+        return queryDslConstructor.verifyAuthAndConstructReplySelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qReply)
             .leftJoin(qEntityAlias.qComment)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id").eq(qEntityAlias.qComment.id))
-            .leftJoin(queryConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)
+            .leftJoin(queryDslConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReplyLike, "reply_id").eq(qEntityAlias.qReply.id))
             .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
             .where(

@@ -7,7 +7,8 @@ import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.command.CommentLikePostCommand
 import com.example.myvopiserver.domain.command.ReplyLikePostCommand
 import com.example.myvopiserver.domain.interfaces.LikeReaderStore
-import com.example.myvopiserver.infrastructure.custom.repository.CustomLikeReaderStore
+import com.example.myvopiserver.infrastructure.custom.jpql.repository.LikeReaderStoreJpql
+import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.LikeReaderStoreDsl
 import com.example.myvopiserver.infrastructure.repository.CommentLikeRepository
 import com.example.myvopiserver.infrastructure.repository.ReplyLikeRepository
 import org.springframework.stereotype.Repository
@@ -17,18 +18,18 @@ import org.springframework.transaction.annotation.Transactional
 class LikeReaderStoreImpl(
     private val commentLikeRepository: CommentLikeRepository,
     private val replyLikeRepository: ReplyLikeRepository,
-    private val customLikeReaderStore: CustomLikeReaderStore,
+    private val likeReaderStoreDsl: LikeReaderStoreDsl,
+    private val likeReaderStoreJpql: LikeReaderStoreJpql,
 ): LikeReaderStore {
 
-    // Comment like
     @Transactional(readOnly = true)
-    override fun findCommentLikeRequest(commentId: Long, userId: Long): CommentLike? {
-        return customLikeReaderStore.findCommentLikeRequest(commentId, userId)
+    override fun findCommentLikeDslRequest(commentId: Long, userId: Long): CommentLike? {
+        return likeReaderStoreDsl.findCommentLike(commentId, userId)
     }
 
     @Transactional
-    override fun initialSaveCommentLikeRequest(command: CommentLikePostCommand) {
-        customLikeReaderStore.saveCommentLikeRequest(command)
+    override fun initialSaveCommentLikeJpqlRequest(command: CommentLikePostCommand) {
+        likeReaderStoreJpql.saveCommentLike(command)
     }
 
     @Transactional
@@ -36,10 +37,9 @@ class LikeReaderStoreImpl(
         return commentLikeRepository.save(commentLike)
     }
 
-    // Reply like
     @Transactional(readOnly = true)
-    override fun findReplyLikeRequest(replyId: Long, userId: Long): ReplyLike? {
-        return customLikeReaderStore.findReplyLikeRequest(replyId, userId)
+    override fun findReplyLikeDslRequest(replyId: Long, userId: Long): ReplyLike? {
+        return likeReaderStoreDsl.findReplyLike(replyId, userId)
     }
 
     @Transactional(readOnly = true)
@@ -53,7 +53,7 @@ class LikeReaderStoreImpl(
     }
 
     @Transactional
-    override fun initialSaveReplyLikeRequest(command: ReplyLikePostCommand) {
-        customLikeReaderStore.saveReplyLikeRequest(command)
+    override fun initialSaveReplyLikeJpqlRequest(command: ReplyLikePostCommand) {
+        likeReaderStoreJpql.saveReplyLike(command)
     }
 }

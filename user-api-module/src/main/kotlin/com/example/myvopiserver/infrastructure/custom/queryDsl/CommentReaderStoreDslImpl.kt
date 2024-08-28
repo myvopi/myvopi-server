@@ -1,23 +1,23 @@
-package com.example.myvopiserver.infrastructure.custom
+package com.example.myvopiserver.infrastructure.custom.queryDsl
 
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.SearchFilter
 import com.example.myvopiserver.domain.command.CommentsSearchCommand
 import com.example.myvopiserver.domain.command.SingleCommentSearchCommand
-import com.example.myvopiserver.infrastructure.custom.alias.BasicAlias
-import com.example.myvopiserver.infrastructure.custom.alias.QEntityAlias
-import com.example.myvopiserver.infrastructure.custom.queryDsl.QueryConstructor
-import com.example.myvopiserver.infrastructure.custom.repository.CustomCommentReaderStore
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.constructor.QueryDslConstructor
+import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.CommentReaderStoreDsl
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.dsl.Expressions
 import org.springframework.stereotype.Repository
 
 @Repository
-class CustomCommentReaderStoreImpl(
+class CommentReaderStoreDslImpl(
     private val alias: BasicAlias,
     private val qEntityAlias: QEntityAlias,
-    private val queryConstructor: QueryConstructor,
-): CustomCommentReaderStore {
+    private val queryDslConstructor: QueryDslConstructor,
+): CommentReaderStoreDsl {
 
     private val maxFetchCnt = 10L
 
@@ -58,12 +58,12 @@ class CustomCommentReaderStoreImpl(
      *   order by like_count desc
      *   limit 10 offset 0;
     * */
-    override fun findCommentsRequest(command: CommentsSearchCommand): List<Tuple> {
-        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
+    override fun findComments(command: CommentsSearchCommand): List<Tuple> {
+        return queryDslConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qComment)
-            .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike)
+            .leftJoin(queryDslConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
-            .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply)
+            .leftJoin(queryDslConstructor.constructReplySubQuery(), alias.subQueryReply)
                 .on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
             .join(qEntityAlias.qUser)
                 .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))
@@ -84,12 +84,12 @@ class CustomCommentReaderStoreImpl(
             .fetch()
     }
 
-    override fun findCommentRequest(command: SingleCommentSearchCommand): Tuple? {
-        return queryConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
+    override fun findComment(command: SingleCommentSearchCommand): Tuple? {
+        return queryDslConstructor.verifyAuthAndConstructCommentSelectQuery(command.internalUserCommand)
             .from(qEntityAlias.qComment)
-            .leftJoin(queryConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike)
+            .leftJoin(queryDslConstructor.constructFilteredCommentLikeSubQuery(), alias.subQueryCommentLike)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryCommentLike, "comment_id").eq(qEntityAlias.qComment.id))
-            .leftJoin(queryConstructor.constructReplySubQuery(), alias.subQueryReply)
+            .leftJoin(queryDslConstructor.constructReplySubQuery(), alias.subQueryReply)
                 .on((Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id")).eq(qEntityAlias.qComment.id))
             .join(qEntityAlias.qUser)
                 .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "user_id").eq(qEntityAlias.qUser.id))

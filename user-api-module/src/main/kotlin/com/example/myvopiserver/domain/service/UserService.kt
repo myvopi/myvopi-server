@@ -39,7 +39,7 @@ class UserService(
     }
 
     fun updateUserMemberRole(command: InternalUserCommand) {
-        userReaderStore.updateUserRequest(
+        userReaderStore.updateUserDslRequest(
             command,
             listOf(UpdateClauseCommand(pathName = QUser.user.role.metadata.name, value = MemberRole.ROLE_USER)),
         )

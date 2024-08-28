@@ -4,7 +4,7 @@ import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.command.UpdateClauseCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
-import com.example.myvopiserver.infrastructure.custom.repository.CustomUserReaderStore
+import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.UserReaderStoreDsl
 import com.example.myvopiserver.infrastructure.repository.UserRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class UserReaderStoreImpl(
     private val userRepository: UserRepository,
-    private val customUserReaderStore: CustomUserReaderStore,
+    private val userReaderStoreDsl: UserReaderStoreDsl,
 ): UserReaderStore {
 
     @Transactional
@@ -36,7 +36,7 @@ class UserReaderStoreImpl(
     }
 
     @Transactional
-    override fun updateUserRequest(command: InternalUserCommand, commandList: List<UpdateClauseCommand>) {
-        customUserReaderStore.updateUserRequest(command, commandList)
+    override fun updateUserDslRequest(command: InternalUserCommand, commandList: List<UpdateClauseCommand>) {
+        userReaderStoreDsl.updateUser(command, commandList)
     }
 }

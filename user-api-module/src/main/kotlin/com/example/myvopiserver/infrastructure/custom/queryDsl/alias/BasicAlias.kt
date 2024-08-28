@@ -1,4 +1,4 @@
-package com.example.myvopiserver.infrastructure.custom.alias
+package com.example.myvopiserver.infrastructure.custom.queryDsl.alias
 
 import com.querydsl.core.types.dsl.Expressions
 import org.springframework.stereotype.Component

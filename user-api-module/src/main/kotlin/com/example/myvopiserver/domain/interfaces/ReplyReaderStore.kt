@@ -7,7 +7,7 @@ import com.querydsl.core.Tuple
 
 interface ReplyReaderStore {
 
-    fun findRepliesRequest(command: ReplySearchCommand): List<Tuple>
+    fun findRepliesDslRequest(command: ReplySearchCommand): List<Tuple>
 
     fun findReplyWithUserByUuid(uuid: String): Reply?
 
@@ -15,5 +15,5 @@ interface ReplyReaderStore {
 
     fun findReplyByUuid(uuid: String): Reply?
 
-    fun findReplyRequest(command: SingleReplySearchCommand): Tuple?
+    fun findReplyDslRequest(command: SingleReplySearchCommand): Tuple?
 }
