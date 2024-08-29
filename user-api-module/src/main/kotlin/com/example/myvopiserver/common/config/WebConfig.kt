@@ -26,7 +26,6 @@ class WebConfig: WebMvcConfigurer {
         registry.addMapping("/api/**")
             .allowedMethods("*")
             .allowedOrigins("*")
-            // 추가
             .allowedHeaders("*")
     }
 }

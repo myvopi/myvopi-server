@@ -10,7 +10,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-// unused
 @Component
 class ClassVariables {
 
