@@ -10,7 +10,9 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 
 @Component
-class CustomAuthenticationEntryPoint: AuthenticationEntryPoint {
+class CustomAuthenticationEntryPoint(
+    private val gson: Gson,
+): AuthenticationEntryPoint {
 
     override fun commence(
         request: HttpServletRequest,
@@ -24,6 +26,6 @@ class CustomAuthenticationEntryPoint: AuthenticationEntryPoint {
             message = ErrorCode.PAGE_NOT_FOUND.engErrorMsg,
             errorCode = ErrorCode.PAGE_NOT_FOUND
         )
-        response.writer.write(Gson().toJson(exceptionResponse))
+        response.writer.write(gson.toJson(exceptionResponse))
     }
 }

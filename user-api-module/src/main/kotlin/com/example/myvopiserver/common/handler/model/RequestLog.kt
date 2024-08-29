@@ -1,10 +1,9 @@
 package com.example.myvopiserver.common.handler.model
 
-import com.google.gson.Gson
 import org.springframework.util.MultiValueMap
 import java.util.*
 
-data class RequestLog(
+data class RequestLog (
     val date: Date = Date(),
     val traceId: String?,
     val spanId: String?,
@@ -15,8 +14,4 @@ data class RequestLog(
     val headers: MultiValueMap<String, String>,
     val parameters: MultiValueMap<String, String>,
     val body: String?,
-) {
-    fun toJsonString(): String {
-        return Gson().toJson(this)
-    }
-}
+)

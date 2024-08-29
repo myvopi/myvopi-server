@@ -1,6 +1,7 @@
 package com.example.myvopiserver.common.filter
 
 import com.example.myvopiserver.common.handler.model.RequestLog
+import com.google.gson.Gson
 import io.micrometer.tracing.Tracer
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -15,6 +16,7 @@ import kotlin.collections.HashMap
 @Component
 class HttpRequestFilter(
     private val tracer: Tracer,
+    private val gson: Gson,
 ): OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -33,7 +35,7 @@ class HttpRequestFilter(
             parameters = getRequestParameters(request),
             body = null
         )
-        logger.info("[SERVER REQUEST]: ${log.toJsonString()}")
+        logger.info("[SERVER REQUEST]: ${gson.toJson(log)}")
         filterChain.doFilter(request, response)
     }
 

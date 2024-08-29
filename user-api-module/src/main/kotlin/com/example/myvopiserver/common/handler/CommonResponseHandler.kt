@@ -3,6 +3,7 @@ package com.example.myvopiserver.common.handler
 import com.commoncoremodule.response.CommonResult
 import com.example.myvopiserver.common.handler.model.ResponseBodyLog
 import com.example.myvopiserver.common.util.extension.getLogger
+import com.google.gson.Gson
 import io.micrometer.tracing.Tracer
 import org.springframework.core.MethodParameter
 import org.springframework.http.MediaType
@@ -14,7 +15,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 
 @ControllerAdvice
 class CommonResponseHandler(
-    private val tracer: Tracer
+    private val tracer: Tracer,
+    private val gson: Gson,
 ): ResponseBodyAdvice<Any>
 {
 
@@ -46,7 +48,7 @@ class CommonResponseHandler(
             body = body
         )
 
-        logger.info("[SERVER RESPONSE BODY]: ${log.toJsonString()}")
+        logger.info("[SERVER RESPONSE BODY]: ${gson.toJson(log)}")
 
         val returnObject: Any?
         if(body is CommonResult<*>) {

@@ -5,6 +5,7 @@ import com.commoncoremodule.exception.JwtException
 import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.exception.UnauthorizedException
 import com.commoncoremodule.response.CommonResponse
+import com.google.gson.Gson
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class ExceptionFilter: OncePerRequestFilter() {
+class ExceptionFilter(
+    private val gson: Gson,
+): OncePerRequestFilter() {
 
-    // TODO need to find out how we can return response
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -52,9 +54,9 @@ class ExceptionFilter: OncePerRequestFilter() {
     {
         response.status = httpStatus.value()
         response.contentType = "application/json; charset=UTF-8"
-
-        val exceptionResponse = CommonResponse.fail(message = e.engErrorMsg, errorCode = e)
+        val exceptionResponse = CommonResponse.fail(e)
         exceptionResponse.path = request.requestURI
         logger.info("[SERVER RESPONSE]: $exceptionResponse")
+        response.writer.write(gson.toJson(CommonResponse.fail(e)))
     }
 }

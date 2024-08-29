@@ -1,7 +1,5 @@
 package com.example.myvopiserver.common.handler.model
 
-import com.google.gson.Gson
-
 data class ResponseBodyLog(
     val traceId: String?,
     val spanId: String?,
@@ -10,8 +8,4 @@ data class ResponseBodyLog(
     val requestURI: String,
     val method: String,
     val body: Any?,
-) {
-    fun toJsonString(): String {
-        return Gson().toJson(this)
-    }
-}
+)

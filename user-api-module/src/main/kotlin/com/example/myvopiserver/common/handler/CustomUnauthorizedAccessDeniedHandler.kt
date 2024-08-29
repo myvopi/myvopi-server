@@ -10,7 +10,9 @@ import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.stereotype.Component
 
 @Component
-class CustomUnauthorizedAccessDeniedHandler: AccessDeniedHandler {
+class CustomUnauthorizedAccessDeniedHandler(
+    private val gson: Gson,
+): AccessDeniedHandler {
 
     override fun handle(
         request: HttpServletRequest,
@@ -25,6 +27,6 @@ class CustomUnauthorizedAccessDeniedHandler: AccessDeniedHandler {
             message = ErrorCode.ACCESS_DENIED.engErrorMsg,
             errorCode = ErrorCode.ACCESS_DENIED
         )
-        response.writer.write(Gson().toJson(exceptionResponse))
+        response.writer.write(gson.toJson(exceptionResponse))
     }
 }
