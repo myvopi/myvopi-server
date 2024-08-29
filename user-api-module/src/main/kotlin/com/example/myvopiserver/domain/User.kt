@@ -15,7 +15,6 @@ import java.util.*
 @DynamicInsert
 class User(
     name: String,               // 성명
-    userId: String,             // 아이디
     nationality: CountryCode,   // 국적
     password: String,           // 비번
     email: String,              // 이메일
@@ -25,7 +24,6 @@ class User(
         command: InternalUserCommand,
     ) : this(
         command.name,
-        command.userId,
         command.nationality,
         command.password,
         command.email
@@ -35,6 +33,8 @@ class User(
         this.uuid = command.uuid
         this.role = command.role
         this.status = command.status
+        this.userId = command.userId
+        this.displayUuid = command.displayUuid
     }
 
     @Id
@@ -49,8 +49,12 @@ class User(
     var name: String = name
         protected set
 
-    @Column(name = "userId", nullable = false, updatable = true)
-    var userId: String = userId
+    @Column(name = "userId", nullable = true, updatable = true)
+    var userId: String? = null
+        protected set
+
+    @Column(name = "displayUuid", nullable = true, updatable = true)
+    var displayUuid: String = ("@user" +this.uuid.split("-").take(2).joinToString("-" ))
         protected set
 
     @Enumerated(EnumType.STRING)

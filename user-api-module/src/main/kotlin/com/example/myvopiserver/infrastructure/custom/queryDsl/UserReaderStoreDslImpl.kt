@@ -23,7 +23,6 @@ class UserReaderStoreDslImpl(
             .update(qUser)
             .where(
                 qUser.id.eq(command.id),
-                qUser.userId.eq(command.userId),
                 qUser.uuid.eq(command.uuid),
                 qUser.email.eq(command.email),
             )

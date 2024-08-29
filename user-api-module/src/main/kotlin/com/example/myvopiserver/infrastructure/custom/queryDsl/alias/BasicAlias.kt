@@ -16,6 +16,8 @@ class BasicAlias {
     final val columnCommentContent = Expressions.stringPath("commentContent")
     final val columnCommentModifiedCnt = Expressions.numberPath(Int::class.javaObjectType, "commentModifiedCnt")
     final val columnUserId = Expressions.stringPath("userId")
+    final val columnUserUuid = Expressions.stringPath("userUuid")
+    final val columnUserDisplayUuid = Expressions.stringPath("userDisplayUuid")
     final val columnCommentLikesCount = Expressions.numberPath(Long::class.javaObjectType, "commentLikeCount")
     final val columnReplyCount = Expressions.numberPath(Long::class.javaObjectType, "replyCount")
     final val subQueryReply = Expressions.stringPath("r")

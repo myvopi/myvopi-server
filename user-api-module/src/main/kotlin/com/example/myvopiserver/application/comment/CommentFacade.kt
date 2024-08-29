@@ -18,8 +18,8 @@ class CommentFacade(
     }
 
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
-        commentService.validateAndUpdateContent(command)
-        val searchCommand = commentService.constructSingleCommentSearchCommand(command)
+        val internalCommentCommand = commentService.validateAndUpdateContent(command)
+        val searchCommand = commentService.constructSingleCommentSearchCommand(command, internalCommentCommand)
         val result = commentService.getComment(searchCommand)
         return commentService.constructCommentBaseInfo(result)
     }

@@ -3,16 +3,24 @@ package com.example.myvopiserver.domain.service
 import com.commoncoremodule.enums.*
 import com.commoncoremodule.util.Cipher
 import com.commoncoremodule.exception.*
+import com.commoncoremodule.extension.getCurrentDateTime
 import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import org.springframework.stereotype.Service
+import java.time.Duration
+import java.time.LocalDateTime
 
 @Service
 class ValidationService(
     private val userReaderStore: UserReaderStore,
     private val cipher: Cipher,
 ) {
+
+    fun validateEmail(email: String) {
+        val verification = userReaderStore.userExistsByEmail(email)
+        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email")
+    }
 
     fun validateUserIdOrEmailExists(userId: String, email: String) {
         val verification = userReaderStore.userExistsByUserIdOrEmail(userId, email)
@@ -35,7 +43,7 @@ class ValidationService(
     }
 
     fun validateOwnerAndRequester(requesterCommand: InternalUserCommand, entityOwner: User) {
-        if(requesterCommand.uuid != entityOwner.uuid || requesterCommand.userId != entityOwner.userId) {
+        if(requesterCommand.uuid != entityOwner.uuid || requesterCommand.email != entityOwner.email) {
             throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Not allowed to request any actions for this comment")
         }
     }
@@ -76,5 +84,14 @@ class ValidationService(
 
     fun validateIfUserEmailBeenVerified(role: MemberRole) {
         if(role == MemberRole.ROLE_UNVERIFIED) throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Please verify your email address")
+    }
+
+    fun validateIfPast5Minutes(createdDt: LocalDateTime) {
+        val currentDateTime = getCurrentDateTime()
+        val duration = Duration.between(createdDt, currentDateTime)
+        val durationMinutes = duration.toMinutes()
+        if(durationMinutes >= 5) {
+            throw BadRequestException(ErrorCode.BAD_REQUEST, "5 minutes have passed")
+        }
     }
 }

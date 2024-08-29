@@ -43,13 +43,13 @@ class CommentService(
 
     fun getComment(command: SingleCommentSearchCommand): Tuple {
         return commentReaderStore.findCommentDslRequest(command)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
     }
 
     @Cacheable(value = ["cacheStore"], key = "#uuid")
     fun getOnlyComment(uuid: String): InternalCommentCommand {
         val comment = commentReaderStore.findCommentByUuid(uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         return commentMapper.to(comment = comment)
     }
 
@@ -74,7 +74,7 @@ class CommentService(
 
     fun getCommentRelations(uuid: String): InternalCommentWithUserAndVideoCommand {
         val comment = commentReaderStore.findCommentWithUserAndVideoAndVideoOwnerByUuid(uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         return extractEntityToCommand(comment)
     }
 
@@ -84,7 +84,8 @@ class CommentService(
         internalVideoCommand: InternalVideoAndOwnerCommand,
     ): InternalCommentCommand {
         val videoOwner = User(command = internalVideoCommand.internalUserCommand)
-        val requester = User(postCommand.internalUserCommand)
+        val requesterCommand = postCommand.internalUserCommand
+        val requester = User(requesterCommand)
         val video = Video(
             command = internalVideoCommand.internalVideoCommand,
             user = videoOwner,
@@ -97,7 +98,7 @@ class CommentService(
         val savedComment= commentReaderStore.saveComment(comment)
         return commentMapper.to(
             comment = savedComment,
-            userId = postCommand.internalUserCommand.userId,
+            userId = requesterCommand.userId ?: requesterCommand.displayUuid,
         )
     }
 
@@ -136,21 +137,22 @@ class CommentService(
     }
 
     // Validation
-    fun validateAndUpdateContent(command: CommentUpdateCommand) {
+    fun validateAndUpdateContent(command: CommentUpdateCommand): InternalCommentCommand {
         val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
         // validate if is owner
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
         // validate if it's deleted
         validationService.validateIsDeleted(comment.status)
         comment.updateContent(command.content)
-        commentReaderStore.saveComment(comment)
+        val savedComment = commentReaderStore.saveComment(comment)
+        return commentMapper.to(savedComment)
     }
 
     fun validateAndDelete(command: CommentDeleteCommand) {
         val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
         validationService.validateIsDeleted(comment.status)
@@ -180,10 +182,12 @@ class CommentService(
 
     // Private & constructors
     private fun mapCommentBaseInfoOfResult(result: Tuple): CommentBaseInfo {
+        val userId = result.get(alias.columnUserId)
+        val userDisplayUuid = result.get(alias.columnUserDisplayUuid)
         return CommentBaseInfo(
             uuid = result.get(alias.columnCommentUuid)!!,
             content = result.get(alias.columnCommentContent)!!,
-            userId = result.get(alias.columnUserId)!!,
+            userId = if(!userId.isNullOrBlank()) userId else userDisplayUuid!!,
             likeCount = result.get(alias.columnCommentLikesCount)!!,
             replyCount = result.get(alias.columnReplyCount)!!,
             createdDate = result.get(alias.columnCreatedDateTuple)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
@@ -206,7 +210,7 @@ class CommentService(
         return CommentBaseInfo(
             uuid = command.uuid,
             content = command.content,
-            userId = command.userId ?: "",
+            userId = command.userId,
             likeCount = 0,
             replyCount = 0,
             createdDate = command.createdDate.toStrings("yyyy-MM-dd HH:mm:ss"),
@@ -217,12 +221,14 @@ class CommentService(
 
     fun constructSingleCommentSearchCommand(
         command: CommentUpdateCommand,
+        internalCommentCommand: InternalCommentCommand,
     ): SingleCommentSearchCommand {
         return SingleCommentSearchCommand(
             internalUserCommand = command.internalUserCommand,
             videoId = command.videoId,
             videoType = command.videoType,
             commentUuid = command.commentUuid,
+            commentId = internalCommentCommand.id,
         )
     }
 

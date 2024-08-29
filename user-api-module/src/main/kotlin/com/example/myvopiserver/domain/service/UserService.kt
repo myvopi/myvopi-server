@@ -1,9 +1,9 @@
 package com.example.myvopiserver.domain.service
 
 import com.commoncoremodule.enums.MemberRole
+import com.commoncoremodule.exception.BadRequestException
 import com.commoncoremodule.util.Cipher
 import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.NotFoundException
 import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
@@ -26,16 +26,14 @@ class UserService(
 ) {
 
     // Db-transactions
-    fun registerUser(command: UserRegisterCommand): InternalUserCommand {
+    fun registerUser(command: UserRegisterCommand) {
         val userCommand = User(
             name = command.name,
-            userId = command.userId,
             nationality = command.nationality,
             password = cipher.encrypt(command.password),
             email = command.email,
         )
-        val user = userReaderStore.saveUser(userCommand)
-        return userMapper.to(user = user)!!
+        userReaderStore.saveUser(userCommand)
     }
 
     fun updateUserMemberRole(command: InternalUserCommand) {
@@ -48,7 +46,7 @@ class UserService(
     // Db-transactions(readOnly)
     fun getUserAndValidateStatus(uuid: String): InternalUserCommand {
         val user = userReaderStore.findUserByUuid(uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         // Banned status validation
         validationService.validateIfBanned(user.status)
         return userMapper.to(user = user)!!
@@ -56,7 +54,7 @@ class UserService(
 
     fun getUserAndValidateStatusWithRole(uuid: String): InternalUserCommand {
         val user = userReaderStore.findUserByUuid(uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         // Banned status validation
         validationService.validateIfBanned(user.status)
         // Role validation
@@ -66,14 +64,14 @@ class UserService(
 
     // Validation & constructors
     fun validateUserRegister(command: UserRegisterCommand) {
-        validationService.validateUserIdOrEmailExists(command.userId, command.email)
+        validationService.validateEmail(command.email)
         validationService.validatePasswordFormat(command.password)
         validationService.validateValidCountryCode(command.nationality)
     }
 
     fun validateUserLogin(command: UserLoginCommand): InternalUserCommand {
-        val user = userReaderStore.findUserByUserId(command.userId)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        val user = userReaderStore.findUserByEmail(command.email)
+            ?: throw BadRequestException(ErrorCode.BAD_REQUEST, "Invalid user credentials")
         val reqPassword = command.password
         val password = user.password
         // Password authentication

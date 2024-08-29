@@ -8,6 +8,7 @@ class UrlObject {
 
     private val requestMatchers: MutableMap<String, List<String>> = HashMap()
 
+    // TODO dynamically refactor
     @PostConstruct
     fun init() {
         requestMatchers["/op/api/v1/comment"] = listOf("GET")
@@ -22,10 +23,11 @@ class UrlObject {
         requestMatchers["/cv/api/v1/reply/report"] = listOf("POST")
         requestMatchers["/op/api/v1/user/register"] = listOf("POST")
         requestMatchers["/op/api/v1/user/login"] = listOf("POST")
-        requestMatchers["/cv/api/v1/user/email/verification/newCode"] = listOf("POST")
-        requestMatchers["/cv/api/v1/user/email/verification"] = listOf("POST")
+        requestMatchers["/cv/api/v1/user/register/email/verification/newCode"] = listOf("POST")
+        requestMatchers["/cv/api/v1/user/register/email/verification"] = listOf("POST")
         requestMatchers["/op/api/v1/user/token/re-issue"] = listOf("POST")
         requestMatchers["/watch"] = listOf("GET")
+        requestMatchers["/cv/api/v1/user/my-info"] = listOf("POST")
     }
 
     fun requestMatchers(): MutableMap<String, List<String>> {

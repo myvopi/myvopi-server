@@ -16,6 +16,7 @@ data class SingleCommentSearchCommand(
     val videoId: String,
     val videoType: VideoType,
     val commentUuid: String,
+    val commentId: Long,
 )
 
 data class ReplySearchCommand(
@@ -27,4 +28,5 @@ data class ReplySearchCommand(
 data class SingleReplySearchCommand(
     val internalUserCommand: InternalUserCommand,
     val replyUuid: String,
+    val replyId: Long,
 )

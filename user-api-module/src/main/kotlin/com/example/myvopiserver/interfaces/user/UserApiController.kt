@@ -27,7 +27,6 @@ class UserApiController(
     {
         val command = UserRegisterCommand(
             name = body.name,
-            userId = body.userId,
             nationality = body.nationality,
             password = body.password,
             email = body.email,
@@ -42,7 +41,7 @@ class UserApiController(
     ): CommonResult<AuthenticationTokenInfo>
     {
         val command = UserLoginCommand(
-            userId = body.userId,
+            email = body.email,
             password = body.password,
         )
         val info = userFacade.loginUser(command)
@@ -50,18 +49,18 @@ class UserApiController(
     }
 
     @Secured("ROLE_UNVERIFIED")
-    @PostMapping("/cv/api/v1/user/email/verification/newCode")
+    @PostMapping("/cv/api/v1/user/register/email/verification/newCode")
     fun emailVerificationNewCode(
         authentication: Authentication,
     ): CommonResult<String>
     {
         val command = authentication.toUserInfo()
-        userFacade.requestEmailVerificationCode(command)
+        userFacade.requestRegisterEmailVerificationCode(command)
         return CommonResponse.success("Verification email sent")
     }
 
     @Secured("ROLE_UNVERIFIED")
-    @PostMapping("/cv/api/v1/user/email/verification")
+    @PostMapping("/cv/api/v1/user/register/email/verification")
     fun emailVerification(
         authentication: Authentication,
         @RequestBody body: EmailVerificationDto,
@@ -72,7 +71,7 @@ class UserApiController(
             internalUserCommand = internalUserCommand,
             reqCode = body.code,
         )
-        userFacade.verifyEmail(command)
+        userFacade.requestVerifyRegisterEmail(command)
         return CommonResponse.success("Verification successful")
     }
 

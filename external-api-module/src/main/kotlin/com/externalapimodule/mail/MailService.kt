@@ -14,23 +14,23 @@ class MailService(
     @Async("mailExecutor")
     fun sendVerificationEmail(
         id: Long,
-        userId: String,
         email: String,
         code: String
     ) {
         val mimeMessage: MimeMessage = mailSender.createMimeMessage()
         val helper = MimeMessageHelper(mimeMessage, true, "utf-8")
-        val bodyText = "<p>Your registered account email verification code is:</p>\n" +
+        val bodyText = "<p>MyVideoOpinion registration email for: $email verification code is:</p>\n" +
                 "<p><br></p>\n" +
                 "<strong style=\"font-size:28px; line-height:32px;\">${code}</strong>\n" +
                 "<p><br></p>\n" +
-                "<p>Your account can’t be accessed " +
-                "without this verification code. Please verify this code inorder to proceed in our community.</p>\n" +
-                "<p>To keep your account secure, we recommend using a " +
-                "unique password for your account."
-        helper.setSubject("Registered account, email verification code")
+                "<p>Please do not share this code with anyone.</p>\n" +
+                "<p>We will not contact you to share or send registration code related contents through any communication procedures.</p>\n" +
+                "<p>Please input this code immediately to complete your registration.</p>\n" +
+                "<p>This code will only be valid for 5 minutes.</p>\n"
+        helper.setSubject("MyVideoOpinion - Email registration verification code")
         helper.setText(bodyText, true)
         helper.setTo(email)
+        helper.setFrom("MyVideoOpinion")
         mailSender.send(mimeMessage)
     }
 }

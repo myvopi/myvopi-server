@@ -32,6 +32,7 @@ class QueryDslConstructor(
                 qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
                 qEntityAlias.qComment.modifiedCnt.`as`(alias.columnCommentModifiedCnt),
                 qEntityAlias.qUser.userId.`as`(alias.columnUserId),
+                qEntityAlias.qUser.displayUuid.`as`(alias.columnUserDisplayUuid),
                 Expressions.numberPath(Long::class.java, alias.subQueryCommentLike, qEntityAlias.qCommentLike.id.metadata.name).countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
                 Expressions.numberPath(Long::class.java, alias.subQueryReply, qEntityAlias.qReply.id.metadata.name).countDistinct().`as`(alias.columnReplyCount), // replyCount
                 Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qComment, qEntityAlias.qComment.createdDt.metadata.name).`as`(alias.columnCreatedDate), // created_dt
@@ -43,6 +44,7 @@ class QueryDslConstructor(
                 qEntityAlias.qComment.content.`as`(alias.columnCommentContent),
                 qEntityAlias.qComment.modifiedCnt.`as`(alias.columnCommentModifiedCnt),
                 qEntityAlias.qUser.userId.`as`(alias.columnUserId),
+                qEntityAlias.qUser.displayUuid.`as`(alias.columnUserDisplayUuid),
                 Expressions.numberPath(Long::class.java, alias.subQueryCommentLike, qEntityAlias.qCommentLike.id.metadata.name).countDistinct().`as`(alias.columnCommentLikesCount), // likeCount
                 Expressions.numberPath(Long::class.java, alias.subQueryReply, qEntityAlias.qReply.id.metadata.name).countDistinct().`as`(alias.columnReplyCount), // replyCount
                 Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qComment, qEntityAlias.qComment.createdDt.metadata.name).`as`(alias.columnCreatedDate), // created_dt
@@ -80,6 +82,7 @@ class QueryDslConstructor(
                 qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
                 qEntityAlias.qReply.content.`as`(alias.columnReplyContent),
                 qEntityAlias.qUser.userId.`as`(alias.columnUserId),
+                qEntityAlias.qUser.displayUuid.`as`(alias.columnUserDisplayUuid),
                 Expressions.numberPath(Long::class.java, alias.subQueryReplyLike, qEntityAlias.qReplyLike.id.metadata.name).countDistinct().`as`(alias.columnReplyLikesCount), // reply likeCount
                 qEntityAlias.qComment.modifiedCnt.`as`(alias.columnReplyModifiedCnt),
                 Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qReply, qEntityAlias.qReply.createdDt.metadata.name).`as`(alias.columnCreatedDate), // created_dt
@@ -90,6 +93,7 @@ class QueryDslConstructor(
                 qEntityAlias.qReply.uuid.`as`(alias.columnReplyUuid),
                 qEntityAlias.qReply.content.`as`(alias.columnReplyContent),
                 qEntityAlias.qUser.userId.`as`(alias.columnUserId),
+                qEntityAlias.qUser.displayUuid.`as`(alias.columnUserDisplayUuid),
                 Expressions.numberPath(Long::class.java, alias.subQueryReplyLike, qEntityAlias.qReplyLike.id.metadata.name).countDistinct().`as`(alias.columnReplyLikesCount), // reply likeCount
                 qEntityAlias.qComment.modifiedCnt.`as`(alias.columnReplyModifiedCnt),
                 Expressions.datePath(LocalDateTime::class.java, qEntityAlias.qReply, qEntityAlias.qReply.createdDt.metadata.name).`as`(alias.columnCreatedDate), // created_dt

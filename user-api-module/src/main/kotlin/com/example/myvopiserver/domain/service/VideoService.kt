@@ -1,8 +1,8 @@
 package com.example.myvopiserver.domain.service
 
 import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.enums.VideoType
+import com.commoncoremodule.exception.BadRequestException
 import com.example.myvopiserver.domain.QUser
 import com.example.myvopiserver.domain.User
 import com.example.myvopiserver.domain.Video
@@ -25,7 +25,7 @@ class VideoService(
     // Db-transactions (readOnly)
     fun getVideoWithOwner(videoType: VideoType, videoId: String): InternalVideoAndOwnerCommand {
         val video = videoReaderStore.findVideoWithUserByTypeAndId(videoType, videoId)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         val owner = video.user
         return InternalVideoAndOwnerCommand(
             internalVideoCommand = videoMapper.to(video = video),
@@ -36,7 +36,8 @@ class VideoService(
     // Db-transactions
     fun searchVideoOrCreateNewWithReturnMessage(command: VideoSearchCommand): InternalVideoCommandWithMessage {
         val returnMessage = StringBuilder()
-        val video = videoReaderStore.findVideoByTypeAndId(command.videoType, command.videoId)
+        // VideoMapper.to()에 video.user.id를 사용 중
+        val video = videoReaderStore.findVideoWithUserByTypeAndId(command.videoType, command.videoId)
         // 동영상 주제가 존재 하지 않을시
         return if(video == null) {
             // 인증 정보가 첨부 되었을시
@@ -62,7 +63,7 @@ class VideoService(
                     message = returnMessage.toString(),
                     search = false,
                 )
-            } ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video not found, you will need an account to start a topic")
+            } ?: throw BadRequestException(ErrorCode.NOT_FOUND, "Video not found, you will need an account to start a topic")
         } else {
             returnMessage.append("Load successful")
             InternalVideoCommandWithMessage(

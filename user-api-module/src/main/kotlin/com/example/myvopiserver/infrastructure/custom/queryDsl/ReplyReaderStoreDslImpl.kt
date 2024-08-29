@@ -58,7 +58,7 @@ class ReplyReaderStoreDslImpl(
             .join(qEntityAlias.qUser)
                 .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
             .where(
-                Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.uuid.metadata.name).eq(command.commentUuid),
+                qEntityAlias.qComment.uuid.eq(command.commentUuid),
                 Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
                 Expressions.stringPath(qEntityAlias.qReply, qEntityAlias.qReply.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
             )
@@ -79,7 +79,8 @@ class ReplyReaderStoreDslImpl(
             .join(qEntityAlias.qUser)
                 .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
             .where(
-                Expressions.stringPath(qEntityAlias.qReply, qEntityAlias.qReply.uuid.metadata.name).eq(command.replyUuid),
+                qEntityAlias.qReply.uuid.eq(command.replyUuid),
+                qEntityAlias.qReply.id.eq(command.replyId),
                 Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
                 Expressions.stringPath(qEntityAlias.qReply, qEntityAlias.qReply.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
             )
