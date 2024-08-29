@@ -1,4 +1,4 @@
-package com.example.myvopiserver.interfaces.reply
+package com.example.myvopiserver.interfaces.dto.reply
 
 data class ReplyUpdateDto (
     val content: String,

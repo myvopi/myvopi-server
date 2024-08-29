@@ -1,4 +1,4 @@
-package com.example.myvopiserver.interfaces.user
+package com.example.myvopiserver.interfaces
 
 import com.example.myvopiserver.application.user.UserFacade
 import com.commoncoremodule.response.CommonResponse
@@ -9,6 +9,10 @@ import com.example.myvopiserver.domain.command.ReissueAccessTokenCommand
 import com.example.myvopiserver.domain.command.UserLoginCommand
 import com.example.myvopiserver.domain.command.UserRegisterCommand
 import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
+import com.example.myvopiserver.interfaces.dto.user.EmailVerificationDto
+import com.example.myvopiserver.interfaces.dto.user.LoginDto
+import com.example.myvopiserver.interfaces.dto.user.RegisterDto
+import com.example.myvopiserver.interfaces.dto.user.ReissueAccessTokenDto
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,7 +24,7 @@ class UserApiController(
     private val userFacade: UserFacade,
 ) {
 
-    @PostMapping("/op/api/v1/user/register")
+    @PostMapping(path = ["/op/api/v1/user/register"])
     fun register(
         @RequestBody body: RegisterDto,
     ): CommonResult<String>
@@ -35,7 +39,7 @@ class UserApiController(
         return CommonResponse.success("Register success")
     }
 
-    @PostMapping("/op/api/v1/user/login")
+    @PostMapping(path = ["/op/api/v1/user/login"])
     fun login(
         @RequestBody body: LoginDto,
     ): CommonResult<AuthenticationTokenInfo>
@@ -49,7 +53,7 @@ class UserApiController(
     }
 
     @Secured("ROLE_UNVERIFIED")
-    @PostMapping("/cv/api/v1/user/register/email/verification/newCode")
+    @PostMapping(path = ["/cv/api/v1/user/register/email/verification/newCode"])
     fun emailVerificationNewCode(
         authentication: Authentication,
     ): CommonResult<String>
@@ -60,7 +64,7 @@ class UserApiController(
     }
 
     @Secured("ROLE_UNVERIFIED")
-    @PostMapping("/cv/api/v1/user/register/email/verification")
+    @PostMapping(path = ["/cv/api/v1/user/register/email/verification"])
     fun emailVerification(
         authentication: Authentication,
         @RequestBody body: EmailVerificationDto,
@@ -75,7 +79,7 @@ class UserApiController(
         return CommonResponse.success("Verification successful")
     }
 
-    @PostMapping("/op/api/v1/user/token/re-issue")
+    @PostMapping(path = ["/op/api/v1/user/token/re-issue"])
     fun reissueAccessToken(
         @RequestBody body: ReissueAccessTokenDto,
     ): CommonResult<AuthenticationTokenInfo>

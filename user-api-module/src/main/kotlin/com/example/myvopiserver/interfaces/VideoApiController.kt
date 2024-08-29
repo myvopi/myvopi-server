@@ -1,4 +1,4 @@
-package com.example.myvopiserver.interfaces.video
+package com.example.myvopiserver.interfaces
 
 import com.example.myvopiserver.application.video.VideoFacade
 import com.commoncoremodule.response.CommonResponse
@@ -20,7 +20,7 @@ class VideoApiController(
     private val videoFacade: VideoFacade,
 ) {
 
-    @GetMapping("/watch")
+    @GetMapping(path = ["/watch"])
     fun searchVideo(
         authentication: Authentication?,
         @RequestParam(value = "v", required = false) ytv: String?,

@@ -1,4 +1,4 @@
-package com.example.myvopiserver.interfaces.user
+package com.example.myvopiserver.interfaces.dto.user
 
 import com.commoncoremodule.enums.CountryCode
 

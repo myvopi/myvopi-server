@@ -1,4 +1,4 @@
-package com.example.myvopiserver.interfaces.comment
+package com.example.myvopiserver.interfaces
 
 import com.commoncoremodule.enums.ReportType
 import com.example.myvopiserver.application.comment.CommentFacade
@@ -11,6 +11,7 @@ import com.commoncoremodule.enums.VideoType
 import com.example.myvopiserver.common.config.authentication.toUserInfo
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
+import com.example.myvopiserver.interfaces.dto.comment.*
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -20,7 +21,7 @@ class CommentApiController(
     private val commentFacade: CommentFacade,
 ) {
 
-    @GetMapping("/op/api/v1/comment")
+    @GetMapping(path = ["/op/api/v1/comment"])
     fun getComments(
         authentication: Authentication?,
         @RequestParam(value = "videoType", required = true) videoType: String,
@@ -46,7 +47,7 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PutMapping("/cv/api/v1/comment")
+    @PutMapping(path = ["/cv/api/v1/comment"])
     fun updateComment(
         authentication: Authentication,
         @RequestBody body: CommentUpdateDto,
@@ -67,7 +68,7 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/cv/api/v1/comment")
+    @PostMapping(path = ["/cv/api/v1/comment"])
     fun postComment(
         authentication: Authentication,
         @RequestBody body: CommentPostDto,
@@ -87,7 +88,7 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @DeleteMapping("/cv/api/v1/comment")
+    @DeleteMapping(path = ["/cv/api/v1/comment"])
     fun deleteComment(
         authentication: Authentication,
         @RequestBody body: CommentDeleteDto,
@@ -107,7 +108,7 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/cv/api/v1/comment/like")
+    @PostMapping(path = ["/cv/api/v1/comment/like"])
     fun postLike(
         authentication: Authentication,
         @RequestBody body: CommentLikeDto,
@@ -127,7 +128,7 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/cv/api/v1/comment/unlike")
+    @PostMapping(path = ["/cv/api/v1/comment/unlike"])
     fun postUnlike(
         authentication: Authentication,
         @RequestBody body: CommentLikeDto,
@@ -147,7 +148,7 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/cv/api/v1/comment/report")
+    @PostMapping(path = ["/cv/api/v1/comment/report"])
     fun postReport(
         authentication: Authentication,
         @RequestBody body: CommentReportDto,
