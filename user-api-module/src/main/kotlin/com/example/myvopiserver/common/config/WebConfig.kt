@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
+import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.nio.charset.StandardCharsets
 
@@ -19,5 +20,13 @@ class WebConfig: WebMvcConfigurer {
         mediaTypeList.add(MediaType.APPLICATION_JSON)
         shmc.supportedMediaTypes = mediaTypeList
         return shmc
+    }
+
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry.addMapping("/api/**")
+            .allowedMethods("*")
+            .allowedOrigins("*")
+            // 추가
+            .allowedHeaders("*")
     }
 }

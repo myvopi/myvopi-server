@@ -1,6 +1,5 @@
 package com.example.myvopiserver.interfaces.comment
 
-import com.authcoremodule.authentication.toUserInfo
 import com.commoncoremodule.enums.ReportType
 import com.example.myvopiserver.application.comment.CommentFacade
 import com.commoncoremodule.exception.ErrorCode
@@ -9,19 +8,19 @@ import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.commoncoremodule.enums.SearchFilter
 import com.commoncoremodule.enums.VideoType
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.CommentBaseInfo
+import com.example.myvopiserver.common.config.authentication.toUserInfo
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.CommentBaseInfo
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/comment")
 class CommentApiController(
     private val commentFacade: CommentFacade,
 ) {
 
-    @GetMapping("/")
+    @GetMapping("/op/api/v1/comment")
     fun getComments(
         authentication: Authentication?,
         @RequestParam(value = "videoType", required = true) videoType: String,
@@ -35,7 +34,7 @@ class CommentApiController(
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val searchFilter = SearchFilter.decode(filter)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")
-        val command = CommentSearchFromCommentCommand(
+        val command = CommentsSearchCommand(
             internalUserCommand = userCommand,
             filter = searchFilter,
             reqPage = reqPage,
@@ -47,15 +46,13 @@ class CommentApiController(
     }
 
     @Secured("ROLE_USER")
-    @PutMapping("/")
+    @PutMapping("/cv/api/v1/comment")
     fun updateComment(
         authentication: Authentication,
-        @RequestParam(value = "videoType", required = true) videoType: String,
-        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentUpdateDto,
     ): CommonResult<CommentBaseInfo>
     {
-        val videoTypeEnum = VideoType.decode(videoType)
+        val videoTypeEnum = VideoType.decode(body.videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentUpdateCommand(
@@ -63,102 +60,94 @@ class CommentApiController(
             content = body.content,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
-            videoId = videoId,
+            videoId = body.videoId,
         )
         val info = commentFacade.requestCommentUpdate(command)
         return CommonResponse.success(info)
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/")
+    @PostMapping("/cv/api/v1/comment")
     fun postComment(
         authentication: Authentication,
-        @RequestParam(value = "videoType", required = true) videoType: String,
-        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentPostDto,
     ): CommonResult<CommentBaseInfo>
     {
-        val videoTypeEnum = VideoType.decode(videoType)
+        val videoTypeEnum = VideoType.decode(body.videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentPostCommand(
             internalUserCommand = internalUserCommand,
             content = body.content,
             videoType = videoTypeEnum,
-            videoId = videoId,
+            videoId = body.videoId,
         )
         val info = commentFacade.requestCommentPost(command)
         return CommonResponse.success(info)
     }
 
     @Secured("ROLE_USER")
-    @DeleteMapping("/")
+    @DeleteMapping("/cv/api/v1/comment")
     fun deleteComment(
         authentication: Authentication,
-        @RequestParam(value = "videoType", required = true) videoType: String,
-        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentDeleteDto,
     ): CommonResult<String>
     {
-        val videoTypeEnum = VideoType.decode(videoType)
+        val videoTypeEnum = VideoType.decode(body.videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentDeleteCommand(
             internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
-            videoId = videoId,
+            videoId = body.videoId,
         )
         commentFacade.requestCommentDelete(command)
         return CommonResponse.success("Comment deleted")
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/like")
+    @PostMapping("/cv/api/v1/comment/like")
     fun postLike(
         authentication: Authentication,
-        @RequestParam(value = "videoType", required = true) videoType: String,
-        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentLikeDto,
     ): CommonResult<String>
     {
-        val videoTypeEnum = VideoType.decode(videoType)
+        val videoTypeEnum = VideoType.decode(body.videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentLikeCommand(
             internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
-            videoId = videoId,
+            videoId = body.videoId,
         )
         commentFacade.requestCommentLike(command)
         return CommonResponse.success("Comment liked")
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/unlike")
+    @PostMapping("/cv/api/v1/comment/unlike")
     fun postUnlike(
         authentication: Authentication,
-        @RequestParam(value = "videoType", required = true) videoType: String,
-        @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestBody body: CommentLikeDto,
     ): CommonResult<String>
     {
-        val videoTypeEnum = VideoType.decode(videoType)
+        val videoTypeEnum = VideoType.decode(body.videoType)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND, "Video type not provided")
         val internalUserCommand = authentication.toUserInfo()
         val command = CommentLikeCommand(
             internalUserCommand = internalUserCommand,
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
-            videoId = videoId,
+            videoId = body.videoId,
         )
         commentFacade.requestCommentUnlike(command)
         return CommonResponse.success("Comment unliked")
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/report")
+    @PostMapping("/cv/api/v1/comment/report")
     fun postReport(
         authentication: Authentication,
         @RequestBody body: CommentReportDto,

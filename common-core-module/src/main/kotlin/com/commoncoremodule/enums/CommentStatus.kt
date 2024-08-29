@@ -5,4 +5,5 @@ enum class CommentStatus {
     FLAGGED,
     DELETED,
     HIDDEN,
+    DELETED_ADMIN,
 }

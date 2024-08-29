@@ -1,10 +1,9 @@
 package com.example.myvopiserver.common.config
 
-import com.authcoremodule.authentication.JwtAuthenticationManager
-import com.example.myvopiserver.common.config.filter.CorsFilter
-import com.authcoremodule.filter.JwtAuthenticationExceptionFilter
-import com.authcoremodule.filter.JwtAuthenticationFilter
-import com.authcoremodule.handler.CustomAccessDeniedHandler
+import com.example.myvopiserver.common.config.authentication.JwtAuthenticationManager
+import com.example.myvopiserver.common.filter.*
+import com.example.myvopiserver.common.handler.CustomAccessDeniedHandler
+import com.example.myvopiserver.common.handler.CustomAuthenticationEntryPoint
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -18,16 +17,16 @@ import org.springframework.security.config.annotation.web.configurers.HttpBasicC
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.session.SessionManagementFilter
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class SecurityConfig(
     private val jwtAuthenticationManager: JwtAuthenticationManager,
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val jwtAuthenticationExceptionFilter: JwtAuthenticationExceptionFilter,
     private val customAccessDeniedHandler: CustomAccessDeniedHandler,
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
+    private val httpRequestFilter: HttpRequestFilter,
+    private val exceptionFilter: ExceptionFilter,
 ) {
 
     @Bean
@@ -37,14 +36,15 @@ class SecurityConfig(
     {
         http.oauth2ResourceServer { oauth2 -> oauth2.jwt(Customizer.withDefaults()) }
         http.authenticationManager(jwtAuthenticationManager)
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-        http.addFilterBefore(jwtAuthenticationExceptionFilter, JwtAuthenticationFilter::class.java)
-            .exceptionHandling{ authenticationManager -> authenticationManager.accessDeniedHandler(customAccessDeniedHandler)}
+        http.addFilterBefore(exceptionFilter, UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(httpRequestFilter, ExceptionFilter::class.java)
+
         http.httpBasic { obj: HttpBasicConfigurer<HttpSecurity> -> obj.disable() }
         http.cors { obj: CorsConfigurer<HttpSecurity> -> obj.disable() }
         http.csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
         http.sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-        http.addFilterBefore(CorsFilter(), SessionManagementFilter::class.java)
+            .addFilterBefore(CorsFilter(), HttpRequestFilter::class.java)
+
         http.headers { headers ->
             headers.frameOptions { frameOptionsConfig -> frameOptionsConfig.disable() }
         }
@@ -53,27 +53,13 @@ class SecurityConfig(
         }
 
         http.authorizeHttpRequests { authorize ->
-            authorize.requestMatchers(HttpMethod.POST, "/{url}").permitAll()
-
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/register").permitAll()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/email/verification/newCode").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/email/verification").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/user/token/re-issue").permitAll()
-
-            authorize.requestMatchers(HttpMethod.GET, "/api/v1/comment/**").permitAll()
-            authorize.requestMatchers(HttpMethod.PUT, "/api/v1/comment/**").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/**").authenticated()
-            authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/comment/**").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/like").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/comment/unlike").authenticated()
-
-            authorize.requestMatchers(HttpMethod.GET, "/api/v1/reply/**").permitAll()
-            authorize.requestMatchers(HttpMethod.PUT, "/api/v1/reply/**").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/**").authenticated()
-            authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/reply/**").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/like").authenticated()
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/reply/unlike").authenticated()
+            authorize.requestMatchers(HttpMethod.GET, "/watch").permitAll()
+            authorize.requestMatchers("*", "/op/**").permitAll()
+            authorize.requestMatchers("*", "/cv/**").authenticated()
+        }
+        .exceptionHandling{
+            it.accessDeniedHandler(customAccessDeniedHandler)
+            it.authenticationEntryPoint(customAuthenticationEntryPoint)
         }
         return http.build()
     }

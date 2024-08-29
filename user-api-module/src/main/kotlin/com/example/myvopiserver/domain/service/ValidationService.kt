@@ -1,16 +1,11 @@
 package com.example.myvopiserver.domain.service
 
+import com.commoncoremodule.enums.*
 import com.commoncoremodule.util.Cipher
-import com.commoncoremodule.exception.BadRequestException
-import com.commoncoremodule.exception.BaseException
-import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.UnauthorizedException
-import com.commoncoremodule.enums.CommentStatus
-import com.commoncoremodule.enums.CountryCode
-import com.commoncoremodule.enums.LikeStatus
-import com.entitycoremodule.command.InternalUserCommand
-import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.domain.interfaces.users.UserReaderStore
+import com.commoncoremodule.exception.*
+import com.example.myvopiserver.domain.User
+import com.example.myvopiserver.domain.command.InternalUserCommand
+import com.example.myvopiserver.domain.interfaces.UserReaderStore
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,14 +14,9 @@ class ValidationService(
     private val cipher: Cipher,
 ) {
 
-    fun validateUserIdExists(userId: String) {
-        val verification = userReaderStore.userExistsByUserId(userId)
-        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username")
-    }
-
-    fun validateEmailExists(email: String) {
-        val verification = userReaderStore.userExistsByEmail(email)
-        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email")
+    fun validateUserIdOrEmailExists(userId: String, email: String) {
+        val verification = userReaderStore.userExistsByUserIdOrEmail(userId, email)
+        if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username or email")
     }
 
     fun validatePasswordFormat(password: String) {
@@ -55,10 +45,6 @@ class ValidationService(
         if(requestPassword != decryptedPassword) throw BadRequestException(ErrorCode.BAD_REQUEST, "Bad request")
     }
 
-    fun validateIfRequestContentMatchesOriginalContent(requestContent: String, commentContent: String): Boolean {
-        return requestContent == commentContent
-    }
-
     fun validateIsDeleted(status: CommentStatus) {
         if(status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This has already been deleted")
     }
@@ -73,5 +59,22 @@ class ValidationService(
 
     fun validateIfFlagged(status: CommentStatus): Boolean {
         return status == CommentStatus.FLAGGED
+    }
+
+    fun validateIfBanned(status: RoleStatus) {
+        if(status == RoleStatus.BANNED) throw AccessDeniedException(ErrorCode.BANNED, ErrorCode.BANNED.engErrorMsg)
+    }
+
+    fun validateIfIsUserRole(role: MemberRole) {
+        if(role == MemberRole.ROLE_ADMIN) throw BaseException(ErrorCode.BAD_REQUEST, "CODE 1")
+        if(role == MemberRole.ROLE_UNVERIFIED) throw UnauthorizedException(ErrorCode.ACCESS_DENIED, "Please verify your email first")
+    }
+
+    fun validateIfDailyChanceExceeded(dailyChance: Int) {
+        if(dailyChance < 1) throw BadRequestException(ErrorCode.BAD_REQUEST, "You have exceeded your daily requests")
+    }
+
+    fun validateIfUserEmailBeenVerified(role: MemberRole) {
+        if(role == MemberRole.ROLE_UNVERIFIED) throw UnauthorizedException(ErrorCode.UNAUTHORIZED, "Please verify your email address")
     }
 }

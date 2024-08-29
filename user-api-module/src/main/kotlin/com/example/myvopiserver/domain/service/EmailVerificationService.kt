@@ -4,13 +4,13 @@ import com.commoncoremodule.exception.BadRequestException
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
 import com.example.myvopiserver.common.util.CodeGenerator
-import com.entitycoremodule.command.EmailVerificationCommand
-import com.entitycoremodule.command.EmailVerifyReqCommand
-import com.entitycoremodule.command.InternalUserCommand
-import com.entitycoremodule.domain.email.EmailVerification
-import com.entitycoremodule.domain.interfaces.users.EmailVerificationReaderStore
-import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.mapper.email.EmailVerificationMapper
+import com.example.myvopiserver.domain.EmailVerification
+import com.example.myvopiserver.domain.User
+import com.example.myvopiserver.domain.command.EmailVerificationCommand
+import com.example.myvopiserver.domain.command.EmailVerifyReqCommand
+import com.example.myvopiserver.domain.command.InternalUserCommand
+import com.example.myvopiserver.domain.interfaces.EmailVerificationReaderStore
+import com.example.myvopiserver.domain.mapper.EmailVerificationMapper
 import org.springframework.stereotype.Service
 
 @Service

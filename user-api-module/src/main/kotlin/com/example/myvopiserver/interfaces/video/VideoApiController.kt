@@ -1,44 +1,40 @@
 package com.example.myvopiserver.interfaces.video
 
 import com.example.myvopiserver.application.video.VideoFacade
-import com.authcoremodule.authentication.toUserInfo
-import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.commoncoremodule.enums.SearchFilter
-import com.entitycoremodule.command.VideoSearchCommand
-import com.entitycoremodule.info.CommentBaseInfo
-import com.example.myvopiserver.common.util.CustomParser
+import com.commoncoremodule.enums.VideoType
+import com.commoncoremodule.exception.BadRequestException
+import com.commoncoremodule.exception.ErrorCode
+import com.example.myvopiserver.common.config.authentication.toUserInfo
+import com.example.myvopiserver.domain.command.VideoSearchCommand
+import com.example.myvopiserver.domain.info.CommentBaseInfo
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class VideoApiController(
-    private val customParser: CustomParser,
     private val videoFacade: VideoFacade,
 ) {
 
-    @PostMapping("/{url}")
+    @GetMapping("/watch")
     fun searchVideo(
         authentication: Authentication?,
-        @PathVariable(value = "url", required = true) url: String,
-        @RequestBody body: CommentRequestDto,
+        @RequestParam(value = "v", required = false) ytv: String?,
+        @RequestParam(value = "s", required = false) yts: String?,
     ): CommonResult<List<CommentBaseInfo>>
     {
-        val urlCommand = customParser.validateAndParseVideoUrl(url)
+        if(ytv == null && yts == null) throw BadRequestException(ErrorCode.BAD_REQUEST, "Must specify ?v= or ?s=")
         val userCommand = authentication?.toUserInfo()
-        val searchFilter = SearchFilter.decode(body.filter)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND, "No such filter found")
         val command = VideoSearchCommand(
             internalUserCommand = userCommand,
-            videoType = urlCommand.videoType,
-            videoId = urlCommand.videoId,
-            filter = searchFilter,
-            reqPage = body.reqPage,
+            videoType = ytv?.let { VideoType.YT_VIDEO } ?: run { VideoType.YT_SHORT },
+            videoId = ytv?.let { ytv } ?: run { yts!! },
+            filter = SearchFilter.RECENT,
+            reqPage = 0,
         )
         val info = videoFacade.requestVideoAndComments(command)
         return CommonResponse.success(info.comments, info.message)

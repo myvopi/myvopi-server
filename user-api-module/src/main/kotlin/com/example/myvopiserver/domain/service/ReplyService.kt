@@ -1,26 +1,27 @@
 package com.example.myvopiserver.domain.service
 
+import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.ContentType
 import com.commoncoremodule.exception.BaseException
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.extension.toStrings
-import com.entitycoremodule.command.*
-import com.entitycoremodule.domain.comment.Comment
-import com.entitycoremodule.domain.interfaces.users.LikeReaderStore
-import com.entitycoremodule.domain.reply.Reply
-import com.entitycoremodule.domain.interfaces.users.ReplyReaderStore
-import com.entitycoremodule.domain.interfaces.users.ReportReaderStore
-import com.entitycoremodule.domain.report.Report
-import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.domain.video.Video
-import com.entitycoremodule.info.ReplyBaseInfo
-import com.entitycoremodule.infrastructure.users.custom.alias.BasicAlias
-import com.entitycoremodule.infrastructure.users.custom.alias.QEntityAlias
-import com.entitycoremodule.mapper.comment.CommentMapper
-import com.entitycoremodule.mapper.common.UserMapper
-import com.entitycoremodule.mapper.reply.ReplyMapper
-import com.entitycoremodule.mapper.video.VideoMapper
+import com.example.myvopiserver.domain.Comment
+import com.example.myvopiserver.domain.interfaces.LikeReaderStore
+import com.example.myvopiserver.domain.Reply
+import com.example.myvopiserver.domain.interfaces.ReplyReaderStore
+import com.example.myvopiserver.domain.interfaces.ReportReaderStore
+import com.example.myvopiserver.domain.Report
+import com.example.myvopiserver.domain.User
+import com.example.myvopiserver.domain.Video
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.ReplyBaseInfo
+import com.example.myvopiserver.domain.mapper.CommentMapper
+import com.example.myvopiserver.domain.mapper.ReplyMapper
+import com.example.myvopiserver.domain.mapper.UserMapper
+import com.example.myvopiserver.domain.mapper.VideoMapper
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
+import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Service
 
@@ -39,25 +40,28 @@ class ReplyService(
 ) {
 
     // Db-transactions (readOnly)
-    fun findReplies(command: ReplySearchCommand): List<Tuple> {
-        return replyReaderStore.findRepliesRequest(command)
+    fun getReplies(command: ReplySearchCommand): List<Tuple> {
+        return replyReaderStore.findRepliesDslRequest(command)
     }
 
-    fun findOnlyReply(uuid: String): InternalReplyCommand {
+    fun getOnlyReply(uuid: String): InternalReplyCommand {
         val reply = replyReaderStore.findReplyByUuid(uuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         return replyMapper.to(reply = reply)
     }
 
-    fun findReply(command: SingleReplySearchCommand): Tuple {
-        return replyReaderStore.findReplyRequest(command)
+    fun getReply(command: SingleReplySearchCommand): Tuple {
+        return replyReaderStore.findReplyDslRequest(command)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
     }
 
-    fun findReplyAndOwnerAndUpdateFlagged(uuid: String): InternalReplyAndOwnerCommand {
-        val reply = replyReaderStore.findReplyWithUserByUuid(uuid)
+    fun getReplyAndOwnerAndUpdateFlagged(uuid: String): InternalReplyAndOwnerCommand {
+        val reply = replyReaderStore.findReplyWithUserAndCommentByUuid(uuid)
             ?.let {
-                if(!validationService.validateIfFlagged(it.status)) {
+                // 삭제 여부 확인
+                validationService.validateIsDeleted(it.status)
+                // 신고 되었었는지 확인
+                if(it.status == CommentStatus.FLAGGED) {
                     it.flagComment()
                     replyReaderStore.saveReply(it)
                 } else it
@@ -73,18 +77,19 @@ class ReplyService(
     // Db-transactions
     fun createNewReply(
         postCommand: ReplyPostCommand,
-        internalCommentCommand: com.entitycoremodule.command.InternalCommentWithUserAndVideoCommand,
+        commentRelationsCommand: InternalCommentWithUserAndVideoCommand,
     ): InternalReplyCommand
     {
+        validationService.validateIsDeleted(commentRelationsCommand.internalCommentCommand.status)
         val requester = User(command = postCommand.internalUserCommand)
-        val commentOwner = User(command = internalCommentCommand.internalCommentOwnerCommand)
-        val videoOwner = User(command = internalCommentCommand.internalVideoOwnerCommand)
+        val commentOwner = User(command = commentRelationsCommand.internalCommentOwnerCommand)
+        val videoOwner = User(command = commentRelationsCommand.internalVideoOwnerCommand)
         val video = Video(
-            command = internalCommentCommand.internalVideoCommand,
+            command = commentRelationsCommand.internalVideoCommand,
             user = videoOwner,
         )
         val comment = Comment(
-            command = internalCommentCommand.internalCommentCommand,
+            command = commentRelationsCommand.internalCommentCommand,
             user = commentOwner,
             video = video,
         )
@@ -100,17 +105,18 @@ class ReplyService(
         )
     }
 
-    fun searchAndUpdateLikeOrCreateNew(
+    fun getAndUpdateLikeOrCreateNew(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
-        val replyLike = likeReaderStore.findReplyLikeRequest(internalReplyCommand.id, requesterUserCommand.id)
+        validationService.validateIsDeleted(internalReplyCommand.status)
+        val replyLike = likeReaderStore.findReplyLikeDslRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
-            val command = ReplyLikePostCommand(
+            val command = ReplyLikePostRequestCommand(
                 userId = requesterUserCommand.id,
                 replyId = internalReplyCommand.id,
             )
-            likeReaderStore.initialSaveReplyLikeRequest(command)
+            likeReaderStore.initialSaveReplyLikeJpqlRequest(command)
         } else {
             validationService.validateIsLiked(replyLike.status)
             replyLike.like()
@@ -118,11 +124,12 @@ class ReplyService(
         }
     }
 
-    fun searchAndUpdateUnlike(
+    fun getAndUpdateUnlike(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
-        val replyLike = likeReaderStore.findReplyLikeRequest(internalReplyCommand.id, requesterUserCommand.id)
+        validationService.validateIsDeleted(internalReplyCommand.status)
+        val replyLike = likeReaderStore.findReplyLikeDslRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this reply")
         } else {
@@ -137,15 +144,15 @@ class ReplyService(
         val reply = replyReaderStore.findReplyWithUserByUuid(command.replyUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = reply.user
+        // validate if is owner
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
+        // validate if it's deleted
         validationService.validateIsDeleted(reply.status)
-        if(!validationService.validateIfRequestContentMatchesOriginalContent(command.content, reply.content)) {
-            reply.updateContent(command.content)
-        }
+        reply.updateContent(command.content)
         replyReaderStore.saveReply(reply)
     }
 
-    fun validateAndUpdateStatus(command: ReplyDeleteCommand) {
+    fun validateAndDelete(command: ReplyDeleteCommand) {
         val reply = replyReaderStore.findReplyWithUserByUuid(command.replyUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val replyOwner = reply.user
@@ -160,14 +167,14 @@ class ReplyService(
         replyAndOwnerCommand: InternalReplyAndOwnerCommand,
     ) {
         val reporter = User(command = replyReportCommand.internalUserCommand)
-        reportReaderStore.findCommentReportByContentUuidAndUser(replyReportCommand.replyUuid, reporter)
+        reportReaderStore.findReplyReportByTargetUuidAndUser(replyReportCommand.replyUuid, reporter)
             ?: run {
                 val reportTarget = User(replyAndOwnerCommand.commentOwnerCommand)
                 val report = Report(
                     contentType = ContentType.REPLY,
                     reportType = replyReportCommand.reportType,
-                    contentUuid = replyAndOwnerCommand.internalReplyCommand.uuid,
-                    contentId = replyAndOwnerCommand.internalReplyCommand.id,
+                    targetUuid = replyAndOwnerCommand.internalReplyCommand.uuid,
+                    targetId = replyAndOwnerCommand.internalReplyCommand.id,
                     reporter = reporter,
                     reportTarget = reportTarget,
                 )
@@ -181,7 +188,7 @@ class ReplyService(
             uuid = result.get(alias.columnReplyUuid)!!,
             content = result.get(alias.columnReplyContent)!!,
             userId = result.get(alias.columnUserId)!!,
-            replyLikeCount = result.get(alias.columnReplyLikesCount)!!,
+            likeCount = result.get(alias.columnReplyLikesCount)!!,
             modified = result.get(alias.columnReplyModifiedCnt)!! > 0,
             createdDate = result.get(alias.columnCreatedDateTuple)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
             userLiked = result.get(alias.columnUserLiked)?: false,
@@ -203,7 +210,7 @@ class ReplyService(
             uuid = command.uuid,
             content = command.content,
             userId = command.userId ?: "",
-            replyLikeCount = 0,
+            likeCount = 0,
             createdDate = command.createdDate.toStrings("yyyy-MM-dd HH:mm:ss"),
             modified = command.modifiedCnt > 0,
             userLiked = false,

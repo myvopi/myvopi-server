@@ -1,16 +1,19 @@
 package com.example.myvopiserver.domain.service
 
-import com.authcoremodule.authentication.JwtTokenGenerator
+import com.commoncoremodule.enums.MemberRole
 import com.commoncoremodule.util.Cipher
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
-import com.entitycoremodule.command.InternalUserCommand
-import com.entitycoremodule.command.UserLoginCommand
-import com.entitycoremodule.command.UserRegisterCommand
-import com.entitycoremodule.domain.user.User
-import com.entitycoremodule.domain.interfaces.users.UserReaderStore
-import com.entitycoremodule.info.AuthenticationTokenInfo
-import com.entitycoremodule.mapper.common.UserMapper
+import com.example.myvopiserver.domain.User
+import com.example.myvopiserver.domain.interfaces.UserReaderStore
+import com.example.myvopiserver.domain.info.AuthenticationTokenInfo
+import com.example.myvopiserver.common.config.authentication.JwtTokenGenerator
+import com.example.myvopiserver.domain.QUser
+import com.example.myvopiserver.domain.command.InternalUserCommand
+import com.example.myvopiserver.domain.command.UpdateClauseCommand
+import com.example.myvopiserver.domain.command.UserLoginCommand
+import com.example.myvopiserver.domain.command.UserRegisterCommand
+import com.example.myvopiserver.domain.mapper.UserMapper
 import org.springframework.stereotype.Service
 
 @Service
@@ -36,22 +39,63 @@ class UserService(
     }
 
     fun updateUserMemberRole(command: InternalUserCommand) {
-        val user = User(command)
-        user.setMemberRoleUser()
-        userReaderStore.saveUser(user)
+        userReaderStore.updateUserDslRequest(
+            command,
+            listOf(UpdateClauseCommand(pathName = QUser.user.role.metadata.name, value = MemberRole.ROLE_USER)),
+        )
     }
 
-    // Validation
-    fun validateUserLogin(command: UserLoginCommand): AuthenticationTokenInfo {
+    // Db-transactions(readOnly)
+    fun getUserAndValidateStatus(uuid: String): InternalUserCommand {
+        val user = userReaderStore.findUserByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        // Banned status validation
+        validationService.validateIfBanned(user.status)
+        return userMapper.to(user = user)!!
+    }
+
+    fun getUserAndValidateStatusWithRole(uuid: String): InternalUserCommand {
+        val user = userReaderStore.findUserByUuid(uuid)
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        // Banned status validation
+        validationService.validateIfBanned(user.status)
+        // Role validation
+        validationService.validateIfIsUserRole(user.role)
+        return userMapper.to(user = user)!!
+    }
+
+    // Validation & constructors
+    fun validateUserRegister(command: UserRegisterCommand) {
+        validationService.validateUserIdOrEmailExists(command.userId, command.email)
+        validationService.validatePasswordFormat(command.password)
+        validationService.validateValidCountryCode(command.nationality)
+    }
+
+    fun validateUserLogin(command: UserLoginCommand): InternalUserCommand {
         val user = userReaderStore.findUserByUserId(command.userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val reqPassword = command.password
         val password = user.password
+        // Password authentication
         validationService.validatePassword(reqPassword, password)
-        val internalUserCommand = userMapper.to(user = user)!!
+        // Banned status validation
+        validationService.validateIfBanned(user.status)
+        return userMapper.to(user = user)!!
+    }
+
+    fun createAuthenticationInfo(
+        internalUserCommand: InternalUserCommand
+    ): AuthenticationTokenInfo {
         return AuthenticationTokenInfo(
             accessToken = jwtTokenGenerator.createAccessToken(internalUserCommand),
             refreshToken = jwtTokenGenerator.createRefreshToken(internalUserCommand),
         )
+    }
+
+    fun validateIfAuthenticationHasBeenApplied(command: InternalUserCommand?) {
+        command?.let {
+            validationService.validateIfUserEmailBeenVerified(command.role)
+            validationService.validateIfBanned(command.status)
+        }
     }
 }

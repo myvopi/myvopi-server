@@ -1,7 +1,7 @@
 package com.example.myvopiserver.application.comment
 
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.CommentBaseInfo
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.CommentBaseInfo
 import com.example.myvopiserver.domain.service.CommentService
 import com.example.myvopiserver.domain.service.VideoService
 import org.springframework.stereotype.Service
@@ -12,40 +12,40 @@ class CommentFacade(
     private val videoService: VideoService,
 ) {
 
-    fun requestComments(command: CommentSearchFromCommentCommand): List<CommentBaseInfo> {
-        val result = commentService.findComments(command)
+    fun requestComments(command: CommentsSearchCommand): List<CommentBaseInfo> {
+        val result = commentService.getCommentsRequest(command)
         return commentService.constructCommentBaseInfo(result)
     }
 
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
         commentService.validateAndUpdateContent(command)
         val searchCommand = commentService.constructSingleCommentSearchCommand(command)
-        val result = commentService.findComment(searchCommand)
+        val result = commentService.getComment(searchCommand)
         return commentService.constructCommentBaseInfo(result)
     }
 
     fun requestCommentPost(command: CommentPostCommand): CommentBaseInfo {
-        val internalVideoCommand = videoService.findVideoWithOwner(command.videoType, command.videoId)
+        val internalVideoCommand = videoService.getVideoWithOwner(command.videoType, command.videoId)
         val internalCommentCommand = commentService.createNewComment(command, internalVideoCommand)
         return commentService.constructInitialCommentBaseInfo(internalCommentCommand)
     }
 
     fun requestCommentDelete(command: CommentDeleteCommand) {
-        commentService.validateAndUpdateStatus(command)
+        commentService.validateAndDelete(command)
     }
 
     fun requestCommentLike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findOnlyComment(command.commentUuid)
-        commentService.searchAndUpdateLikeOrCreateNew(command.internalUserCommand, internalCommentCommand)
+        val internalCommentCommand = commentService.getOnlyComment(command.commentUuid)
+        commentService.getAndUpdateLikeOrCreateNew(command.internalUserCommand, internalCommentCommand)
     }
 
     fun requestCommentUnlike(command: CommentLikeCommand) {
-        val internalCommentCommand = commentService.findOnlyComment(command.commentUuid)
-        commentService.searchAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
+        val internalCommentCommand = commentService.getOnlyComment(command.commentUuid)
+        commentService.getAndUpdateUnlike(command.internalUserCommand, internalCommentCommand)
     }
 
     fun requestReportComment(command: CommentReportCommand) {
-        val internalCommentAndOwnerCommand = commentService.findCommentAndOwnerAndUpdateFlagged(command.commentUuid)
+        val internalCommentAndOwnerCommand = commentService.getCommentAndOwnerAndUpdateFlagged(command.commentUuid)
         commentService.validateReportOrStore(command, internalCommentAndOwnerCommand)
     }
 }

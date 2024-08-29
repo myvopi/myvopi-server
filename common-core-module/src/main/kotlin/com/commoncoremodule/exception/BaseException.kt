@@ -49,3 +49,33 @@ data class InternalException(
         return super.toString()
     }
 }
+
+data class BannedException(
+    val errorCode: ErrorCode,
+    override val message: String = errorCode.engErrorMsg
+): RuntimeException(message)
+{
+    override fun toString(): String {
+        return super.toString()
+    }
+}
+
+data class JwtException(
+    val errorCode: ErrorCode,
+    override val message: String = errorCode.engErrorMsg
+): RuntimeException(message)
+{
+    override fun toString(): String {
+        return super.toString()
+    }
+}
+
+data class AccessDeniedException(
+    val errorCode: ErrorCode,
+    override val message: String = errorCode.engErrorMsg
+): RuntimeException(message)
+{
+    override fun toString(): String {
+        return super.toString()
+    }
+}

@@ -1,6 +1,5 @@
 package com.externalapimodule.mail
 
-import com.entitycoremodule.command.EmailVerificationCommand
 import jakarta.mail.internet.MimeMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -13,12 +12,17 @@ class MailService(
 ) {
 
     @Async("mailExecutor")
-    fun sendVerificationEmail(command: EmailVerificationCommand) {
+    fun sendVerificationEmail(
+        id: Long,
+        userId: String,
+        email: String,
+        code: String
+    ) {
         val mimeMessage: MimeMessage = mailSender.createMimeMessage()
         val helper = MimeMessageHelper(mimeMessage, true, "utf-8")
         val bodyText = "<p>Your registered account email verification code is:</p>\n" +
                 "<p><br></p>\n" +
-                "<strong style=\"font-size:28px; line-height:32px;\">${command.code}</strong>\n" +
+                "<strong style=\"font-size:28px; line-height:32px;\">${code}</strong>\n" +
                 "<p><br></p>\n" +
                 "<p>Your account can’t be accessed " +
                 "without this verification code. Please verify this code inorder to proceed in our community.</p>\n" +
@@ -26,7 +30,7 @@ class MailService(
                 "unique password for your account."
         helper.setSubject("Registered account, email verification code")
         helper.setText(bodyText, true)
-        helper.setTo(command.email)
+        helper.setTo(email)
         mailSender.send(mimeMessage)
     }
 }

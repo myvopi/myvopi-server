@@ -1,14 +1,14 @@
 package com.example.myvopiserver.interfaces.reply
 
 import com.example.myvopiserver.application.reply.ReplyFacade
-import com.authcoremodule.authentication.toUserInfo
 import com.commoncoremodule.enums.ReportType
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
-import com.entitycoremodule.command.*
-import com.entitycoremodule.info.ReplyBaseInfo
+import com.example.myvopiserver.common.config.authentication.toUserInfo
+import com.example.myvopiserver.domain.command.*
+import com.example.myvopiserver.domain.info.ReplyBaseInfo
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -16,27 +16,25 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/reply")
 class ReplyApiController(
     private val replyFacade: ReplyFacade,
 ) {
 
-    @GetMapping("/")
-    fun getComments(
+    @GetMapping("/op/api/v1/reply")
+    fun getReplies(
         authentication: Authentication?,
-        @RequestParam(value = "uuid", required = true) uuid: String,
+        @RequestParam(value = "commentUuid", required = true) commentUuid: String,
         @RequestParam(value = "reqPage", required = true) reqPage: Int,
     ): CommonResult<List<ReplyBaseInfo>>
     {
         val userCommand = authentication?.toUserInfo()
         val command = ReplySearchCommand(
             internalUserCommand = userCommand,
-            commentUuid = uuid,
+            commentUuid = commentUuid,
             reqPage = reqPage,
         )
         val info = replyFacade.requestReplies(command)
@@ -44,7 +42,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PutMapping("/")
+    @PutMapping("/cv/api/v1/reply")
     fun updateReply(
         authentication: Authentication,
         @RequestBody body: ReplyUpdateDto,
@@ -61,7 +59,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/")
+    @PostMapping("/cv/api/v1/reply")
     fun postReply(
         authentication: Authentication,
         @RequestBody body: ReplyPostDto,
@@ -78,7 +76,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @DeleteMapping("/")
+    @DeleteMapping("/cv/api/v1/reply")
     fun deleteReply(
         authentication: Authentication,
         @RequestBody body: ReplyDeleteDto,
@@ -94,7 +92,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/like")
+    @PostMapping("/cv/api/v1/reply/like")
     fun postReplyLike(
         authentication: Authentication,
         @RequestBody body: ReplyLikeDto,
@@ -110,7 +108,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/unlike")
+    @PostMapping("/cv/api/v1/reply/unlike")
     fun postReplyUnlike(
         authentication: Authentication,
         @RequestBody body: ReplyLikeDto,
@@ -126,7 +124,7 @@ class ReplyApiController(
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/report")
+    @PostMapping("/cv/api/v1/reply/report")
     fun postReport(
         authentication: Authentication,
         @RequestBody body: ReplyReportDto,
