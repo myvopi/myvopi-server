@@ -3,7 +3,7 @@ package com.example.myvopiserver.common.config.authentication
 import com.commoncoremodule.enums.TokenType
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
-import com.example.myvopiserver.common.util.UrlObject
+import com.example.myvopiserver.common.util.UrlObject.Companion.RequestMatchersMap
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.service.UserService
 import com.example.myvopiserver.domain.service.ValidationService
@@ -20,17 +20,16 @@ class JwtAuthenticationManager(
     private val tokenGenerator: JwtTokenGenerator,
     private val userService: UserService,
     private val request: HttpServletRequest,
-    urlObject: UrlObject,
     private val validationService: ValidationService,
 ): AuthenticationManager {
 
-    private val requestMatchers = urlObject.requestMatchers()
+    private val requestMatchers = RequestMatchersMap
 
     // 어떤 URL이든 인증 정보가 첨부 되었을 시 authentication을 걷친다
     override fun authenticate(authentication: Authentication): Authentication {
         val uri = request.requestURI
-        val registeredMethods = requestMatchers[uri] ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val method = request.method
+        val registeredMethods = requestMatchers[uri] ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         /*
          * [참고] PostConstruct에서 등록된 URL을 지정/생성 한 뒤 요청에한 URL이 고유한지 판단 {@link com.example.myvopiserver.common.util}
          * [문제] 즉, 이 과정이 필요한 이유는, SpringSecurity에서 requestMatchers중 authenticated()와 permitAll()을 나누더라도
@@ -45,11 +44,14 @@ class JwtAuthenticationManager(
          * 임으로 이 두개도 별도의 조건을 추가 해줘야 됨
          * 추가적으로 /cv가 담겨 있지만 requestMatchers에 등록 되지 않는 URL한에서는 authenticationManager를 통과 한 후 NOT_FOUND 발생
          */
-        registeredMethods.find { it == method } ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+        val foundMethods = registeredMethods.find { it == method }
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
 
-        if(uri.contains("/cv") || uri.equals("/watch") ||
-          (method == "GET" && uri.equals("/op/api/v1/comment")) ||
-          (method == "GET" && uri.equals("/op/api/v1/reply")))
+        if(uri.startsWith("/cv") ||
+            (foundMethods == "GET" && uri.equals("/watch")) ||
+            (foundMethods == "GET" && uri.equals("/op/api/v1/comment")) ||
+            (foundMethods == "GET" && uri.equals("/op/api/v1/reply"))
+        )
         {
             val jwt = authentication as BearerTokenAuthenticationToken
             val validatedToken = tokenGenerator.decodeToken(jwt.token)

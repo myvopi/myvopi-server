@@ -1,4 +1,4 @@
-package com.example.myvopiserver.interfaces.comment
+package com.example.myvopiserver.interfaces.dto.comment
 
 data class CommentUpdateDto(
     val content: String,
