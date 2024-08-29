@@ -5,6 +5,7 @@ import com.example.myvopiserver.domain.Video
 
 interface VideoReaderStore {
 
+    // unused
     fun findVideoByTypeAndId(videoType: VideoType, videoId: String): Video?
 
     fun findVideoWithUserByTypeAndId(videoType: VideoType, videoId: String): Video?

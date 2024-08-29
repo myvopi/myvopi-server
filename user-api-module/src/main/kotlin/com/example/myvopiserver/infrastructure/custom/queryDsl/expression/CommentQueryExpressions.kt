@@ -20,9 +20,12 @@ class CommentQueryExpressions(
             .where(
                 Expressions.numberPath(Long::class.java, qEntityAlias.qComment2, "video_id")
                     .eq(Expressions.numberPath(Long::class.java, qEntityAlias.qComment, "video_id")),
-                qEntityAlias.qComment2.id.eq(qEntityAlias.qComment.id),
-                Expressions.numberPath(Long::class.java, qEntityAlias.qCommentLike2, "user_id").eq(userId),
-                Expressions.stringPath(qEntityAlias.qCommentLike2, "status").eq(LikeStatus.LIKED.name),
+                qEntityAlias.qComment2.id
+                    .eq(qEntityAlias.qComment.id),
+                Expressions.numberPath(Long::class.java, qEntityAlias.qCommentLike2, "user_id")
+                    .eq(userId),
+                Expressions.stringPath(qEntityAlias.qCommentLike2, "status")
+                    .eq(LikeStatus.LIKED.name),
             )
             .exists()
     }

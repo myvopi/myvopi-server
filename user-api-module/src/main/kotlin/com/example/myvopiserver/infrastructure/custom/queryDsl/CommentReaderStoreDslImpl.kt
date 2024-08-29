@@ -70,7 +70,7 @@ class CommentReaderStoreDslImpl(
             .join(qEntityAlias.qVideo)
                 .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
             .where(
-                Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qVideo.videoId.metadata.name).eq(command.videoId),
+                qEntityAlias.qVideo.videoId.eq(command.videoId),
                 Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qComment.video.videoType.metadata.name).eq(command.videoType.name),
                 Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
             )
@@ -96,11 +96,11 @@ class CommentReaderStoreDslImpl(
             .join(qEntityAlias.qVideo)
                 .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qComment, "video_id").eq(qEntityAlias.qVideo.id))
             .where(
-                qEntityAlias.qUser.uuid.eq(command.internalUserCommand.uuid),
-                Expressions.stringPath(qEntityAlias.qUser, qEntityAlias.qUser.userId.metadata.name).eq(command.internalUserCommand.userId),
-                Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qVideo.videoId.metadata.name).eq(command.videoId),
+                qEntityAlias.qVideo.videoId.eq(command.videoId),
+                qEntityAlias.qComment.uuid.eq(command.commentUuid),
+                qEntityAlias.qComment.id.eq(command.commentId),
                 Expressions.stringPath(qEntityAlias.qVideo, qEntityAlias.qVideo.videoType.metadata.name).eq(command.videoType.name),
-                qEntityAlias.qComment.uuid.eq(command.commentUuid)
+                Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
             )
             .groupBy(qEntityAlias.qComment.id)
             .fetchOne()

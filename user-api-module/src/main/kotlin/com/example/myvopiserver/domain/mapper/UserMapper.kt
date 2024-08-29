@@ -21,6 +21,7 @@ interface UserMapper {
         Mapping(source = "user.role", target = "role"),
         Mapping(source = "user.status", target = "status"),
         Mapping(source = "user.dailyChance", target = "dailyChance"),
+        Mapping(source = "user.displayUuid", target = "displayUuid"),
     )
     fun to(user: User?): InternalUserCommand?
 }

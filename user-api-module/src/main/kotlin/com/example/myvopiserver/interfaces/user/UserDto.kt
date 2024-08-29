@@ -4,14 +4,13 @@ import com.commoncoremodule.enums.CountryCode
 
 data class RegisterDto(
     val name: String,
-    val userId: String, // TODO character limit
     val nationality: CountryCode,
     val password: String,
-    val email: String, // TODO strong email verification needed
+    val email: String,
 )
 
 data class LoginDto(
-    val userId: String,
+    val email: String,
     val password: String,
 )
 

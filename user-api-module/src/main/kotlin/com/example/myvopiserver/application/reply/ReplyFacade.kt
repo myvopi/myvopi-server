@@ -18,8 +18,8 @@ class ReplyFacade(
     }
 
     fun requestReplyUpdate(command: ReplyUpdateCommand): ReplyBaseInfo {
-        replyService.validateAndUpdateContent(command)
-        val searchCommand = replyService.constructSingleReplySearchCommand(command)
+        val internalReplyCommand = replyService.validateAndUpdateContent(command)
+        val searchCommand = replyService.constructSingleReplySearchCommand(command, internalReplyCommand)
         val result = replyService.getReply(searchCommand)
         return replyService.constructReplyBaseInfo(result)
     }

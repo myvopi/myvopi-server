@@ -1,5 +1,6 @@
 package com.example.myvopiserver.domain
 
+import com.commoncoremodule.extension.getCurrentDateTime
 import jakarta.persistence.*
 import org.hibernate.annotations.DynamicInsert
 import org.hibernate.annotations.DynamicUpdate
@@ -36,6 +37,7 @@ class EmailVerification(
     fun setNewCode(code: String) {
         this.code = code
         this.chance = 3
+        this.createdDt = getCurrentDateTime()
     }
 
     fun removeChance() {

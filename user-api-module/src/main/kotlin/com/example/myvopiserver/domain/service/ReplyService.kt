@@ -2,9 +2,9 @@ package com.example.myvopiserver.domain.service
 
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.ContentType
+import com.commoncoremodule.exception.BadRequestException
 import com.commoncoremodule.exception.BaseException
 import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.extension.toStrings
 import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.interfaces.LikeReaderStore
@@ -46,13 +46,13 @@ class ReplyService(
 
     fun getOnlyReply(uuid: String): InternalReplyCommand {
         val reply = replyReaderStore.findReplyByUuid(uuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         return replyMapper.to(reply = reply)
     }
 
     fun getReply(command: SingleReplySearchCommand): Tuple {
         return replyReaderStore.findReplyDslRequest(command)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
     }
 
     fun getReplyAndOwnerAndUpdateFlagged(uuid: String): InternalReplyAndOwnerCommand {
@@ -66,7 +66,7 @@ class ReplyService(
                     replyReaderStore.saveReply(it)
                 } else it
             }
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         val owner = reply.user
         return InternalReplyAndOwnerCommand(
             internalReplyCommand = replyMapper.to(reply),
@@ -81,7 +81,8 @@ class ReplyService(
     ): InternalReplyCommand
     {
         validationService.validateIsDeleted(commentRelationsCommand.internalCommentCommand.status)
-        val requester = User(command = postCommand.internalUserCommand)
+        val requesterCommand = postCommand.internalUserCommand
+        val requester = User(command = requesterCommand)
         val commentOwner = User(command = commentRelationsCommand.internalCommentOwnerCommand)
         val videoOwner = User(command = commentRelationsCommand.internalVideoOwnerCommand)
         val video = Video(
@@ -101,7 +102,7 @@ class ReplyService(
         val savedReply = replyReaderStore.saveReply(reply)
         return replyMapper.to(
             reply = savedReply,
-            userId = postCommand.internalUserCommand.userId,
+            userId = requesterCommand.userId ?: requesterCommand.displayUuid,
         )
     }
 
@@ -140,21 +141,22 @@ class ReplyService(
     }
 
     // Validation
-    fun validateAndUpdateContent(command: ReplyUpdateCommand) {
+    fun validateAndUpdateContent(command: ReplyUpdateCommand): InternalReplyCommand {
         val reply = replyReaderStore.findReplyWithUserByUuid(command.replyUuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         val commentOwner = reply.user
         // validate if is owner
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
         // validate if it's deleted
         validationService.validateIsDeleted(reply.status)
         reply.updateContent(command.content)
-        replyReaderStore.saveReply(reply)
+        val savedReply = replyReaderStore.saveReply(reply)
+        return replyMapper.to(savedReply)
     }
 
     fun validateAndDelete(command: ReplyDeleteCommand) {
         val reply = replyReaderStore.findReplyWithUserByUuid(command.replyUuid)
-            ?: throw NotFoundException(ErrorCode.NOT_FOUND)
+            ?: throw BadRequestException(ErrorCode.NOT_FOUND)
         val replyOwner = reply.user
         validationService.validateOwnerAndRequester(command.internalUserCommand, replyOwner)
         validationService.validateIsDeleted(reply.status)
@@ -184,10 +186,12 @@ class ReplyService(
 
     // Private & constructors
     private fun mapReplyBaseInfoOfResult(result: Tuple): ReplyBaseInfo {
+        val userId = result.get(alias.columnUserId)
+        val userDisplayUuid = result.get(alias.columnUserDisplayUuid)
         return ReplyBaseInfo(
             uuid = result.get(alias.columnReplyUuid)!!,
             content = result.get(alias.columnReplyContent)!!,
-            userId = result.get(alias.columnUserId)!!,
+            userId = if(!userId.isNullOrBlank()) userId else userDisplayUuid!!,
             likeCount = result.get(alias.columnReplyLikesCount)!!,
             modified = result.get(alias.columnReplyModifiedCnt)!! > 0,
             createdDate = result.get(alias.columnCreatedDateTuple)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
@@ -209,7 +213,7 @@ class ReplyService(
         return ReplyBaseInfo(
             uuid = command.uuid,
             content = command.content,
-            userId = command.userId ?: "",
+            userId = command.userId,
             likeCount = 0,
             createdDate = command.createdDate.toStrings("yyyy-MM-dd HH:mm:ss"),
             modified = command.modifiedCnt > 0,
@@ -235,12 +239,14 @@ class ReplyService(
     }
 
     fun constructSingleReplySearchCommand(
-        command: ReplyUpdateCommand
+        command: ReplyUpdateCommand,
+        internalReplyCommand: InternalReplyCommand,
     ): SingleReplySearchCommand
     {
         return SingleReplySearchCommand(
             internalUserCommand = command.internalUserCommand,
             replyUuid = command.replyUuid,
+            replyId = internalReplyCommand.id,
         )
     }
 }

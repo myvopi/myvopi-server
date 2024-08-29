@@ -10,7 +10,9 @@ interface UserReaderStore {
 
     fun findUserByUuid(uuid: String): User?
 
-    fun findUserByUserId(userId: String): User?
+    fun findUserByEmail(email: String): User?
+
+    fun userExistsByEmail(email: String): Boolean
 
     fun userExistsByUserIdOrEmail(userId: String, email: String): Boolean
 

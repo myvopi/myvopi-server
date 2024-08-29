@@ -13,7 +13,6 @@ interface EmailVerificationMapper {
 
     @Mappings(
         Mapping(source = "user.id", target = "id"),
-        Mapping(source = "user.userId", target = "userId"),
         Mapping(source = "user.email", target = "email"),
         Mapping(source = "emailVerification.code", target = "code"),
         Mapping(source = "emailVerification.chance", target = "chance"),

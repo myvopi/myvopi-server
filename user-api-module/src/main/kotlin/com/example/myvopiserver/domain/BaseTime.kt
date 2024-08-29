@@ -14,7 +14,7 @@ class BaseTime {
 
     // TODO time calculation for region
     @CreatedDate
-    @Column(name = "createdDt", updatable = false)
+    @Column(name = "createdDt", updatable = true)
     var createdDt: LocalDateTime? = null
 
     @LastModifiedDate

@@ -27,17 +27,16 @@ class UserFacade(
         return userService.createAuthenticationInfo(internalUserCommand)
     }
 
-    fun requestEmailVerificationCode(command: InternalUserCommand) {
+    fun requestRegisterEmailVerificationCode(command: InternalUserCommand) {
         val emailVerificationCommand = emailVerificationService.updateEmailCode(command)
         mailService.sendVerificationEmail(
             id = emailVerificationCommand.id,
-            userId = emailVerificationCommand.userId,
             email = emailVerificationCommand.email,
             code = emailVerificationCommand.code,
         )
     }
 
-    fun verifyEmail(command: EmailVerifyReqCommand) {
+    fun requestVerifyRegisterEmail(command: EmailVerifyReqCommand) {
         emailVerificationService.verifyCodeAndDeleteVerification(command)
         userService.updateUserMemberRole(command.internalUserCommand)
     }
