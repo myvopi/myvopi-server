@@ -1,5 +1,6 @@
 package com.example.myvopiserver.domain.service
 
+import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.ContentType
 import com.commoncoremodule.exception.BaseException
 import com.commoncoremodule.exception.ErrorCode
@@ -55,9 +56,12 @@ class ReplyService(
     }
 
     fun getReplyAndOwnerAndUpdateFlagged(uuid: String): InternalReplyAndOwnerCommand {
-        val reply = replyReaderStore.findReplyWithUserByUuid(uuid)
+        val reply = replyReaderStore.findReplyWithUserAndCommentByUuid(uuid)
             ?.let {
-                if(!validationService.validateIfFlagged(it.status)) {
+                // 삭제 여부 확인
+                validationService.validateIsDeleted(it.status)
+                // 신고 되었었는지 확인
+                if(it.status == CommentStatus.FLAGGED) {
                     it.flagComment()
                     replyReaderStore.saveReply(it)
                 } else it
@@ -73,18 +77,19 @@ class ReplyService(
     // Db-transactions
     fun createNewReply(
         postCommand: ReplyPostCommand,
-        internalCommentCommand: InternalCommentWithUserAndVideoCommand,
+        commentRelationsCommand: InternalCommentWithUserAndVideoCommand,
     ): InternalReplyCommand
     {
+        validationService.validateIsDeleted(commentRelationsCommand.internalCommentCommand.status)
         val requester = User(command = postCommand.internalUserCommand)
-        val commentOwner = User(command = internalCommentCommand.internalCommentOwnerCommand)
-        val videoOwner = User(command = internalCommentCommand.internalVideoOwnerCommand)
+        val commentOwner = User(command = commentRelationsCommand.internalCommentOwnerCommand)
+        val videoOwner = User(command = commentRelationsCommand.internalVideoOwnerCommand)
         val video = Video(
-            command = internalCommentCommand.internalVideoCommand,
+            command = commentRelationsCommand.internalVideoCommand,
             user = videoOwner,
         )
         val comment = Comment(
-            command = internalCommentCommand.internalCommentCommand,
+            command = commentRelationsCommand.internalCommentCommand,
             user = commentOwner,
             video = video,
         )
@@ -104,9 +109,10 @@ class ReplyService(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
+        validationService.validateIsDeleted(internalReplyCommand.status)
         val replyLike = likeReaderStore.findReplyLikeDslRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
-            val command = ReplyLikePostCommand(
+            val command = ReplyLikePostRequestCommand(
                 userId = requesterUserCommand.id,
                 replyId = internalReplyCommand.id,
             )
@@ -122,6 +128,7 @@ class ReplyService(
         requesterUserCommand: InternalUserCommand,
         internalReplyCommand: InternalReplyCommand,
     ) {
+        validationService.validateIsDeleted(internalReplyCommand.status)
         val replyLike = likeReaderStore.findReplyLikeDslRequest(internalReplyCommand.id, requesterUserCommand.id)
         if(replyLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this reply")
@@ -145,7 +152,7 @@ class ReplyService(
         replyReaderStore.saveReply(reply)
     }
 
-    fun validateAndUpdateStatus(command: ReplyDeleteCommand) {
+    fun validateAndDelete(command: ReplyDeleteCommand) {
         val reply = replyReaderStore.findReplyWithUserByUuid(command.replyUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val replyOwner = reply.user
@@ -160,14 +167,14 @@ class ReplyService(
         replyAndOwnerCommand: InternalReplyAndOwnerCommand,
     ) {
         val reporter = User(command = replyReportCommand.internalUserCommand)
-        reportReaderStore.findCommentReportByContentUuidAndUser(replyReportCommand.replyUuid, reporter)
+        reportReaderStore.findReplyReportByTargetUuidAndUser(replyReportCommand.replyUuid, reporter)
             ?: run {
                 val reportTarget = User(replyAndOwnerCommand.commentOwnerCommand)
                 val report = Report(
                     contentType = ContentType.REPLY,
                     reportType = replyReportCommand.reportType,
-                    contentUuid = replyAndOwnerCommand.internalReplyCommand.uuid,
-                    contentId = replyAndOwnerCommand.internalReplyCommand.id,
+                    targetUuid = replyAndOwnerCommand.internalReplyCommand.uuid,
+                    targetId = replyAndOwnerCommand.internalReplyCommand.id,
                     reporter = reporter,
                     reportTarget = reportTarget,
                 )

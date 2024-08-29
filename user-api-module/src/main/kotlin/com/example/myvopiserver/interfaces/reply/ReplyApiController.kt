@@ -25,16 +25,16 @@ class ReplyApiController(
 ) {
 
     @GetMapping("/op/api/v1/reply")
-    fun getComments(
+    fun getReplies(
         authentication: Authentication?,
-        @RequestParam(value = "uuid", required = true) uuid: String,
+        @RequestParam(value = "commentUuid", required = true) commentUuid: String,
         @RequestParam(value = "reqPage", required = true) reqPage: Int,
     ): CommonResult<List<ReplyBaseInfo>>
     {
         val userCommand = authentication?.toUserInfo()
         val command = ReplySearchCommand(
             internalUserCommand = userCommand,
-            commentUuid = uuid,
+            commentUuid = commentUuid,
             reqPage = reqPage,
         )
         val info = replyFacade.requestReplies(command)

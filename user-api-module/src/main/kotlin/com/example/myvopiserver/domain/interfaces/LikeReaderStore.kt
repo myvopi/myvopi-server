@@ -4,14 +4,14 @@ import com.example.myvopiserver.domain.CommentLike
 import com.example.myvopiserver.domain.Reply
 import com.example.myvopiserver.domain.ReplyLike
 import com.example.myvopiserver.domain.User
-import com.example.myvopiserver.domain.command.CommentLikePostCommand
-import com.example.myvopiserver.domain.command.ReplyLikePostCommand
+import com.example.myvopiserver.domain.command.CommentLikePostRequestCommand
+import com.example.myvopiserver.domain.command.ReplyLikePostRequestCommand
 
 interface LikeReaderStore {
 
     fun findCommentLikeDslRequest(commentId: Long, userId: Long): CommentLike?
 
-    fun initialSaveCommentLikeJpqlRequest(command: CommentLikePostCommand)
+    fun initialSaveCommentLikeJpqlRequest(command: CommentLikePostRequestCommand)
 
     fun saveCommentLike(commentLike: CommentLike): CommentLike
 
@@ -21,5 +21,5 @@ interface LikeReaderStore {
 
     fun saveReplyLike(replyLike: ReplyLike): ReplyLike
 
-    fun initialSaveReplyLikeJpqlRequest(command: ReplyLikePostCommand)
+    fun initialSaveReplyLikeJpqlRequest(command: ReplyLikePostRequestCommand)
 }

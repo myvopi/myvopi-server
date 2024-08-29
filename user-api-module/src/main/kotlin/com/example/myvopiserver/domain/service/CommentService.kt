@@ -56,7 +56,10 @@ class CommentService(
     fun getCommentAndOwnerAndUpdateFlagged(uuid: String): InternalCommentAndOwnerCommand {
         val comment = commentReaderStore.findCommentWithUserByUuid(uuid)
             ?.let {
-                if(!validationService.validateIfFlagged(it.status)) {
+                // 삭제 여부 확인
+                validationService.validateIsDeleted(it.status)
+                // 신고 되었었는지 확인
+                if(it.status == CommentStatus.FLAGGED) {
                     it.flagComment()
                     commentReaderStore.saveComment(it)
                 } else it
@@ -102,10 +105,10 @@ class CommentService(
         requesterUserCommand: InternalUserCommand,
         internalCommentCommand: InternalCommentCommand,
     ) {
-        validateStatus(internalCommentCommand)
+        validationService.validateIsDeleted(internalCommentCommand.status)
         val commentLike = likeReaderStore.findCommentLikeDslRequest(internalCommentCommand.id, requesterUserCommand.id)
         if(commentLike == null) {
-            val command = CommentLikePostCommand(
+            val command = CommentLikePostRequestCommand(
                 userId = requesterUserCommand.id,
                 commentId = internalCommentCommand.id,
             )
@@ -121,7 +124,7 @@ class CommentService(
         requesterUserCommand: InternalUserCommand,
         internalCommentCommand: InternalCommentCommand,
     ) {
-        validateStatus(internalCommentCommand)
+        validationService.validateIsDeleted(internalCommentCommand.status)
         val commentLike = likeReaderStore.findCommentLikeDslRequest(internalCommentCommand.id, requesterUserCommand.id)
         if(commentLike == null) {
             throw BaseException(ErrorCode.BAD_REQUEST, "You haven't even liked this comment")
@@ -145,7 +148,7 @@ class CommentService(
         commentReaderStore.saveComment(comment)
     }
 
-    fun validateAndUpdateStatus(command: CommentDeleteCommand) {
+    fun validateAndDelete(command: CommentDeleteCommand) {
         val comment = commentReaderStore.findCommentWithUserByUuid(command.commentUuid)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND)
         val commentOwner = comment.user
@@ -155,23 +158,19 @@ class CommentService(
         commentReaderStore.saveComment(comment)
     }
 
-    fun validateStatus(command: InternalCommentCommand) {
-        if(command.status == CommentStatus.DELETED) throw BadRequestException(ErrorCode.BAD_REQUEST, "This comment has already been deleted")
-    }
-
     fun validateReportOrStore(
         commentReportCommand: CommentReportCommand,
         commentAndOwnerCommand: InternalCommentAndOwnerCommand,
     ) {
         val reporter = User(command = commentReportCommand.internalUserCommand)
-        reportReaderStore.findCommentReportByContentUuidAndUser(commentReportCommand.commentUuid, reporter)
+        reportReaderStore.findCommentReportByTargetUuidAndUser(commentReportCommand.commentUuid, reporter)
             ?: run {
                 val reportTarget = User(commentAndOwnerCommand.commentOwnerCommand)
                 val report = Report(
                     contentType = ContentType.COMMENT,
                     reportType = commentReportCommand.reportType,
-                    contentUuid = commentAndOwnerCommand.internalCommentCommand.uuid,
-                    contentId = commentAndOwnerCommand.internalCommentCommand.id,
+                    targetUuid = commentAndOwnerCommand.internalCommentCommand.uuid,
+                    targetId = commentAndOwnerCommand.internalCommentCommand.id,
                     reporter = reporter,
                     reportTarget = reportTarget,
                 )

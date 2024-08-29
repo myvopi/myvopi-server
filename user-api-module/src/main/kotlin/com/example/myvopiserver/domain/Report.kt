@@ -13,8 +13,8 @@ import org.hibernate.annotations.DynamicUpdate
 class Report(
     contentType: ContentType,   // 콘텐츠 유형
     reportType: ReportType,     // 신고 내용
-    contentUuid: String,        // 콘텐츠 UUID
-    contentId: Long,            // 콘텐츠 ID
+    targetUuid: String,        // 콘텐츠 UUID
+    targetId: Long,            // 콘텐츠 ID
     reporter: User,             // 신고자
     reportTarget: User,         // 신고 대상자
 ): BaseTime() {
@@ -33,12 +33,12 @@ class Report(
     var reportType: ReportType = reportType
         protected set
 
-    @Column(name = "contentUuid", nullable = false, updatable = true)
-    var contentUuid: String = contentUuid
+    @Column(name = "targetUuid", nullable = false, updatable = true)
+    var targetUuid: String = targetUuid
         protected set
 
-    @Column(name = "contentId", nullable = false, updatable = true)
-    var contentId: Long = contentId
+    @Column(name = "targetId", nullable = false, updatable = true)
+    var targetId: Long = targetId
         protected set
 
     @ManyToOne(
@@ -58,6 +58,6 @@ class Report(
         protected set
 
     override fun toString(): String {
-        return "Report(id=$id, contentType=$contentType, contentUuid='$contentUuid', contentId=$contentId, reportType=$reportType)"
+        return "Report(id=$id, contentType=$contentType, reportType=$reportType, targetUuid='$targetUuid', targetId=$targetId, reporter=$reporter, reportTarget=$reportTarget)"
     }
 }

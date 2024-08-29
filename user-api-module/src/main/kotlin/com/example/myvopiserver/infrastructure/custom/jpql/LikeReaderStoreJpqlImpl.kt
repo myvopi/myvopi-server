@@ -4,8 +4,8 @@ import com.commoncoremodule.enums.LikeStatus
 import com.commoncoremodule.extension.getCurrentDateTime
 import com.example.myvopiserver.common.util.ClassVariables.Companion.TablesNamesByClass
 import com.example.myvopiserver.domain.*
-import com.example.myvopiserver.domain.command.CommentLikePostCommand
-import com.example.myvopiserver.domain.command.ReplyLikePostCommand
+import com.example.myvopiserver.domain.command.CommentLikePostRequestCommand
+import com.example.myvopiserver.domain.command.ReplyLikePostRequestCommand
 import com.example.myvopiserver.infrastructure.custom.jpql.column.ColumnNames
 import com.example.myvopiserver.infrastructure.custom.jpql.repository.LikeReaderStoreJpql
 import com.example.myvopiserver.infrastructure.custom.jpql.constructor.JpqlConstructor
@@ -21,7 +21,7 @@ class LikeReaderStoreJpqlImpl(
 
     private val tableNamesByClass = TablesNamesByClass
 
-    override fun saveCommentLike(command: CommentLikePostCommand) {
+    override fun saveCommentLike(command: CommentLikePostRequestCommand) {
         val queryBuilder = StringBuilder()
         val tableName = tableNamesByClass[CommentLike::class]
         val query = queryBuilder.append(jpqlConstructor.constructLikeInsertQuery(tableName, columnNames.commentId))
@@ -36,7 +36,7 @@ class LikeReaderStoreJpqlImpl(
             .executeUpdate()
     }
 
-    override fun saveReplyLike(command: ReplyLikePostCommand) {
+    override fun saveReplyLike(command: ReplyLikePostRequestCommand) {
         val queryBuilder = StringBuilder()
         val tableName = tableNamesByClass[ReplyLike::class]
         val query = queryBuilder.append(jpqlConstructor.constructLikeInsertQuery(tableName, columnNames.replyId))

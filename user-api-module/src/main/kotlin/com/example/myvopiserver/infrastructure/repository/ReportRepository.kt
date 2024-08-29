@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ReportRepository: JpaRepository<Report, Long> {
 
-    fun findByContentUuidAndContentTypeAndReporter(uuid: String, type: ContentType, reporter: User): Report?
+    fun findByTargetUuidAndContentTypeAndReporter(uuid: String, type: ContentType, reporter: User): Report?
 }

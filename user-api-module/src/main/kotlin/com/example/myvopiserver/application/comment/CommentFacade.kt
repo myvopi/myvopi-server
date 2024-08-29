@@ -31,7 +31,7 @@ class CommentFacade(
     }
 
     fun requestCommentDelete(command: CommentDeleteCommand) {
-        commentService.validateAndUpdateStatus(command)
+        commentService.validateAndDelete(command)
     }
 
     fun requestCommentLike(command: CommentLikeCommand) {

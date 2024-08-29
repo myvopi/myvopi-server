@@ -5,12 +5,13 @@ import com.example.myvopiserver.domain.ReplyLike
 import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
 import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.LikeReaderStoreDsl
 import com.querydsl.jpa.impl.JPAQueryFactory
+import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 
 @Repository
 class LikeReaderStoreDslImpl(
-    private val jpaQueryFactory: JPAQueryFactory,
     private val qEntityAlias: QEntityAlias,
+    private val em: EntityManager,
 ): LikeReaderStoreDsl {
 
     /**
@@ -22,7 +23,7 @@ class LikeReaderStoreDslImpl(
     * */
     override fun findCommentLike(commentId: Long, userId: Long): CommentLike? {
         val qCommentLike = qEntityAlias.qCommentLike
-        return jpaQueryFactory
+        return JPAQueryFactory(em)
             .select(qCommentLike)
             .from(qCommentLike)
             .where(
@@ -34,7 +35,7 @@ class LikeReaderStoreDslImpl(
 
     override fun findReplyLike(replyId: Long, userId: Long): ReplyLike? {
         val qReplyLike = qEntityAlias.qReplyLike
-        return jpaQueryFactory
+        return JPAQueryFactory(em)
             .select(qReplyLike)
             .from(qReplyLike)
             .where(

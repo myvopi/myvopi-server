@@ -14,13 +14,13 @@ class ReportReaderStoreImpl(
 ): ReportReaderStore {
 
     @Transactional(readOnly = true)
-    override fun findCommentReportByContentUuidAndUser(contentUuid: String, user: User): Report? {
-        return reportRepository.findByContentUuidAndContentTypeAndReporter(contentUuid, ContentType.COMMENT, user)
+    override fun findCommentReportByTargetUuidAndUser(contentUuid: String, user: User): Report? {
+        return reportRepository.findByTargetUuidAndContentTypeAndReporter(contentUuid, ContentType.COMMENT, user)
     }
 
     @Transactional(readOnly = true)
-    override fun findReplyReportByContentUuidAndUser(contentUuid: String, user: User): Report? {
-        return reportRepository.findByContentUuidAndContentTypeAndReporter(contentUuid, ContentType.REPLY, user)
+    override fun findReplyReportByTargetUuidAndUser(contentUuid: String, user: User): Report? {
+        return reportRepository.findByTargetUuidAndContentTypeAndReporter(contentUuid, ContentType.REPLY, user)
     }
 
     @Transactional

@@ -7,18 +7,20 @@ import com.example.myvopiserver.domain.command.UpdateClauseCommand
 import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.UserReaderStoreDsl
 import com.querydsl.core.types.dsl.PathBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
+import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Repository
 
 @Repository
 class UserReaderStoreDslImpl(
-    private val jpaQueryFactory: JPAQueryFactory,
+    private val em: EntityManager,
 ): UserReaderStoreDsl {
 
     private val path = PathBuilder(User::class.java, QUser.user.metadata.name)
     private val qUser = QUser.user
 
     override fun updateUser(command: InternalUserCommand, commandList: List<UpdateClauseCommand>) {
-        val updateClause = jpaQueryFactory.update(qUser)
+        val updateClause = JPAQueryFactory(em)
+            .update(qUser)
             .where(
                 qUser.id.eq(command.id),
                 qUser.userId.eq(command.userId),

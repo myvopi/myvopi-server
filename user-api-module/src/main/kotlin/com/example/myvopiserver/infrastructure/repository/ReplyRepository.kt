@@ -11,5 +11,8 @@ interface ReplyRepository: JpaRepository<Reply, Long> {
     @EntityGraph(attributePaths = ["user"])
     fun findWithUserByUuid(uuid: String): Reply?
 
+    @EntityGraph(attributePaths = ["user", "comment"])
+    fun findWithUserAndCommentByUuid(uuid: String): Reply?
+
     fun findByUuid(uuid: String): Reply?
 }

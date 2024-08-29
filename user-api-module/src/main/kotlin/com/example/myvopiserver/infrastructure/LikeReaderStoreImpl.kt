@@ -4,8 +4,8 @@ import com.example.myvopiserver.domain.CommentLike
 import com.example.myvopiserver.domain.Reply
 import com.example.myvopiserver.domain.ReplyLike
 import com.example.myvopiserver.domain.User
-import com.example.myvopiserver.domain.command.CommentLikePostCommand
-import com.example.myvopiserver.domain.command.ReplyLikePostCommand
+import com.example.myvopiserver.domain.command.CommentLikePostRequestCommand
+import com.example.myvopiserver.domain.command.ReplyLikePostRequestCommand
 import com.example.myvopiserver.domain.interfaces.LikeReaderStore
 import com.example.myvopiserver.infrastructure.custom.jpql.repository.LikeReaderStoreJpql
 import com.example.myvopiserver.infrastructure.custom.queryDsl.repository.LikeReaderStoreDsl
@@ -28,7 +28,7 @@ class LikeReaderStoreImpl(
     }
 
     @Transactional
-    override fun initialSaveCommentLikeJpqlRequest(command: CommentLikePostCommand) {
+    override fun initialSaveCommentLikeJpqlRequest(command: CommentLikePostRequestCommand) {
         likeReaderStoreJpql.saveCommentLike(command)
     }
 
@@ -53,7 +53,7 @@ class LikeReaderStoreImpl(
     }
 
     @Transactional
-    override fun initialSaveReplyLikeJpqlRequest(command: ReplyLikePostCommand) {
+    override fun initialSaveReplyLikeJpqlRequest(command: ReplyLikePostRequestCommand) {
         likeReaderStoreJpql.saveReplyLike(command)
     }
 }

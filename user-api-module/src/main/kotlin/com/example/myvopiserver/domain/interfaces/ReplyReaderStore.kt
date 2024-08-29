@@ -11,6 +11,8 @@ interface ReplyReaderStore {
 
     fun findReplyWithUserByUuid(uuid: String): Reply?
 
+    fun findReplyWithUserAndCommentByUuid(uuid: String): Reply?
+
     fun saveReply(reply: Reply): Reply
 
     fun findReplyByUuid(uuid: String): Reply?

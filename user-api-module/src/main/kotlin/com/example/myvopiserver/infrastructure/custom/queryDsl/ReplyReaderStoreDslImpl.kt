@@ -55,7 +55,8 @@ class ReplyReaderStoreDslImpl(
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id").eq(qEntityAlias.qComment.id))
             .leftJoin(queryDslConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReplyLike, "reply_id").eq(qEntityAlias.qReply.id))
-            .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
+            .join(qEntityAlias.qUser)
+                .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
             .where(
                 Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.uuid.metadata.name).eq(command.commentUuid),
                 Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),
@@ -75,7 +76,8 @@ class ReplyReaderStoreDslImpl(
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReply, "comment_id").eq(qEntityAlias.qComment.id))
             .leftJoin(queryDslConstructor.constructFilteredReplyLikeSubQuery(), alias.subQueryReplyLike)
                 .on(Expressions.numberPath(Long::class.javaObjectType, alias.subQueryReplyLike, "reply_id").eq(qEntityAlias.qReply.id))
-            .join(qEntityAlias.qUser).on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
+            .join(qEntityAlias.qUser)
+                .on(Expressions.numberPath(Long::class.javaObjectType, qEntityAlias.qReply, "user_id").eq(qEntityAlias.qUser.id))
             .where(
                 Expressions.stringPath(qEntityAlias.qReply, qEntityAlias.qReply.uuid.metadata.name).eq(command.replyUuid),
                 Expressions.stringPath(qEntityAlias.qComment, qEntityAlias.qComment.status.metadata.name).`in`(CommentStatus.SHOW.name, CommentStatus.FLAGGED.name),

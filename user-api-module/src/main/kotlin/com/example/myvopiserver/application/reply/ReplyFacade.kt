@@ -31,7 +31,7 @@ class ReplyFacade(
     }
 
     fun requestReplyDelete(command: ReplyDeleteCommand) {
-        replyService.validateAndUpdateStatus(command)
+        replyService.validateAndDelete(command)
     }
 
     fun requestReplyLike(command: ReplyLikeCommand) {

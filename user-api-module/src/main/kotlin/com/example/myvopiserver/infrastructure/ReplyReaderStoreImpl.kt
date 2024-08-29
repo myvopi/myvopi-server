@@ -26,6 +26,11 @@ class ReplyReaderStoreImpl(
         return replyRepository.findWithUserByUuid(uuid)
     }
 
+    @Transactional(readOnly = true)
+    override fun findReplyWithUserAndCommentByUuid(uuid: String): Reply? {
+        return replyRepository.findWithUserAndCommentByUuid(uuid)
+    }
+
     @Transactional
     override fun saveReply(reply: Reply): Reply {
         return replyRepository.save(reply)
