@@ -12,7 +12,6 @@ import java.time.LocalDateTime
 @EntityListeners(AuditingEntityListener::class)
 class BaseTime {
 
-    // TODO time calculation for region
     @CreatedDate
     @Column(name = "createdDt", updatable = true)
     var createdDt: LocalDateTime? = null

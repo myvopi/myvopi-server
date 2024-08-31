@@ -12,6 +12,7 @@ import com.example.myvopiserver.domain.command.VideoSearchCommand
 import com.example.myvopiserver.domain.info.CommentBaseInfo
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
@@ -23,6 +24,7 @@ class VideoApiController(
     @GetMapping(path = ["/watch"])
     fun searchVideo(
         authentication: Authentication?,
+        @RequestHeader("X-Time-Zone") timeZone: String,
         @RequestParam(value = "v", required = false) ytv: String?,
         @RequestParam(value = "s", required = false) yts: String?,
     ): CommonResult<List<CommentBaseInfo>>
