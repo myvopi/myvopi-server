@@ -1,6 +1,7 @@
 package com.externalapimodule.mail
 
 import jakarta.mail.internet.MimeMessage
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Async
@@ -8,6 +9,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class MailService(
+    @Value("\${APP_NAME}")
+    private val appName: String,
+    @Value("\${EMAIL_USERNAME}")
+    private val emailUsername: String,
     private val mailSender: JavaMailSender,
 ) {
 
@@ -27,10 +32,10 @@ class MailService(
                 "<p>We will not contact you to share or send registration code related contents through any communication procedures.</p>\n" +
                 "<p>Please input this code immediately to complete your registration.</p>\n" +
                 "<p>This code will only be valid for 5 minutes.</p>\n"
-        helper.setSubject("MyVideoOpinion - Email registration verification code")
+        helper.setSubject("[MyVideoOpinion] Email registration verification code")
         helper.setText(bodyText, true)
         helper.setTo(email)
-        helper.setFrom("MyVideoOpinion")
+        helper.setFrom(emailUsername, appName)
         mailSender.send(mimeMessage)
     }
 }
