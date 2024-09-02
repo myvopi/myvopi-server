@@ -1,5 +1,6 @@
 package com.example.myvopiserver.domain.command
 
+import com.commoncoremodule.enums.Preference
 import com.commoncoremodule.enums.SearchFilter
 import com.commoncoremodule.enums.VideoType
 
@@ -9,6 +10,7 @@ data class CommentsSearchCommand(
     val reqPage: Int,
     val videoId: String,
     val videoType: VideoType,
+    val preferences: Map<Preference, Any>?,
 )
 
 data class SingleCommentSearchCommand(
@@ -23,6 +25,7 @@ data class ReplySearchCommand(
     val internalUserCommand: InternalUserCommand?,
     val commentUuid: String,
     val reqPage: Int,
+    val preferences: Map<Preference, Any>?,
 )
 
 data class SingleReplySearchCommand(

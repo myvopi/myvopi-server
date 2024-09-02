@@ -2,10 +2,11 @@ package com.example.myvopiserver.domain.service
 
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.ContentType
+import com.commoncoremodule.enums.Preference
 import com.commoncoremodule.exception.BadRequestException
 import com.commoncoremodule.exception.BaseException
 import com.commoncoremodule.exception.ErrorCode
-import com.commoncoremodule.extension.toStrings
+import com.commoncoremodule.extension.toLocalZoneDate
 import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.interfaces.LikeReaderStore
 import com.example.myvopiserver.domain.Reply
@@ -24,6 +25,7 @@ import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
 import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.QEntityAlias
 import com.querydsl.core.Tuple
 import org.springframework.stereotype.Service
+import java.time.ZoneId
 
 @Service
 class ReplyService(
@@ -185,37 +187,39 @@ class ReplyService(
     }
 
     // Private & constructors
-    private fun mapReplyBaseInfoOfResult(result: Tuple): ReplyBaseInfo {
+    private fun mapReplyBaseInfoOfResult(result: Tuple, userTz: ZoneId): ReplyBaseInfo {
         val userId = result.get(alias.columnUserId)
         val userDisplayUuid = result.get(alias.columnUserDisplayUuid)
+        val createdDt = result.get(alias.columnCreatedDateTuple)!!
         return ReplyBaseInfo(
             uuid = result.get(alias.columnReplyUuid)!!,
             content = result.get(alias.columnReplyContent)!!,
             userId = if(!userId.isNullOrBlank()) userId else userDisplayUuid!!,
             likeCount = result.get(alias.columnReplyLikesCount)!!,
             modified = result.get(alias.columnReplyModifiedCnt)!! > 0,
-            createdDate = result.get(alias.columnCreatedDateTuple)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
+            createdDate = createdDt.toLocalZoneDate(userTz),
             userLiked = result.get(alias.columnUserLiked)?: false,
         )
     }
 
-    fun constructReplyBaseInfo(results: List<Tuple>): List<ReplyBaseInfo> {
+    fun constructReplyBaseInfo(results: List<Tuple>, preferences: Map<Preference, Any>): List<ReplyBaseInfo> {
         return results.map { result ->
-            mapReplyBaseInfoOfResult(result)
+            mapReplyBaseInfoOfResult(result, preferences[Preference.TZ] as ZoneId)
         }
     }
 
-    fun constructReplyBaseInfo(result: Tuple): ReplyBaseInfo {
-        return mapReplyBaseInfoOfResult(result)
+    fun constructReplyBaseInfo(result: Tuple, preferences: Map<Preference, Any>): ReplyBaseInfo {
+        return mapReplyBaseInfoOfResult(result, preferences[Preference.TZ] as ZoneId)
     }
 
-    fun constructInitialReplyBaseInfo(command: InternalReplyCommand): ReplyBaseInfo {
+    fun constructInitialReplyBaseInfo(command: InternalReplyCommand, preferences: Map<Preference, Any>): ReplyBaseInfo {
+        val userTz = preferences[Preference.TZ]!! as ZoneId
         return ReplyBaseInfo(
             uuid = command.uuid,
             content = command.content,
             userId = command.userId,
             likeCount = 0,
-            createdDate = command.createdDate.toStrings("yyyy-MM-dd HH:mm:ss"),
+            createdDate = command.createdDate.toLocalZoneDate(userTz),
             modified = command.modifiedCnt > 0,
             userLiked = false,
         )

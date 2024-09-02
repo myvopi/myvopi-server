@@ -1,9 +1,6 @@
 package com.example.myvopiserver.domain.command
 
-import com.commoncoremodule.enums.CommentStatus
-import com.commoncoremodule.enums.ReportType
-import com.commoncoremodule.enums.VerifyStatus
-import com.commoncoremodule.enums.VideoType
+import com.commoncoremodule.enums.*
 import java.time.LocalDateTime
 
 data class CommentUpdateCommand(
@@ -12,6 +9,7 @@ data class CommentUpdateCommand(
     val commentUuid: String,
     val videoType: VideoType,
     val videoId: String,
+    val preferences: Map<Preference, Any>,
 )
 
 data class InternalCommentWithUserAndVideoCommand(
@@ -26,6 +24,7 @@ data class CommentPostCommand(
     val content: String,
     val videoType: VideoType,
     val videoId: String,
+    val preferences: Map<Preference, Any>,
 )
 
 data class CommentDeleteCommand(

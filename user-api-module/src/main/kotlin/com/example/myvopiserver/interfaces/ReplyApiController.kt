@@ -4,6 +4,7 @@ import com.example.myvopiserver.application.reply.ReplyFacade
 import com.commoncoremodule.enums.ReportType
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
+import com.commoncoremodule.extension.parsePreferences
 import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.example.myvopiserver.common.config.authentication.toUserInfo
@@ -12,13 +13,7 @@ import com.example.myvopiserver.domain.info.ReplyBaseInfo
 import com.example.myvopiserver.interfaces.dto.reply.*
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class ReplyApiController(
@@ -28,6 +23,7 @@ class ReplyApiController(
     @GetMapping(path = ["/op/api/v1/reply"])
     fun getReplies(
         authentication: Authentication?,
+        @RequestHeader("cookie", required = true) cookie: String,
         @RequestParam(value = "commentUuid", required = true) commentUuid: String,
         @RequestParam(value = "reqPage", required = true) reqPage: Int,
     ): CommonResult<List<ReplyBaseInfo>>
@@ -37,6 +33,7 @@ class ReplyApiController(
             internalUserCommand = userCommand,
             commentUuid = commentUuid,
             reqPage = reqPage,
+            preferences = parsePreferences(cookie),
         )
         val info = replyFacade.requestReplies(command)
         return CommonResponse.success(info)
@@ -46,6 +43,7 @@ class ReplyApiController(
     @PutMapping(path = ["/cv/api/v1/reply"])
     fun updateReply(
         authentication: Authentication,
+        @RequestHeader("cookie", required = true) cookie: String,
         @RequestBody body: ReplyUpdateDto,
     ): CommonResult<ReplyBaseInfo>
     {
@@ -54,6 +52,7 @@ class ReplyApiController(
             internalUserCommand = internalUserCommand,
             content = body.content,
             replyUuid = body.uuid,
+            preferences = parsePreferences(cookie),
         )
         val info = replyFacade.requestReplyUpdate(command)
         return CommonResponse.success(info)
@@ -63,6 +62,7 @@ class ReplyApiController(
     @PostMapping(path = ["/cv/api/v1/reply"])
     fun postReply(
         authentication: Authentication,
+        @RequestHeader("cookie", required = true) cookie: String,
         @RequestBody body: ReplyPostDto,
     ): CommonResult<ReplyBaseInfo>
     {
@@ -71,6 +71,7 @@ class ReplyApiController(
             internalUserCommand = internalUserCommand,
             content = body.content,
             commentUuid = body.commentUuid,
+            preferences = parsePreferences(cookie),
         )
         val info = replyFacade.requestReplyPost(command)
         return CommonResponse.success(info)

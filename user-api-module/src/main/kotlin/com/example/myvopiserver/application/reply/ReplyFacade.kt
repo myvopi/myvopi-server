@@ -14,20 +14,20 @@ class ReplyFacade(
 
     fun requestReplies(command: ReplySearchCommand): List<ReplyBaseInfo> {
         val result = replyService.getReplies(command)
-        return replyService.constructReplyBaseInfo(result)
+        return replyService.constructReplyBaseInfo(result, command.preferences!!)
     }
 
     fun requestReplyUpdate(command: ReplyUpdateCommand): ReplyBaseInfo {
         val internalReplyCommand = replyService.validateAndUpdateContent(command)
         val searchCommand = replyService.constructSingleReplySearchCommand(command, internalReplyCommand)
         val result = replyService.getReply(searchCommand)
-        return replyService.constructReplyBaseInfo(result)
+        return replyService.constructReplyBaseInfo(result, command.preferences!!)
     }
 
     fun requestReplyPost(command: ReplyPostCommand): ReplyBaseInfo {
         val internalCommentCommand = commentService.getCommentRelations(command.commentUuid)
         val internalReplyCommand = replyService.createNewReply(command, internalCommentCommand)
-        return replyService.constructInitialReplyBaseInfo(internalReplyCommand)
+        return replyService.constructInitialReplyBaseInfo(internalReplyCommand, command.preferences!!)
     }
 
     fun requestReplyDelete(command: ReplyDeleteCommand) {
