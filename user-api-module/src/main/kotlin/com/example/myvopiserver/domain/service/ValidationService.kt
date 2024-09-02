@@ -17,6 +17,12 @@ class ValidationService(
     private val cipher: Cipher,
 ) {
 
+    private val emailPattern = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$".toRegex()
+
+    private val passwordLengthRegex = Regex(".{12,20}") // At least 12 characters
+    private val passwordSpecialCharRegex = Regex("[@!#$%&*]") // At least one special character
+    private val passwordUppercaseRegex = Regex("[A-Z]") // At least one uppercase letter
+
     fun validateEmail(email: String) {
         val verification = userReaderStore.userExistsByEmail(email)
         if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email")
@@ -27,14 +33,14 @@ class ValidationService(
         if(verification) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable username or email")
     }
 
-    fun validatePasswordFormat(password: String) {
-        val lengthRegex = Regex(".{12,20}") // At least 12 characters
-        val specialCharRegex = Regex("[@!#$%&*]") // At least one special character
-        val uppercaseRegex = Regex("[A-Z]") // At least one uppercase letter
+    fun validateEmailFormat(email: String) {
+        if(!emailPattern.matches(email)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Unavailable email format")
+    }
 
-        if(!lengthRegex.containsMatchIn(password)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Password must be at least 12 characters and maximum of 20 characters")
-        if(!specialCharRegex.containsMatchIn(password)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Password must contain at least one special symbol")
-        if(!uppercaseRegex.containsMatchIn(password)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Password must contain at least one capital letter")
+    fun validatePasswordFormat(password: String) {
+        if(!passwordLengthRegex.containsMatchIn(password)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Password must be at least 12 characters and maximum of 20 characters")
+        if(!passwordSpecialCharRegex.containsMatchIn(password)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Password must contain at least one special symbol")
+        if(!passwordUppercaseRegex.containsMatchIn(password)) throw BadRequestException(ErrorCode.BAD_REQUEST, "Password must contain at least one capital letter")
     }
 
     fun validateValidCountryCode(countryCode: CountryCode) {

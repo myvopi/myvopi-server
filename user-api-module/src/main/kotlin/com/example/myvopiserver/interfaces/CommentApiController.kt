@@ -8,6 +8,7 @@ import com.commoncoremodule.response.CommonResponse
 import com.commoncoremodule.response.CommonResult
 import com.commoncoremodule.enums.SearchFilter
 import com.commoncoremodule.enums.VideoType
+import com.commoncoremodule.extension.parsePreferences
 import com.example.myvopiserver.common.config.authentication.toUserInfo
 import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.CommentBaseInfo
@@ -24,6 +25,7 @@ class CommentApiController(
     @GetMapping(path = ["/op/api/v1/comment"])
     fun getComments(
         authentication: Authentication?,
+        @RequestHeader("cookie", required = true) cookie: String,
         @RequestParam(value = "videoType", required = true) videoType: String,
         @RequestParam(value = "videoId", required = true) videoId: String,
         @RequestParam(value = "filter", required = true) filter: String,
@@ -41,6 +43,7 @@ class CommentApiController(
             reqPage = reqPage,
             videoId = videoId,
             videoType = videoTypeEnum,
+            preferences = parsePreferences(cookie),
         )
         val info = commentFacade.requestComments(command)
         return CommonResponse.success(info)
@@ -50,6 +53,7 @@ class CommentApiController(
     @PutMapping(path = ["/cv/api/v1/comment"])
     fun updateComment(
         authentication: Authentication,
+        @RequestHeader("cookie", required = true) cookie: String,
         @RequestBody body: CommentUpdateDto,
     ): CommonResult<CommentBaseInfo>
     {
@@ -62,6 +66,7 @@ class CommentApiController(
             commentUuid = body.uuid,
             videoType = videoTypeEnum,
             videoId = body.videoId,
+            preferences = parsePreferences(cookie),
         )
         val info = commentFacade.requestCommentUpdate(command)
         return CommonResponse.success(info)
@@ -72,6 +77,7 @@ class CommentApiController(
     fun postComment(
         authentication: Authentication,
         @RequestBody body: CommentPostDto,
+        @RequestHeader("cookie", required = true) cookie: String,
     ): CommonResult<CommentBaseInfo>
     {
         val videoTypeEnum = VideoType.decode(body.videoType)
@@ -82,6 +88,7 @@ class CommentApiController(
             content = body.content,
             videoType = videoTypeEnum,
             videoId = body.videoId,
+            preferences = parsePreferences(cookie),
         )
         val info = commentFacade.requestCommentPost(command)
         return CommonResponse.success(info)

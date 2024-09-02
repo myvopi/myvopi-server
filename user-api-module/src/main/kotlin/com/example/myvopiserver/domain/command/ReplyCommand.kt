@@ -1,6 +1,7 @@
 package com.example.myvopiserver.domain.command
 
 import com.commoncoremodule.enums.CommentStatus
+import com.commoncoremodule.enums.Preference
 import com.commoncoremodule.enums.ReportType
 import com.commoncoremodule.enums.VerifyStatus
 import java.time.LocalDateTime
@@ -9,12 +10,14 @@ data class ReplyUpdateCommand(
     val internalUserCommand: InternalUserCommand,
     val content: String,
     val replyUuid: String,
+    val preferences: Map<Preference, Any>?,
 )
 
 data class ReplyPostCommand(
     val internalUserCommand: InternalUserCommand,
     val content: String,
     val commentUuid: String,
+    val preferences: Map<Preference, Any>?,
 )
 
 data class ReplyDeleteCommand(

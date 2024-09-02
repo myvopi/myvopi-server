@@ -3,7 +3,7 @@ package com.example.myvopiserver.common.handler.model
 import org.springframework.util.MultiValueMap
 import java.util.*
 
-data class RequestLog (
+data class RequestLog(
     val date: Date = Date(),
     val traceId: String?,
     val spanId: String?,

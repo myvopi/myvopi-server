@@ -6,7 +6,8 @@ import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
 import com.commoncoremodule.enums.CommentStatus
 import com.commoncoremodule.enums.ContentType
-import com.commoncoremodule.extension.toStrings
+import com.commoncoremodule.enums.Preference
+import com.commoncoremodule.extension.toLocalZoneDate
 import com.example.myvopiserver.domain.Comment
 import com.example.myvopiserver.domain.Report
 import com.example.myvopiserver.domain.User
@@ -23,6 +24,7 @@ import com.example.myvopiserver.infrastructure.custom.queryDsl.alias.BasicAlias
 import org.springframework.stereotype.Service
 import com.querydsl.core.Tuple
 import org.springframework.cache.annotation.Cacheable
+import java.time.ZoneId
 
 @Service
 class CommentService(
@@ -181,39 +183,41 @@ class CommentService(
     }
 
     // Private & constructors
-    private fun mapCommentBaseInfoOfResult(result: Tuple): CommentBaseInfo {
+    private fun mapCommentBaseInfoOfResult(result: Tuple, userTz: ZoneId): CommentBaseInfo {
         val userId = result.get(alias.columnUserId)
         val userDisplayUuid = result.get(alias.columnUserDisplayUuid)
+        val createdDt = result.get(alias.columnCreatedDateTuple)!!
         return CommentBaseInfo(
             uuid = result.get(alias.columnCommentUuid)!!,
             content = result.get(alias.columnCommentContent)!!,
             userId = if(!userId.isNullOrBlank()) userId else userDisplayUuid!!,
             likeCount = result.get(alias.columnCommentLikesCount)!!,
             replyCount = result.get(alias.columnReplyCount)!!,
-            createdDate = result.get(alias.columnCreatedDateTuple)!!.toStrings("yyyy-MM-dd HH:mm:ss"),
+            createdDate = createdDt.toLocalZoneDate(userTz),
             modified = result.get(alias.columnCommentModifiedCnt)!! > 0,
             userLiked = result.get(alias.columnUserLiked)?: false,
         )
     }
 
-    fun constructCommentBaseInfo(results: List<Tuple>): List<CommentBaseInfo> {
+    fun constructCommentBaseInfo(results: List<Tuple>, preferences: Map<Preference, Any>): List<CommentBaseInfo> {
         return results.map { result ->
-            mapCommentBaseInfoOfResult(result)
+            mapCommentBaseInfoOfResult(result, preferences[Preference.TZ] as ZoneId)
         }
     }
 
-    fun constructCommentBaseInfo(result: Tuple): CommentBaseInfo {
-        return mapCommentBaseInfoOfResult(result)
+    fun constructCommentBaseInfo(result: Tuple, preferences: Map<Preference, Any>): CommentBaseInfo {
+        return mapCommentBaseInfoOfResult(result, preferences[Preference.TZ] as ZoneId)
     }
 
-    fun constructInitialCommentBaseInfo(command: InternalCommentCommand): CommentBaseInfo {
+    fun constructInitialCommentBaseInfo(command: InternalCommentCommand, preferences: Map<Preference, Any>): CommentBaseInfo {
+        val userTz = preferences[Preference.TZ]!! as ZoneId
         return CommentBaseInfo(
             uuid = command.uuid,
             content = command.content,
             userId = command.userId,
             likeCount = 0,
             replyCount = 0,
-            createdDate = command.createdDate.toStrings("yyyy-MM-dd HH:mm:ss"),
+            createdDate = command.createdDate.toLocalZoneDate(userTz),
             modified = command.modifiedCnt > 0,
             userLiked = false,
         )
@@ -241,6 +245,7 @@ class CommentService(
             videoId = command.videoId,
             videoType = command.videoType,
             internalUserCommand = command.internalUserCommand,
+            preferences = null,
         )
     }
 

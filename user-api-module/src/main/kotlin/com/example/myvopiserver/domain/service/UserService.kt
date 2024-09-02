@@ -65,6 +65,7 @@ class UserService(
     // Validation & constructors
     fun validateUserRegister(command: UserRegisterCommand) {
         validationService.validateEmail(command.email)
+        validationService.validateEmailFormat(command.email)
         validationService.validatePasswordFormat(command.password)
         validationService.validateValidCountryCode(command.nationality)
     }

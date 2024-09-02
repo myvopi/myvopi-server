@@ -1,6 +1,6 @@
 package com.example.myvopiserver.domain.info
 
-data class ReplyBaseInfo (
+data class ReplyBaseInfo(
     val uuid: String,
     val content: String,
     val userId: String?,

@@ -14,20 +14,20 @@ class CommentFacade(
 
     fun requestComments(command: CommentsSearchCommand): List<CommentBaseInfo> {
         val result = commentService.getCommentsRequest(command)
-        return commentService.constructCommentBaseInfo(result)
+        return commentService.constructCommentBaseInfo(result, command.preferences!!)
     }
 
     fun requestCommentUpdate(command: CommentUpdateCommand): CommentBaseInfo {
         val internalCommentCommand = commentService.validateAndUpdateContent(command)
         val searchCommand = commentService.constructSingleCommentSearchCommand(command, internalCommentCommand)
         val result = commentService.getComment(searchCommand)
-        return commentService.constructCommentBaseInfo(result)
+        return commentService.constructCommentBaseInfo(result, command.preferences)
     }
 
     fun requestCommentPost(command: CommentPostCommand): CommentBaseInfo {
         val internalVideoCommand = videoService.getVideoWithOwner(command.videoType, command.videoId)
         val internalCommentCommand = commentService.createNewComment(command, internalVideoCommand)
-        return commentService.constructInitialCommentBaseInfo(internalCommentCommand)
+        return commentService.constructInitialCommentBaseInfo(internalCommentCommand, command.preferences)
     }
 
     fun requestCommentDelete(command: CommentDeleteCommand) {
