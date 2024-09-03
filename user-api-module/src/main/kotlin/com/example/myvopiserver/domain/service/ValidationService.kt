@@ -100,4 +100,8 @@ class ValidationService(
             throw BadRequestException(ErrorCode.BAD_REQUEST, "5 minutes have passed")
         }
     }
+
+    fun validateContentSize(content: String) {
+        if(content.length == 2000) throw BadRequestException(ErrorCode.BAD_REQUEST, "Your content length exceeded")
+    }
 }
