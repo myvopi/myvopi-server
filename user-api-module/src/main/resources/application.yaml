@@ -12,7 +12,7 @@ spring:
         show-sql: true
         format_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${DDL}
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -26,13 +26,13 @@ spring:
 #    password: ${PROD_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      max-lifetime: ${DB_HIKARI_MAX_LIFETIME}
-      maximum-pool-size: ${DB_HIKARI_MAX_POOLSIZE}
-      connection-init-sql: ${DB_HIKARI_INIT_SQL}
-      validation-timeout: ${DB_HIKARI_VALIDATION_TIMEOUT}
-      connection-timeout: ${DB_HIKARI_CONNECTION_TIMEOUT}
-      idle-timeout: ${DB_HIKARI_IDLE_TIMEOUT}
-      minimum-idle: ${DB_HIKARI_MINIMUM_IDLE}
+      max-lifetime: ${PRIMARY_HIKARI_MAX_LIFETIME}
+      maximum-pool-size: ${PRIMARY_HIKARI_MAX_POOLSIZE}
+      connection-init-sql: ${PRIMARY_HIKARI_INIT_SQL}
+      validation-timeout: ${PRIMARY_HIKARI_VALIDATION_TIMEOUT}
+      connection-timeout: ${PRIMARY_HIKARI_CONNECTION_TIMEOUT}
+      idle-timeout: ${PRIMARY_HIKARI_IDLE_TIMEOUT}
+      minimum-idle: ${PRIMARY_HIKARI_MINIMUM_IDLE}
 
   mail:
     default-encoding: UTF-8
