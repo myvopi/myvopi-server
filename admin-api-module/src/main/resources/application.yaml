@@ -19,13 +19,13 @@ spring:
     password: ${DEV_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      max-lifetime: ${DB_HIKARI_MAX_LIFETIME}
-      maximum-pool-size: ${DB_HIKARI_MAX_POOLSIZE}
-      connection-init-sql: ${DB_HIKARI_INIT_SQL}
-      validation-timeout: ${DB_HIKARI_VALIDATION_TIMEOUT}
-      connection-timeout: ${DB_HIKARI_CONNECTION_TIMEOUT}
-      idle-timeout: ${DB_HIKARI_IDLE_TIMEOUT}
-      minimum-idle: ${DB_HIKARI_MINIMUM_IDLE}
+      max-lifetime: ${ADMIN_HIKARI_MAX_LIFETIME}
+      maximum-pool-size: ${ADMIN_HIKARI_MAX_POOLSIZE}
+      connection-init-sql: ${ADMIN_HIKARI_INIT_SQL}
+      validation-timeout: ${ADMIN_HIKARI_VALIDATION_TIMEOUT}
+      connection-timeout: ${ADMIN_HIKARI_CONNECTION_TIMEOUT}
+      idle-timeout: ${ADMIN_HIKARI_IDLE_TIMEOUT}
+      minimum-idle: ${ADMIN_HIKARI_MINIMUM_IDLE}
 
 security:
   key: ${ADMIN_SECURITY_KEY}
