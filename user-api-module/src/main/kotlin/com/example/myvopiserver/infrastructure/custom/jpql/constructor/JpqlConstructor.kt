@@ -5,25 +5,58 @@ import org.springframework.stereotype.Component
 
 @Component
 class JpqlConstructor(
-    private val columnNames: ColumnNames,
+    columnNames: ColumnNames,
 ) {
+
+    private val createdDtName = columnNames.createdDt
+    private val updatedDtName = columnNames.updatedDt
+    private val statusName = columnNames.status
+    private val userIdName = columnNames.userId
+    private val idName = columnNames.id
+    private val hostName = columnNames.host
+    private val portName = columnNames.port
+    private val urlName = columnNames.url
 
     fun constructLikeInsertQuery(
         tableName: String?,
         setEntityId: String,
-    ): String {
-        return "INSERT INTO $tableName (" +
-               " ${columnNames.createdDt} ," +
-               " ${columnNames.updatedDt} ," +
-               " ${columnNames.status} ," +
-               " $setEntityId ," +
-               " ${columnNames.userId} " +
-               ") VALUES (" +
-               " :createdDt , " +
-               " :updatedDt , " +
-               " :status , " +
-               " :$setEntityId , " +
-               " :user_id " +
-               ")"
+    ): StringBuilder {
+        return StringBuilder()
+            .append(
+                "INSERT INTO $tableName (" +
+                " $createdDtName ," +
+                " $updatedDtName ," +
+                " $statusName ," +
+                " $setEntityId ," +
+                " $userIdName" +
+                ") VALUES (" +
+                " :$createdDtName ," +
+                " :$updatedDtName ," +
+                " :$statusName ," +
+                " :$setEntityId ," +
+                " :$userIdName" +
+                ")"
+            )
+    }
+
+    fun constructIpInsertQuery(
+        tableName: String?,
+    ): StringBuilder {
+        return StringBuilder()
+            .append(
+                "INSERT INTO $tableName (" +
+                " $idName ," +
+                " $createdDtName ," +
+                " $portName ," +
+                " $hostName ," +
+                " $urlName" +
+                ") VALUES (" +
+                " :$idName ," +
+                " :$createdDtName ," +
+                " :$portName ," +
+                " :$hostName ," +
+                " :$urlName" +
+                ")"
+            )
     }
 }
