@@ -1,5 +1,6 @@
 package com.example.myvopiserver.common.util
 
+import com.commoncoremodule.extension.getCurrentDateTime
 import java.security.SecureRandom
 
 class CodeGenerator {
@@ -19,6 +20,11 @@ class CodeGenerator {
             }
 
             return code.toString()
+        }
+
+        fun ipIdGenerator(): String {
+            val currentDateTime = getCurrentDateTime()
+            return "ip_$currentDateTime"
         }
     }
 }
