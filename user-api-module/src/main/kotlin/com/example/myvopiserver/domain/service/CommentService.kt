@@ -147,6 +147,8 @@ class CommentService(
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
         // validate if it's deleted
         validationService.validateIsDeleted(comment.status)
+        // validate content length
+        validationService.validateContentSize(command.content)
         comment.updateContent(command.content)
         val savedComment = commentReaderStore.saveComment(comment)
         return commentMapper.to(savedComment)

@@ -4,12 +4,14 @@ import com.example.myvopiserver.domain.command.*
 import com.example.myvopiserver.domain.info.ReplyBaseInfo
 import com.example.myvopiserver.domain.service.CommentService
 import com.example.myvopiserver.domain.service.ReplyService
+import com.example.myvopiserver.domain.service.ValidationService
 import org.springframework.stereotype.Service
 
 @Service
 class ReplyFacade(
     private val replyService: ReplyService,
     private val commentService: CommentService,
+    private val validationService: ValidationService,
 ) {
 
     fun requestReplies(command: ReplySearchCommand): List<ReplyBaseInfo> {
@@ -25,6 +27,7 @@ class ReplyFacade(
     }
 
     fun requestReplyPost(command: ReplyPostCommand): ReplyBaseInfo {
+        validationService.validateContentSize(command.content)
         val internalCommentCommand = commentService.getCommentRelations(command.commentUuid)
         val internalReplyCommand = replyService.createNewReply(command, internalCommentCommand)
         return replyService.constructInitialReplyBaseInfo(internalReplyCommand, command.preferences!!)

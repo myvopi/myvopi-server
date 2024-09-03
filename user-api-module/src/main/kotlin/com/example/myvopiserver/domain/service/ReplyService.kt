@@ -151,6 +151,8 @@ class ReplyService(
         validationService.validateOwnerAndRequester(command.internalUserCommand, commentOwner)
         // validate if it's deleted
         validationService.validateIsDeleted(reply.status)
+        // validate content length
+        validationService.validateContentSize(command.content)
         reply.updateContent(command.content)
         val savedReply = replyReaderStore.saveReply(reply)
         return replyMapper.to(savedReply)
