@@ -5,4 +5,5 @@ include(
     "admin-api-module",
     "common-core-module",
     "external-api-module",
+    "cron-api-module",
 )

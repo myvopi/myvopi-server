@@ -80,6 +80,16 @@ project(":common-core-module") {
     }
 }
 
+project(":cron-api-module") {
+    tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+        enabled = true
+    }
+
+    tasks.getByName<Jar>("jar") {
+        enabled = false
+    }
+}
+
 //tasks.withType<Test> {
 //    useJUnitPlatform()
 //}
