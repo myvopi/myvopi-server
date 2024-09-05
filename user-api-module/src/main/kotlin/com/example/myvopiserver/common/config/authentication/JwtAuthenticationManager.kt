@@ -3,7 +3,7 @@ package com.example.myvopiserver.common.config.authentication
 import com.commoncoremodule.enums.TokenType
 import com.commoncoremodule.exception.ErrorCode
 import com.commoncoremodule.exception.NotFoundException
-import com.example.myvopiserver.common.util.UrlObject.Companion.RequestMatchersMap
+import com.example.myvopiserver.common.util.ClassResources.Companion.RequestMatchersMap
 import com.example.myvopiserver.domain.command.InternalUserCommand
 import com.example.myvopiserver.domain.service.UserService
 import com.example.myvopiserver.domain.service.ValidationService
