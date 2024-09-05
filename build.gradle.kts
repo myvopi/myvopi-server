@@ -114,6 +114,15 @@ private fun validateDirectory(gradleCommand: String): List<String> {
     }
 }
 
+private fun getSystemOs(properties: Map<String, String>): String {
+    val os = properties["OS_SET"]!!
+    return if(os != "win") {
+        properties["DOCKER_DB_URL"]!!
+    } else {
+        properties["DEV_DB_URL"]!!
+    }
+}
+
 private fun validateProject(gradleCommand: String) {
     val directories = validateDirectory(gradleCommand)
     if(gradleCommand.contains("build")) {
@@ -167,9 +176,12 @@ private fun validateProject(gradleCommand: String) {
         }
         userProperties
             .apply {
+                put("OS_SET", rootProperties["OS_SET"]!!)
+                put("SOURCE_DIR", rootProperties["SOURCE_DIR"]!!)
                 put("APP_NAME", rootProperties["APP_NAME"]!!)
                 put("DATABASE_NAME", rootProperties["DATABASE_NAME"]!!)
-                put("DEV_DB_URL", rootProperties["DEV_DB_URL"]!!)
+                // TODO
+                put("DEV_DB_URL", getSystemOs(rootProperties))
                 put("DEV_DB_USER", rootProperties["DEV_DB_USER"]!!)
                 put("DEV_DB_PASSWORD", rootProperties["DEV_DB_PASSWORD"]!!)
             }
