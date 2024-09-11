@@ -26,16 +26,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: :user-api-module:build -x test
-
-      - name: Make zip file
-        run: zip -qq -r ./$GITHUB_SHA.zip user-api-module/build/libs/
+#      - name: Make gradlew executable
+#        run: chmod +x ./gradlew
+#
+#      - name: Build with Gradle
+#        uses: gradle/gradle-build-action@v3
+#        with:
+#          arguments: :user-api-module:build -x test
+#
+#      - name: Make zip file
+#        run: zip -qq -r ./$GITHUB_SHA.zip user-api-module/build/libs/
 
       - name: Set up Python
         uses: actions/setup-python@v4
