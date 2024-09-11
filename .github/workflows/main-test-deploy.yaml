@@ -48,7 +48,7 @@ jobs:
           pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
       - name: Write credentials file
-        run: echo "${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}" > credentials.json
+        run: echo "${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}" > ./credentials.json
 
       - name: Upload file to Google Drive and get file ID
         id: upload_and_get_id
