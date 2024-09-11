@@ -26,16 +26,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-#      - name: Make gradlew executable
-#        run: chmod +x ./gradlew
-#
-#      - name: Build with Gradle
-#        uses: gradle/gradle-build-action@v3
-#        with:
-#          arguments: :user-api-module:build -x test
-#
-#      - name: Make zip file
-#        run: zip -qq -r ./$GITHUB_SHA.zip user-api-module/build/libs/
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: :user-api-module:build -x test
+
+      - name: Make zip file
+        run: zip -qq -r ./$GITHUB_SHA.zip user-api-module/build/libs/
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -51,7 +51,6 @@ jobs:
         run: |
           echo '{"type": "service_account", "project_id": ${{secrets.GDRIVE_CRED_PROJECT_ID}}, "private_key_id": ${{secrets.GDRIVE_CRED_PRIVATE_KEY_ID}}, "private_key": ${{secrets.GDRIVE_CRED_PRIVATE_KEY}}, "client_email": ${{secrets.GDRIVE_CRED_CLIENT_EMAIL}}, "client_id": ${{secrets.GDRIVE_CRED_CLIENT_ID}}, "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs", "client_x509_cert_url": ${{secrets.GDRIVE_CLIENT_X509}}, "universe_domain": "googleapis.com"}' >> credentials.json
           chmod 777 credentials.json
-          cat credentials.json
 
       - name: Upload file to Google Drive and get file ID
         id: upload_and_get_id
@@ -60,13 +59,6 @@ jobs:
           from googleapiclient.discovery import build
           from google.oauth2.service_account import Credentials
           from googleapiclient.http import MediaFileUpload
-          import json
-          
-          with open('credentials.json', 'r') as file:
-            lines = file.readlines()
-          
-          for line in lines:
-            print(line.strip())  # strip() removes any leading/trailing whitespace
           
           SCOPES = ['https://www.googleapis.com/auth/drive.file']
           FILE_NAME = '$GITHUB_SHA.zip'
