@@ -46,36 +46,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
-
-      - name: Create credentials
-        run: |
-          touch credentials.json
-          echo "{" >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_X509}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_UNIVERSE_DOMAIN}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_TYPE}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_TOKEN_URI}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_PROJECT_ID}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_PRIVATE_KEY_ID}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_PRIVATE_KEY}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_CLIENT_ID}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_CLIENT_EMAIL}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_AUTH_URI}}" >> credentials.json
-          echo ", " >> credentials.json
-          echo "${{secrets.GDRIVE_CRED_AUTH_PROVIDER}}" >> credentials.json
-          echo "}" >> credentials.json
-          chmod 777 credentials.json
-          cat credentials.json
-
+          
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "credentials.json"
+          json: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
 
       - name: Upload file to Google Drive and get file ID
         id: upload_and_get_id
