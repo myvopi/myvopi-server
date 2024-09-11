@@ -64,6 +64,8 @@ jobs:
           
           for line in lines:
             print(line.strip())  # strip() removes any leading/trailing whitespace
+          
+          print("${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}")
 
           SCOPES = ['https://www.googleapis.com/auth/drive.file']
           FILE_NAME = '$GITHUB_SHA.zip'
