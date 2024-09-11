@@ -58,12 +58,18 @@ jobs:
           from google.oauth2.service_account import Credentials
           from googleapiclient.http import MediaFileUpload
           import json
+          
+          with open('credentials.json', 'r') as file:
+            lines = file.readlines()
+          
+          for line in lines:
+            print(line.strip())  # strip() removes any leading/trailing whitespace
 
           SCOPES = ['https://www.googleapis.com/auth/drive.file']
           FILE_NAME = '$GITHUB_SHA.zip'
           FOLDER_ID = '${{ secrets.GOOGLE_DRIVE_PRODUCT_DEPLOY_FOLDER_ID }}'
 
-          credentials = Credentials.from_service_account_file("credentials.json", scopes=SCOPES)
+          credentials = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
           service = build('drive', 'v3', credentials=credentials)
 
           # Upload file
