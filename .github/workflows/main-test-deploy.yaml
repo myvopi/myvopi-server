@@ -81,7 +81,6 @@ jobs:
         run: |
           echo "File ID: ${{ steps.upload_and_get_id.outputs.file_id }}"
           
-          
 
 #      - name: Construct action secrets to env.properties
 #        run: |
