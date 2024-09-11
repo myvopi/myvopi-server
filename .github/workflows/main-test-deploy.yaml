@@ -59,6 +59,13 @@ jobs:
           from googleapiclient.discovery import build
           from google.oauth2.service_account import Credentials
           from googleapiclient.http import MediaFileUpload
+          import json
+          
+          with open('credentials.json', 'r') as file:
+            lines = file.readlines()
+          
+          for line in lines:
+            print(line.strip())  # strip() removes any leading/trailing whitespace
           
           SCOPES = ['https://www.googleapis.com/auth/drive.file']
           FILE_NAME = '$GITHUB_SHA.zip'
