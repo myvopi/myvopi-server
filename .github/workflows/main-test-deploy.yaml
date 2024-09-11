@@ -60,14 +60,11 @@ jobs:
           import json
 
           SCOPES = ['https://www.googleapis.com/auth/drive.file']
-          credentialFilePath = "/credentails.json"
-          with open(jsonfilepath, "r") as p:
-            print(json.load(p))
           SERVICE_ACCOUNT_FILE = 'credentials.json'
           FILE_NAME = '$GITHUB_SHA.zip'
           FOLDER_ID = '${{ secrets.GOOGLE_DRIVE_PRODUCT_DEPLOY_FOLDER_ID }}'
 
-          credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+          credentials = Credentials.from_service_account_file("/credentials.json", scopes=SCOPES)
           service = build('drive', 'v3', credentials=credentials)
 
           # Upload file
