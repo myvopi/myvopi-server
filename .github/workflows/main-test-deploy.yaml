@@ -35,7 +35,7 @@ jobs:
           arguments: :user-api-module:build -x test
 
       - name: Make zip file
-        run: zip -qq -r ./$GITHUB_SHA.zip build/libs/
+        run: zip -qq -r ./$GITHUB_SHA.zip /user-api-module/build/libs/
 
       - name: Set up Python
         uses: actions/setup-python@v4
