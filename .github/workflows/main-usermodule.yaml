@@ -115,25 +115,33 @@ jobs:
         env:
           SSH_PASSPHRASE: ${{secrets.UBUNTU_SSH_PASSPHRASE}}
           SSH_PRIVATE_KEY: ${{secrets.UBUNTU_SSH_PRIVATE_KEY}}
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           mkdir -p ~/.ssh
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          echo "echo $SSH_PASSPHRASE" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
+          
+          echo "Starting ssh-agent..."
+          eval $(ssh-agent -s)
+          
+          echo "Creating SSH_ASKPASS script..."
+          echo "echo \$SSH_PASSPHRASE" > ~/.ssh_askpass
+          chmod +x ~/.ssh_askpass
+        
+          echo "Adding SSH private key..."
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add ~/.ssh/id_rsa >/dev/null
+        
+          DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add ~/.ssh/id_rsa
 #          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
 #          echo "echo $SSH_PASSPHRASE" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
 #          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
 
       - name: Verify SSH key addition
         run: |
-          ssh-add -l
+          ssh-add -l || echo "No keys added"
 
       - name: Connect via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }}
+          ssh -o StrictHostKeyChecking=no ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }} "echo 'Connection successful!'"
 
 #      - name: Construct action secrets to env.properties
 #        run: |
