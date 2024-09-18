@@ -117,9 +117,15 @@ jobs:
           SSH_PRIVATE_KEY: ${{secrets.UBUNTU_SSH_PRIVATE_KEY}}
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
+#          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+#          echo "echo $SSH_PASSPHRASE" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
+#          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
+          mkdir -p ~/.ssh
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           echo "echo $SSH_PASSPHRASE" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add ~/.ssh/id_rsa >/dev/null
 
       - name: Connect via SSH
         run: |
