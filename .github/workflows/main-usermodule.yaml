@@ -112,15 +112,14 @@ jobs:
 #        env:
 #          GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
 
-      - uses: fifsky/ssh-action@master
-        with:
-          host: ${{ secrets.UBUNTU_SERVER_HOST }}
-          user: ${{ secrets.UBUNTU_SERVER_USER }}
-          key: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
-          pass: ${{ secrets.UBUNTU_SSH_PASSPHRASE }}
-          command: |
-            cd ~
-            sudo mkdir test
+
+      - name: Setup SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+        run: |
+          cd ~
+          mkdir test
 
 #      - name: Construct action secrets to env.properties
 #        run: |
