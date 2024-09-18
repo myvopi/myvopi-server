@@ -127,6 +127,10 @@ jobs:
 #          echo "echo $SSH_PASSPHRASE" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
 #          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
 
+      - name: Verify SSH key addition
+        run: |
+          ssh-add -l
+
       - name: Connect via SSH
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }}
