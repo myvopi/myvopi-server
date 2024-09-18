@@ -121,7 +121,6 @@ jobs:
           command: |
             cd ~
             sudo mkdir test
-            
 
 #      - name: Construct action secrets to env.properties
 #        run: |
