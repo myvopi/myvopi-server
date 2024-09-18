@@ -124,22 +124,11 @@ jobs:
       - name: Print ssh-add identities
         run: ssh-add -l
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
-
       - name: Deploy to server
         run: |
-          ssh ${{ secrets.UBUNTU }}@${{ secrets.UBUNTU_SERVER_HOST }} << 'EOF'
-            sudo mkdir test
-            # Add your deployment commands here
-            # Example: cd /var/www/myapp && git pull origin main
-          EOF
-          
-        
-          
-          
+          ssh ${{ secrets.UBUNTU }}@${{ secrets.UBUNTU_SERVER_HOST }}
+          sudo mkdir test
+
 #      - name: Construct action secrets to env.properties
 #        run: |
 #          echo "DEV_DB_URL=${{secrets.ENV_DEV_DB_URL}}" >> env.properties
