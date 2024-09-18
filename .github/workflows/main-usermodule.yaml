@@ -111,22 +111,16 @@ jobs:
 #          EOF
 #        env:
 #          GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
-
-      - name: Setup SSH Key
+      - name: Setup SSH with a passphrase
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.UBUNTU_SSH_PASSPHRASE }}
+          SSH_PASSPHRASE: ${{secrets.UBUNTU_SSH_PASSPHRASE}}
+          SSH_PRIVATE_KEY: ${{secrets.UBUNTU_SSH_PRIVATE_KEY}}
         run: |
-          mkdir -p ~/.ssh
-          eval "$(ssh-agent -s)"
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          echo "echo $SSH_PASSPHRASE" > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
 
-          # Add the server’s host key to known_hosts
-          ssh-keyscan -H ${{ secrets.UBUNTU_SERVER_HOST }} >> ~/.ssh/known_hosts
-
-      - name: SSH connection
+      - name: Connect via SSH
         run: |
           ssh ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }}
 
