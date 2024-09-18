@@ -112,14 +112,22 @@ jobs:
 #        env:
 #          GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
 
+      - name: Setup SSH passphrase
+        env:
+          SSH_PASSPHRASE: ${{secrets.UBUNTU_SSH_PASSPHRASE}}
+          SSH_PRIVATE_KEY: ${{secrets.UBUNTU_SSH_PRIVATE_KEY}}
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          echo 'echo $SSH_PASSPHRASE' > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
+
+      - name: Print ssh-add identities
+        run: ssh-add -l
+
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
-
-      - name: Add SSH key with passphrase
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add - <<< "${{ secrets.SSH_PASSPHRASE }}"
 
       - name: Deploy to server
         run: |
