@@ -112,14 +112,17 @@ jobs:
 #        env:
 #          GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
 
-
-      - name: Setup SSH Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.UBUNTU_SSH_PASSPHRASE }}
+      - name: SSH connection
         run: |
-          cd ~
-          mkdir test
+          ssh ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }}
+
+#      - name: Setup SSH Key
+#        env:
+#          SSH_PRIVATE_KEY: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
+#          SSH_PASSPHRASE: ${{ secrets.UBUNTU_SSH_PASSPHRASE }}
+#        run: |
+#          cd ~
+#          mkdir test
 
 #      - name: Construct action secrets to env.properties
 #        run: |
