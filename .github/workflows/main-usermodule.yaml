@@ -115,8 +115,8 @@ jobs:
 
       - name: Setup SSH Key
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+          SSH_PRIVATE_KEY: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.UBUNTU_SSH_PASSPHRASE }}
         run: |
           cd ~
           mkdir test
