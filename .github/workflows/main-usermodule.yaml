@@ -117,7 +117,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
           SSH_PASSPHRASE: ${{ secrets.UBUNTU_SSH_PASSPHRASE }}
         run: |
-          sudo mkdir -p ~/.ssh
+          mkdir -p ~/.ssh
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
