@@ -117,7 +117,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{secrets.UBUNTU_SSH_PRIVATE_KEY}}
         run: |
           mkdir -p ~/.ssh
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           
           echo "Starting ssh-agent..."
           eval $(ssh-agent -s)
