@@ -119,7 +119,7 @@ jobs:
 
       - name: SSH and run commands
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_SERVER_USER }}@${{ secrets.SSH_SERVER_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }} << 'EOF'
             cd ~
             mkdir test
           EOF
