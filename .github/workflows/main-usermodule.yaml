@@ -121,5 +121,5 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }} << 'EOF'
             cd ~/google-drive-api
-            sudo java -jar google-drive-download-api-0.0.1-SNAPSHOT.jar ${{ steps.upload_and_get_id.outputs.file_id }}
+            java -jar google-drive-download-api-0.0.1-SNAPSHOT.jar ${{ steps.upload_and_get_id.outputs.file_id }}
           EOF
