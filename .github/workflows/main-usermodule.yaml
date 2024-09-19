@@ -27,90 +27,90 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-#      - name: Set up JDK 17
-#        uses: actions/setup-java@v3
-#        with:
-#          java-version: '17'
-#          distribution: 'temurin'
-#
-#      - name: Create env.properties and move to classpath
-#        run: |
-#          echo "OS_SET=${{secrets.ENV_OS_SET}}" >> env.properties
-#          echo "APP_NAME=${{secrets.ENV_APP_NAME}}" >> env.properties
-#          echo "DATABASE_NAME=${{secrets.ENV_DATABASE_NAME}}" >> env.properties
-#          echo "DOCKER_DB_URL=${{secrets.ENV_DOCKER_DB_URL}}" >> env.properties
-#          echo "PROD_DB_USER=${{secrets.ENV_PROD_DB_USER}}" >> env.properties
-#          echo "PROD_DB_PASSWORD=${{secrets.ENV_PROD_DB_PASSWORD}}" >> env.properties
-#          echo "CIPHER_SECRET=${{secrets.ENV_CIPHER_SECRET}}" >> env.properties
-#          echo "CIPHER_IV=${{secrets.ENV_CIPHER_IV}}" >> env.properties
-#          echo "DDL=update" >> env.properties
-#          echo "USER_SECURITY_KEY=150" >> env.properties
-#          echo "PRIMARY_HIKARI_MAX_POOLSIZE=50" >> env.properties
-#          echo "PRIMARY_HIKARI_MINIMUM_IDLE=540000" >> env.properties
-#          echo "PRIMARY_HIKARI_MAX_LIFETIME=set wait_timeout = 600" >> env.properties
-#          echo "PRIMARY_HIKARI_INIT_SQL=15000" >> env.properties
-#          echo "PRIMARY_HIKARI_CONNECTION_TIMEOUT=300000" >> env.properties
-#          echo "PRIMARY_HIKARI_IDLE_TIMEOUT=10000" >> env.properties
-#          echo "PRIMARY_PORT=8091" >> env.properties
-#          echo "PRIMARY_PORT2=8092" >> env.properties
-#          echo "EMAIL_USERNAME=${{secrets.ENV_EMAIL_USERNAME}}" >> env.properties
-#          echo "EMAIL_PASSWORD=${{secrets.ENV_EMAIL_PASSWORD}}" >> env.properties
-#          echo "SSL_OR_TLS=587" >> env.properties
-#          echo "SOURCE_DIR=/src/main/kotlin/com/example/myvopiserver" >> env.properties
-#          chmod 777 env.properties
-#          mv env.properties user-api-module/src/resources
-#
-#      - name: Make gradlew executable
-#        run: sudo chmod +x ./gradlew
-#
-#      - name: Build with Gradle
-#        uses: gradle/gradle-build-action@v3
-#        with:
-#          arguments: :user-api-module:build -x test
-#
-#      - name: Make zip file
-#        run: zip -qq -r ./$GITHUB_SHA.zip user-api-module/build/libs/
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: '3.9'
-#
-#      - name: Install python google dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
-#
-#      - name: Create credentials.json
-#        run: |
-#          echo '{"type": "service_account", "project_id": ${{secrets.GDRIVE_CRED_PROJECT_ID}}, "private_key_id": ${{secrets.GDRIVE_CRED_PRIVATE_KEY_ID}}, "private_key": ${{secrets.GDRIVE_CRED_PRIVATE_KEY}}, "client_email": ${{secrets.GDRIVE_CRED_CLIENT_EMAIL}}, "client_id": ${{secrets.GDRIVE_CRED_CLIENT_ID}}, "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs", "client_x509_cert_url": ${{secrets.GDRIVE_CLIENT_X509}}, "universe_domain": "googleapis.com"}' >> credentials.json
-#          chmod 777 credentials.json
-#
-#      - name: Upload file to Google Drive and get file ID
-#        id: upload_and_get_id
-#        run: |
-#          python <<EOF
-#          from googleapiclient.discovery import build
-#          from google.oauth2.service_account import Credentials
-#          from googleapiclient.http import MediaFileUpload
-#
-#          SCOPES = ['https://www.googleapis.com/auth/drive.file']
-#          FILE_NAME = '$GITHUB_SHA.zip'
-#          FOLDER_ID = '${{ secrets.GOOGLE_DRIVE_PRODUCT_DEPLOY_FOLDER_ID }}'
-#
-#          credentials = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
-#          service = build('drive', 'v3', credentials=credentials)
-#
-#          # Upload file
-#          file_metadata = {'name': FILE_NAME, 'parents': [FOLDER_ID]}
-#          media = MediaFileUpload(FILE_NAME)
-#          file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-#
-#          # Output file ID
-#          print(f"::set-output name=file_id::{file.get('id')}")
-#          EOF
-#        env:
-#          GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create env.properties and move to classpath
+        run: |
+          echo "OS_SET=${{secrets.ENV_OS_SET}}" >> env.properties
+          echo "APP_NAME=${{secrets.ENV_APP_NAME}}" >> env.properties
+          echo "DATABASE_NAME=${{secrets.ENV_DATABASE_NAME}}" >> env.properties
+          echo "DOCKER_DB_URL=${{secrets.ENV_DOCKER_DB_URL}}" >> env.properties
+          echo "PROD_DB_USER=${{secrets.ENV_PROD_DB_USER}}" >> env.properties
+          echo "PROD_DB_PASSWORD=${{secrets.ENV_PROD_DB_PASSWORD}}" >> env.properties
+          echo "CIPHER_SECRET=${{secrets.ENV_CIPHER_SECRET}}" >> env.properties
+          echo "CIPHER_IV=${{secrets.ENV_CIPHER_IV}}" >> env.properties
+          echo "DDL=update" >> env.properties
+          echo "USER_SECURITY_KEY=150" >> env.properties
+          echo "PRIMARY_HIKARI_MAX_POOLSIZE=50" >> env.properties
+          echo "PRIMARY_HIKARI_MINIMUM_IDLE=540000" >> env.properties
+          echo "PRIMARY_HIKARI_MAX_LIFETIME=set wait_timeout = 600" >> env.properties
+          echo "PRIMARY_HIKARI_INIT_SQL=15000" >> env.properties
+          echo "PRIMARY_HIKARI_CONNECTION_TIMEOUT=300000" >> env.properties
+          echo "PRIMARY_HIKARI_IDLE_TIMEOUT=10000" >> env.properties
+          echo "PRIMARY_PORT=8091" >> env.properties
+          echo "PRIMARY_PORT2=8092" >> env.properties
+          echo "EMAIL_USERNAME=${{secrets.ENV_EMAIL_USERNAME}}" >> env.properties
+          echo "EMAIL_PASSWORD=${{secrets.ENV_EMAIL_PASSWORD}}" >> env.properties
+          echo "SSL_OR_TLS=587" >> env.properties
+          echo "SOURCE_DIR=/src/main/kotlin/com/example/myvopiserver" >> env.properties
+          chmod 777 env.properties
+          mv env.properties user-api-module/src/resources
+
+      - name: Make gradlew executable
+        run: sudo chmod +x ./gradlew
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: :user-api-module:build -x test
+
+      - name: Make zip file
+        run: zip -qq -r ./$GITHUB_SHA.zip user-api-module/build/libs/
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install python google dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+      - name: Create credentials.json
+        run: |
+          echo '{"type": "service_account", "project_id": ${{secrets.GDRIVE_CRED_PROJECT_ID}}, "private_key_id": ${{secrets.GDRIVE_CRED_PRIVATE_KEY_ID}}, "private_key": ${{secrets.GDRIVE_CRED_PRIVATE_KEY}}, "client_email": ${{secrets.GDRIVE_CRED_CLIENT_EMAIL}}, "client_id": ${{secrets.GDRIVE_CRED_CLIENT_ID}}, "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs", "client_x509_cert_url": ${{secrets.GDRIVE_CLIENT_X509}}, "universe_domain": "googleapis.com"}' >> credentials.json
+          chmod 777 credentials.json
+
+      - name: Upload file to Google Drive and get file ID
+        id: upload_and_get_id
+        run: |
+          python <<EOF
+          from googleapiclient.discovery import build
+          from google.oauth2.service_account import Credentials
+          from googleapiclient.http import MediaFileUpload
+
+          SCOPES = ['https://www.googleapis.com/auth/drive.file']
+          FILE_NAME = '$GITHUB_SHA.zip'
+          FOLDER_ID = '${{ secrets.GOOGLE_DRIVE_PRODUCT_DEPLOY_FOLDER_ID }}'
+
+          credentials = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
+          service = build('drive', 'v3', credentials=credentials)
+
+          # Upload file
+          file_metadata = {'name': FILE_NAME, 'parents': [FOLDER_ID]}
+          media = MediaFileUpload(FILE_NAME)
+          file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+          # Output file ID
+          print(f"::set-output name=file_id::{file.get('id')}")
+          EOF
+        env:
+          GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
 
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -120,6 +120,6 @@ jobs:
       - name: SSH and run commands
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.UBUNTU_SERVER_USER }}@${{ secrets.UBUNTU_SERVER_HOST }} << 'EOF'
-            cd ~
-            mkdir test
+            cd ~/google-drive-api
+            sudo java -jar google-drive-download-api-0.0.1-SNAPSHOT.jar ${{ steps.upload_and_get_id.outputs.file_id }}
           EOF
