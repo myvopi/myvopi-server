@@ -111,12 +111,15 @@ jobs:
 #          EOF
 #        env:
 #          GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED: ${{ secrets.GOOGLE_DRIVE_API_SERVICE_ACCOUNT_CRED }}
-      - name: Configure ssh connection
-        uses: fifsky/ssh-action@master
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          host: ${{ secrets.UBUNTU_SERVER_HOST }}
-          user: ${{ secrets.UBUNTU_SERVER_USER }}
-          key: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
-          command: |
+          ssh-private-key: ${{ secrets.UBUNTU_SSH_PRIVATE_KEY }}
+
+      - name: SSH and run commands
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_SERVER_USER }}@${{ secrets.SSH_SERVER_HOST }} << 'EOF'
             cd ~
-            sudo mkdir test
+            mkdir test
+          EOF
