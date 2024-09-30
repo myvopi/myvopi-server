@@ -1,16 +1,14 @@
-# ./gradlew :user-api-module:build -x test -PcustomArg="prod"
-# cd .\user-api-module\
-# docker build --no-cache -t app-image .
-# docker run -d -p 8091:8091 -e "SPRING_PROFILES_ACTIVE=prod1" -e "CONFIG_LOCATION=classpath:/application.yaml,classpath:/application-prod1.yaml" --name app-container -it app-image
+# ./gradlew :user-api-module:build -x test -PcustomArg="dev"
+# java -jar .\user-api-module\build\libs\user-api-module-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --spring.config.location=classpath:/application.yaml,classpath:/application-dev.yaml
 spring:
   config:
     activate:
-      on-profile: prod1
+      on-profile: dev
     import: "classpath:env.properties"
   datasource:
-    url: ${PROD_DB_URL}${DATABASE_NAME}
-    username: ${PROD_DB_USER}
-    password: ${PROD_DB_PASSWORD}
+    url: ${DEV_DB_URL}${DATABASE_NAME}
+    username: ${DEV_DB_USER}
+    password: ${DEV_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       max-lifetime: ${PRIMARY_HIKARI_MAX_LIFETIME}
@@ -22,4 +20,4 @@ spring:
       minimum-idle: ${PRIMARY_HIKARI_MINIMUM_IDLE}
 
 server:
-  port: 8091
+  port: 8080

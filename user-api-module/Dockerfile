@@ -9,5 +9,4 @@ ARG CONTROLLER_DIR=${MAIN_DIR}/interfaces
 COPY ${JAR_FILE} /user-api-module/app.jar
 COPY ${CLASS_DIR}/*.kt /user-api-module${DOCKER_OUT_DIR}/domain/
 COPY ${CONTROLLER_DIR}/*.kt /user-api-module${DOCKER_OUT_DIR}/interfaces/
-EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

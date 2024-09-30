@@ -30,7 +30,7 @@
 
     <!--    ENV PROFILE SETTING START    -->
     <!-- default / local / dev -->
-    <springProfile name="default | local | dev1 | dev2">
+    <springProfile name="default | dev | prod1 | prod2">
         <logger name="com.example.myvopiserver" level="DEBUG" additivity="false">
             <appender-ref ref="console" />
         </logger>
