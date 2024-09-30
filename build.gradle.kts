@@ -114,23 +114,28 @@ private fun validateDirectory(gradleCommand: String): List<String> {
     }
 }
 
-private fun getSystemOs(properties: Map<String, String>): String {
-    val os = properties["OS_SET"]!!
-    return if(os != "win") {
-        properties["DOCKER_DB_URL"]!!
+private fun getSystemOs(): String {
+    val osName = System.getProperty("os.name").lowercase()
+    return if(osName.contains("windows")) {
+        "win"
     } else {
-        properties["DEV_DB_URL"]!!
+        "other"
     }
 }
 
 private fun validateProject(gradleCommand: String) {
     val directories = validateDirectory(gradleCommand)
+    println("Executed command: $gradleCommand")
     if(gradleCommand.contains("build")) {
+        val customArg: String by project
+        println("Custom Arguments: $customArg")
         val rootProperties = getEnvProperties()
         val userProperties: MutableMap<String, String>
         when {
             gradleCommand.contains("user-api-module") -> {
                 userProperties = mutableMapOf(
+                    "OS_SET" to getSystemOs(),
+                    "ACTIVE_PROFILE" to customArg,
                     "DDL" to rootProperties["DDL"]!!,
                     "CIPHER_SECRET" to rootProperties["CIPHER_SECRET"]!!,
                     "CIPHER_IV" to rootProperties["CIPHER_IV"]!!,
@@ -149,6 +154,8 @@ private fun validateProject(gradleCommand: String) {
             }
             gradleCommand.contains("admin-api-module") -> {
                 userProperties = mutableMapOf(
+                    "OS_SET" to getSystemOs(),
+                    "ACTIVE_PROFILE" to customArg,
                     "CIPHER_SECRET" to rootProperties["CIPHER_SECRET"]!!,
                     "CIPHER_IV" to rootProperties["CIPHER_IV"]!!,
                     "ADMIN_SECURITY_KEY" to rootProperties["ADMIN_SECURITY_KEY"]!!,
@@ -176,15 +183,25 @@ private fun validateProject(gradleCommand: String) {
         }
         userProperties
             .apply {
-                put("OS_SET", rootProperties["OS_SET"]!!)
                 put("SOURCE_DIR", rootProperties["SOURCE_DIR"]!!)
                 put("APP_NAME", rootProperties["APP_NAME"]!!)
                 put("DATABASE_NAME", rootProperties["DATABASE_NAME"]!!)
-                // TODO
-                put("DEV_DB_URL", getSystemOs(rootProperties))
-                put("DEV_DB_USER", rootProperties["DEV_DB_USER"]!!)
-                put("DEV_DB_PASSWORD", rootProperties["DEV_DB_PASSWORD"]!!)
             }
+        if(customArg == "prod") {
+            userProperties
+                .apply {
+                    put("PROD_DB_URL", rootProperties["PROD_DB_URL"]!!)
+                    put("PROD_DB_USER", rootProperties["PROD_DB_USER"]!!)
+                    put("PROD_DB_PASSWORD", rootProperties["PROD_DB_PASSWORD"]!!)
+                }
+        } else {
+            userProperties
+                .apply {
+                    put("DEV_DB_URL", rootProperties["DEV_DB_URL"]!!)
+                    put("DEV_DB_USER", rootProperties["DEV_DB_USER"]!!)
+                    put("DEV_DB_PASSWORD", rootProperties["DEV_DB_PASSWORD"]!!)
+                }
+        }
         createNewEnvFile(directories.first(), userProperties)
     } else if(gradleCommand.contains("clean")) {
         directories.forEach { directory ->

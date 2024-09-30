@@ -1,5 +1,6 @@
 package com.example.myvopiserver.common.util
 
+import com.example.myvopiserver.common.util.extension.getLogger
 import jakarta.annotation.PostConstruct
 import jakarta.persistence.Column
 import jakarta.persistence.JoinColumn
@@ -23,10 +24,14 @@ class ClassResources(
     private val sourceDirName: String,
     @Value("\${OS_SET}")
     private val os: String,
+    @Value("\${ACTIVE_PROFILE}")
+    private val activeProfile: String,
 ) {
     private val entityDirName = "/domain"
     private val controllerDirName = "/interfaces"
     private val rootPackageName = "com.example.myvopiserver"
+
+    private val logger by getLogger()
 
     @PostConstruct
     fun initBuildClasses() {
@@ -57,8 +62,8 @@ class ClassResources(
     }
 
     private fun getSourceDirDestinationByOs(): String {
-        val lowerOs = os.lowercase()
-        return if(lowerOs == "win" || lowerOs == "git") {
+        logger.info("Current OS = $os")
+        return if(os == "win" && activeProfile == "dev") {
             "/user-api-module$sourceDirName"
         } else {
             sourceDirName

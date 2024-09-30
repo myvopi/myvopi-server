@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: prod2
+    import: "classpath:env.properties"
+  datasource:
+    url: ${PROD_DB_URL}${DATABASE_NAME}
+    username: ${PROD_DB_USER}
+    password: ${PROD_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: ${PRIMARY_HIKARI_MAX_LIFETIME}
+      maximum-pool-size: ${PRIMARY_HIKARI_MAX_POOLSIZE}
+      connection-init-sql: ${PRIMARY_HIKARI_INIT_SQL}
+      validation-timeout: ${PRIMARY_HIKARI_VALIDATION_TIMEOUT}
+      connection-timeout: ${PRIMARY_HIKARI_CONNECTION_TIMEOUT}
+      idle-timeout: ${PRIMARY_HIKARI_IDLE_TIMEOUT}
+      minimum-idle: ${PRIMARY_HIKARI_MINIMUM_IDLE}
+
+server:
+  port: 8092
