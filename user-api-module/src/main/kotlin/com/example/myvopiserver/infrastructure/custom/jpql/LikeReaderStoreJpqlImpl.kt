@@ -2,7 +2,7 @@ package com.example.myvopiserver.infrastructure.custom.jpql
 
 import com.commoncoremodule.enums.LikeStatus
 import com.commoncoremodule.extension.getCurrentDateTime
-import com.example.myvopiserver.common.util.ClassVariables.Companion.TablesNamesByClass
+import com.example.myvopiserver.common.util.ClassResources.Companion.TablesNamesByClass
 import com.example.myvopiserver.domain.*
 import com.example.myvopiserver.domain.command.CommentLikePostRequestCommand
 import com.example.myvopiserver.domain.command.ReplyLikePostRequestCommand

@@ -41,4 +41,6 @@ out/
 
 ### Environment Variables ###
 **/env.properties
-/env.properties
+/user-api-module/src/main/resources/env.properties
+/admin-api-module/src/main/resources/env.properties
+/cron-api-module/src/main/resources/env.properties

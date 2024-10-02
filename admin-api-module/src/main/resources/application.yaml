@@ -1,6 +1,6 @@
 spring:
   config:
-    import: "file:./env.properties"
+    import: "classpath:env.properties"
     activate:
       on-profile:
   sql:
